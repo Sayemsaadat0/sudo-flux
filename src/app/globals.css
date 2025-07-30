@@ -1,26 +1,227 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-heading: var(--font-unbounded);
+  --font-body: var(--font-manrope);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* e11bc6 - primary */
+/* 3a20f5 - secondary */
+@theme {
+  /* Purple Shades */
+  --color-sudo-purple-1: #fce8fa;
+  --color-sudo-purple-2: #f7bbef;
+  --color-sudo-purple-3: #f18de4;
+  --color-sudo-purple-4: #ec60d9;
+  --color-sudo-purple-5: #e632ce;
+  --color-sudo-purple-6: #cd19b4;
+  --color-sudo-purple-7: #9f138c;
+  --color-sudo-purple-8: #720e64;
+  --color-sudo-purple-9: #44083c;
+
+  /* Blue Shades */
+  --color-sudo-blue-1: #e9e7fe;
+  --color-sudo-blue-2: #beb6fc;
+  --color-sudo-blue-3: #9385fa;
+  --color-sudo-blue-4: #6854f7;
+  --color-sudo-blue-5: #3d23f5;
+  --color-sudo-blue-6: #230adc;
+  --color-sudo-blue-7: #1c08ab;
+  --color-sudo-blue-8: #14057a;
+  --color-sudo-blue-8: #0c0349;
+
+  /* Neutral Shades */
+  --color-sudo-neutral-1: #e0e0e0;
+  --color-sudo-neutral-2: #b0b0b0;
+  --color-sudo-neutral-3: #757575;
+  --color-sudo-neutral-4: #4a4a4a;
+  --color-sudo-neutral-5: #2d2d2d;
+  --color-sudo-neutral-6: #1a1a1a;
+
+  /* White Shades */
+  --color-sudo-white-1: #f9f9f9;
+  --color-sudo-white-2: #f2f2f2;
+  --color-sudo-white-3: #e6e6e6;
+  --color-sudo-white-4: #cccccc;
+  --color-sudo-white-5: #b3b3b3;
+  --color-sudo-white-6: #999999;
+
+  /* font family */
+  --font-heading: var(--font-unbounded);
+  --font-body: var(--font-manrope);
+
+  /* fonts sizes */
+  /* Font sizes for body text (Manrope) */
+  --text-sudo-regular-16: 1rem;
+  --text-sudo-regular-16--font-weight: 400;
+
+  --text-sudo-paragraph-20: 1.25rem;
+  --text-sudo-paragraph-20--font-weight: 400;
+
+  --text-sudo-button-20: 1.25rem;
+  --text-sudo-button-20--font-weight: 500;
+
+  /* Font sizes for titles (Unbounded) */
+  --text-sudo-title-22: 1.5rem;
+  --text-sudo-title-22--font-weight: 500;
+
+  --text-sudo-title-28: 1.75rem;
+  --text-sudo-title-28--font-weight: 500;
+
+  --text-sudo-title-36: 2.25rem;
+  --text-sudo-title-36--font-weight: 500;
+
+  --text-sudo-title-48: 3rem;
+  --text-sudo-title-48--font-weight: 600;
+
+  /* Font sizes for headers (Unbounded) */
+  --text-sudo-header-22: 1.375rem;
+  --text-sudo-header-22--font-weight: 700;
+
+  --text-sudo-header-28: 1.75rem;
+  --text-sudo-header-28--font-weight: 700;
+
+  --text-sudo-header-42: 2.625rem;
+  --text-sudo-header-42--font-weight: 700;
+
+  --text-sudo-header-56: 3.5rem;
+  --text-sudo-header-56--font-weight: 700;
+
+  --text-sudo-header-70: 4.375rem;
+  --text-sudo-header-70--font-weight: 700;
+
+  --text-sudo-header-88: 5.5rem;
+  --text-sudo-header-88--font-weight: 700;
+
+  --text-sudo-header-106: 6rem;
+  --text-sudo-header-106--font-weight: 800;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.sudo-container {
+  max-width: 1512px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 60px;
+  padding-right: 60px;
+}
+
+/* Media queries remain unchanged */
+@media screen and (max-width: 1440px) {
+  .sudo-container {
+    padding-left: 50px;
+    padding-right: 50px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media screen and (max-width: 1280px) {
+  .sudo-container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .sudo-container {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sudo-container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .sudo-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .sudo-container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  .sudo-container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+@layer base {
+  body {
+    font-family: var(--font-manrope);
+    background-color: var(--color-sudo-white-3);
+  }
+}
+
+
+/* external css */
+.flip-animate {
+  display: inline-block;
+  position: relative;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform-origin: top;
+  transition: transform 0.3s;
+}
+
+.flip-animate::before {
+  content: attr(data-hover);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  transform: rotateX(-95deg);
+    backface-visibility: hidden;
+
+  transform-origin: top;
+  text-align: center;
+  transition: color 0.3s;
+}
+
+.flip-animate:hover {
+  transform: rotateX(90deg) translateY(-22px);
+}
+
+
+
+/* === NEW: Flip on parent .group hover === */
+.flip-animate-group-hover {
+  display: inline-block;
+  position: relative;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform-origin: top;
+  transition: transform 0.3s;
+}
+
+.flip-animate-group-hover::before {
+  content: attr(data-hover);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  transform: rotateX(-95deg);
+  transform-origin: top;
+  backface-visibility: hidden;
+  text-align: center;
+  transition: color 0.3s, opacity 0.3s;
+  opacity: 0;
+}
+
+.group:hover .flip-animate-group-hover {
+  transform: rotateX(90deg) translateY(-22px);
+}
+
+.group:hover .flip-animate-group-hover::before {
+  opacity: 1;
 }
