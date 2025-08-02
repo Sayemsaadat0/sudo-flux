@@ -10,12 +10,12 @@ const AboutSection = () => {
     const wordsToColor = [
         {
             text: "tailored services",
-            className: "text-green-400",
+            className: "text-sudo-blue-6",
         },
         {
-            text: "unique business needs",
+            text: "unique business needs.",
             style: {
-                backgroundImage: "linear-gradient(90deg, #ff8a00, #e52e71)",
+                backgroundImage: "linear-gradient(90deg, purple, blue)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
