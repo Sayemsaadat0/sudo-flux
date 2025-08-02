@@ -234,13 +234,68 @@
 
 @keyframes shine {
   0% {
-    background-position: 100%;
+    background-position: 150% 0; /* start further right */
+  }
+  50% {
+    background-position: 50% 0; /* middle position */
   }
   100% {
-    background-position: -100%;
+    background-position: -50% 0; /* end left */
   }
 }
 
 .animate-shine {
-  animation: shine 5s linear infinite;
+  animation: shine 10s ease-in-out infinite;
 }
+
+.gradient-text-static {
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--color-sudo-purple-6), var(--color-sudo-blue-6));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; /* fallback */
+  display: inline-block;
+  user-select: none;
+}
+
+
+
+  /* Keyframes can be defined outside the layer */
+  @keyframes slide-line-animation {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+
+  .animated-line-container {
+    height: 4px;
+    background-color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* The moving black bar */
+  .animated-line-mover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(to right, 
+      black 60%, 
+      black 100%, 
+      black 40%
+    );
+    background-size: 50% 100%; 
+    background-repeat: no-repeat;
+    animation: slide-line-animation 3s linear infinite;
+  }
+
+  .animated-line-mover.delay-half {
+    animation-delay: -1.5s;
+  }
