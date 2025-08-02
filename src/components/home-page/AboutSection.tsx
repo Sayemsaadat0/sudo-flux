@@ -74,15 +74,7 @@ const AboutSection = () => {
                     </div>
                 </div>
             </div>
-            {/* <div className="space-y-5">
-                <div className="flex flex-col justify-center items-center mx-auto w-fit">
-                    <h4 className="uppercase font-bold">Our Expertise, Your Success</h4>
-                    <div className="w-2/4">
-                        <LineAnimation />
-                    </div>
-                </div>
-                <h2 className="text-sudo-title-36 font-heading w-2/3 mx-auto text-center">From humble beginnings to industry leaders in digital innovation</h2>
-            </div> */}
+            
         </div>
     )
 }
