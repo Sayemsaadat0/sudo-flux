@@ -48,7 +48,7 @@ const Button: React.FC<ButtonProps> = ({
       <div
         className={
           icon &&
-          `text-sudo-button-20 flex justify-center items-center gap-2  ${reverse ? "flex-row-reverse gap-2" : "flex-row"
+          `text-sudo-regular-16 flex justify-center items-center gap-2  ${reverse ? "flex-row-reverse gap-2" : "flex-row"
           }`
         }
       >

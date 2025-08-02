@@ -163,7 +163,6 @@
   }
 }
 
-
 /* external css */
 .flip-animate {
   display: inline-block;
@@ -180,20 +179,18 @@
   top: 100%;
   left: 0;
   width: 100%;
-  transform: rotateX(-95deg);
-    backface-visibility: hidden;
+  transform: rotateX(-90deg);
+  backface-visibility: hidden;
 
   transform-origin: top;
-  text-align: center;
+  /* text-align: center; */
   transition: color 0.3s;
 }
 
 .flip-animate:hover {
   transform: rotateX(90deg) translateY(-22px);
+
 }
-
-
-
 /* === NEW: Flip on parent .group hover === */
 .flip-animate-group-hover {
   display: inline-block;

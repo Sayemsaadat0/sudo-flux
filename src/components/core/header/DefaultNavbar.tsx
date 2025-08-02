@@ -72,7 +72,7 @@ const DefaultNavbar: React.FC = () => {
                 <div className="flex items-center gap-2 md:gap-[10px] cursor-pointer xl:gap-1 justify-end">
                     <div>
                         <Link href={'/quote'}>
-                            <Button variant={'outlineBtn'} label={'Get a Quote'} />
+                            <Button variant={'outlineBtn'} label={'Contact Us'} />
                         </Link>
                     </div>
                     <div className=' bg-sudo-blue-5  text-sudo-white-1 rounded-full flex'>
