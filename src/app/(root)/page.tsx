@@ -1,13 +1,10 @@
 'use client';
 
-import useSmoothScroll from "@/hooks/useSmoothScroll";
+import HomePageContainer from "@/components/home-page/HomePageContainer";
 
 const Home = () => {
-  useSmoothScroll();
   return (
-    <div className="sudo-container space-y-10 py-24">
-      <div className="min-h-screen">1st Section</div>
-    </div>
+    <><HomePageContainer /></>
   )
 }
 export default Home

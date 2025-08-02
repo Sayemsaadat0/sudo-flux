@@ -189,7 +189,6 @@
 
 .flip-animate:hover {
   transform: rotateX(90deg) translateY(-22px);
-
 }
 /* === NEW: Flip on parent .group hover === */
 .flip-animate-group-hover {
@@ -221,4 +220,27 @@
 
 .group:hover .flip-animate-group-hover::before {
   opacity: 1;
+}
+
+.outline-text {
+  color: black; /* Fallback */
+  text-transform: uppercase;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: black;
+  letter-spacing: 3px;
+  /* text-stroke: 1px black; Future-proofing */
+}
+
+@keyframes shine {
+  0% {
+    background-position: 100%;
+  }
+  100% {
+    background-position: -100%;
+  }
+}
+
+.animate-shine {
+  animation: shine 5s linear infinite;
 }
