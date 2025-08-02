@@ -10,11 +10,11 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primarybtn:
-          'rounded-full bg-sudo-blue-5 py-2.5 px-3 md:px-[32px]  hover:bg-sudo-blue-4 hover:border-none transition-all',
+          'rounded-full bg-sudo-blue-5 py-3 px-3 md:px-[32px]  hover:bg-sudo-blue-4 hover:border-none transition-all',
         outlineBtn:
-          'rounded-full bg-none text-sudo-neutral-9 border border-sudo-neutral-3 hover:border-sudo-neutral-2 py-2.5 px-3 md:px-[32px]   hover:bg-sudo-white-1  transition-all',
+          'rounded-full bg-none text-sudo-neutral-9 border border-sudo-neutral-3 hover:border-sudo-neutral-2 py-3 px-3 md:px-[32px]   hover:bg-sudo-white-1  transition-all',
         textBtn:
-          'rounded-full bg-none text-sudo-neutral-9 border py-2.5 px-3 md:px-[32px] md:py-3.5 ',
+          'rounded-full bg-none text-sudo-neutral-9 border py-3 px-3 md:px-[32px] md:py-3.5 ',
         paginationBtn:
           'rounded-full border bg-oc-primary-1-500 px-3 py-2 text-white rounded-full',
         ghostBtn: 'rounded-full border border-sudo-neutral-9 text-sudo-neutral-9 bg-oc-white-600 px-3 py-2',
