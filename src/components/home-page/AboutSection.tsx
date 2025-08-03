@@ -112,10 +112,7 @@ export default function AboutSection() {
                             label="More About us"
                             icon={<ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                             }
-                            variant="outlineBtn"
-                            className="w-fit group hover:bg-primary hover:text-primary-foreground transition-colors bg-transparent"
                         >
-
                         </Button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">

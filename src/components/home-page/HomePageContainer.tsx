@@ -6,6 +6,7 @@ import AboutSection from "./AboutSection"
 import ServiceSection from "./ServiceSection"
 import FaqSection from "./FaqSection"
 import BlogSection from "./BlogSection"
+import TestimonialsSection from "./TestimonialSection"
 // import ContactSection from "./ContactSection"
 
 const HomePageContainer = () => {
@@ -18,6 +19,7 @@ const HomePageContainer = () => {
             <ServiceSection />
             <FaqSection />
             <BlogSection />
+            <TestimonialsSection />
             {/* <ContactSection/> */}
         </div>
     )

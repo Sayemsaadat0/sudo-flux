@@ -1,13 +1,12 @@
-
 'use client';
 
-import React, { useRef, useEffect, ReactNode } from 'react';
+import React, { useRef, useEffect, ReactNode, useMemo, CSSProperties } from 'react';
 import { gsap } from 'gsap';
 import clsx from 'clsx';
 import Image from 'next/image';
 
-// Props interface remains the same
-interface TextMarqueProps {
+// --- MODIFIED Props interface ---
+interface AnimatedMarqueProps {
     children: ReactNode;
     direction?: 'left' | 'right';
     duration?: number;
@@ -15,9 +14,14 @@ interface TextMarqueProps {
     textClassName?: string;
     hoverBgClassName?: string;
     hoverImageUrl?: string;
+    fadeLeft?: boolean;
+    fadeRight?: boolean;
+    fadeWidth?: number;
+    /** If false, all hover effects (background, text color, image) will be disabled. Defaults to true. */
+    isHoverActive?: boolean;
 }
 
-const TextMarque: React.FC<TextMarqueProps> = ({
+const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
     children,
     direction = 'left',
     duration = 20,
@@ -25,10 +29,38 @@ const TextMarque: React.FC<TextMarqueProps> = ({
     textClassName,
     hoverBgClassName,
     hoverImageUrl,
+    fadeLeft = false,
+    fadeRight = false,
+    fadeWidth = 100,
+    // --- NEW PROP with default value ---
+    isHoverActive = true,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const marqueeContentRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
+
+    // Memoized style for the fade mask (no changes here)
+    const maskStyle = useMemo((): CSSProperties => {
+        if (!fadeLeft && !fadeRight) return {};
+        const colorStops: string[] = [];
+        if (fadeLeft) {
+            colorStops.push('transparent 0%');
+            colorStops.push(`black ${fadeWidth}px`);
+        } else {
+            colorStops.push('black 0%');
+        }
+        if (fadeRight) {
+            colorStops.push(`black calc(100% - ${fadeWidth}px)`);
+            colorStops.push('transparent 100%');
+        } else {
+            colorStops.push('black 100%');
+        }
+        const maskImageValue = `linear-gradient(to right, ${colorStops.join(', ')})`;
+        return {
+            maskImage: maskImageValue,
+            WebkitMaskImage: maskImageValue,
+        };
+    }, [fadeLeft, fadeRight, fadeWidth]);
 
     // Marquee scroll effect (no changes here)
     useEffect(() => {
@@ -58,41 +90,26 @@ const TextMarque: React.FC<TextMarqueProps> = ({
         const container = containerRef.current;
         const image = imageRef.current;
 
-        if (!hoverImageUrl || !container || !image) return;
+        // --- KEY CHANGE: Exit early if hover is disabled or image is not provided ---
+        if (!isHoverActive || !hoverImageUrl || !container || !image) {
+            return; // Do not attach any event listeners
+        }
 
         gsap.set(image, { scale: 0, autoAlpha: 0 });
-
-        // Use a variable to store dimensions for performance.
-        // We'll update it on mouse enter.
         let imageDimensions = { width: 0, height: 0 };
 
         const onMouseMove = (e: MouseEvent) => {
             const rect = container.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
-
-            // THE KEY CHANGE: Calculate the target position for the top-left corner
-            // by subtracting half the image's dimensions from the mouse position.
             const targetX = mouseX - imageDimensions.width / 2;
             const targetY = mouseY - imageDimensions.height / 2;
-
-            gsap.to(image, {
-                x: targetX,
-                y: targetY,
-                duration: 0.6,
-                ease: 'power2.out',
-            });
+            gsap.to(image, { x: targetX, y: targetY, duration: 0.6, ease: 'power2.out' });
         };
-
         const onMouseEnter = () => {
-            // Get the image's rendered dimensions once when the mouse enters.
-            imageDimensions = {
-                width: image.offsetWidth,
-                height: image.offsetHeight,
-            };
+            imageDimensions = { width: image.offsetWidth, height: image.offsetHeight };
             gsap.to(image, { scale: 1, autoAlpha: 1, duration: 0.3 });
         };
-
         const onMouseLeave = () => {
             gsap.to(image, { scale: 0, autoAlpha: 0, duration: 0.3 });
         };
@@ -106,20 +123,26 @@ const TextMarque: React.FC<TextMarqueProps> = ({
             container.removeEventListener('mouseenter', onMouseEnter);
             container.removeEventListener('mouseleave', onMouseLeave);
         };
-    }, [hoverImageUrl]);
+        // --- Add isHoverActive to dependency array ---
+    }, [hoverImageUrl, isHoverActive]);
 
     return (
         <div
             ref={containerRef}
             className={clsx(
-                'relative w-full group ',
+                'relative w-full',
+                { 'group': isHoverActive },
                 className
             )}
         >
-            <div className="relative overflow-hidden py-5">
+            <div
+                className="relative overflow-hidden py-5"
+                style={maskStyle}
+            >
+            
                 <div
                     className={clsx(
-                        'absolute  w-full h-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inset-0 group-hover:h-full transition-all duration-500 ease-in-out',
+                        'absolute w-full h-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inset-0 group-hover:h-full transition-all duration-500 ease-in-out',
                         'bg-sudo-blue-6',
                         hoverBgClassName
                     )}
@@ -129,7 +152,7 @@ const TextMarque: React.FC<TextMarqueProps> = ({
                         <div
                             key={i}
                             className={clsx(
-                                'px-4 text-sudo-neutral-6 group-hover:text-white transition-colors duration-500 relative z-10',
+                                'px-2 text-sudo-neutral-6 group-hover:text-white transition-colors duration-500 relative z-10',
                                 textClassName
                             )}
                         >
@@ -147,7 +170,7 @@ const TextMarque: React.FC<TextMarqueProps> = ({
                     alt="Hover detail"
                     className={clsx(
                         'absolute top-0 left-0 w-40 h-56 object-cover rounded-lg shadow-2xl z-20',
-                        'pointer-events-none' // IMPORTANT: Prevents the image from blocking mouse events
+                        'pointer-events-none'
                     )}
                 />
             )}
@@ -155,4 +178,4 @@ const TextMarque: React.FC<TextMarqueProps> = ({
     );
 };
 
-export default TextMarque;
+export default AnimatedMarque;

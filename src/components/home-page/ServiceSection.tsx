@@ -1,9 +1,9 @@
 'use client'
 
 import Link from "next/link";
-import TextMarque from "../animations/TextMarque";
 import LineAnimation from "../animations/LineAnimation";
 import clsx from "clsx";
+import AnimatedMarque from "../animations/AnimatedMarque";
 
 const ServiceSection = () => {
     const marqueesData = [
@@ -73,7 +73,7 @@ const ServiceSection = () => {
                                 isLast && "border-none"
                             )}
                         >
-                            <TextMarque
+                            <AnimatedMarque
                                 direction={item.direction as "left" | "right"}
                                 hoverImageUrl={item.hoverImageUrl}
                                 duration={item.duration}
@@ -81,7 +81,7 @@ const ServiceSection = () => {
                                 textClassName="text-sudo-title-48 font-bold uppercase font-heading"
                             >
                                 {item.text}
-                            </TextMarque>
+                            </AnimatedMarque>
                         </Link>
                     );
                 })}

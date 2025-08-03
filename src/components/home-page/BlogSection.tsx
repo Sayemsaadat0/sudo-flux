@@ -31,19 +31,19 @@ const BlogSection = () => {
     ];
     return (
         <div className="sudo-container py-10 space-y-10">
-            <div className="">
+            <div className="flex flex-col items-center justify-center">
                 <div className="flex flex-col justify-center items-center mx-auto w-fit">
                     <h4 className="uppercase font-bold">Our Expertise, Your Success</h4>
                     <div className="w-2/4">
                         <LineAnimation />
                     </div>
                 </div>
-                <h2 className="text-sudo-title-48 text-sudo-neutral-6 font-heading w-2/3 mx-auto text-center">View Our Services
+                <h2 className="text-sudo-title-48 text-sudo-neutral-6 font-heading w-2/3 mx-auto text-center">Our Latest Blogs
                 </h2>
+                <Link href={'/about'} className="py-3">
+                    <Button label="Explore more" />
+                </Link>
             </div>
-            <Link href={'/about'} className="py-3">
-                <Button label="Explore more" />
-            </Link>
             <div>
                 <div className="space-y-12">
                     <div className="grid gap-5 grid-cols-1 md:grid-cols-3 ">
