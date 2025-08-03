@@ -1,9 +1,9 @@
 'use client'
 
 import Link from "next/link";
-import TextMarque from "../animations/TextMarque";
 import LineAnimation from "../animations/LineAnimation";
 import clsx from "clsx";
+import AnimatedMarque from "../animations/AnimatedMarque";
 
 const ServiceSection = () => {
     const marqueesData = [
@@ -50,7 +50,7 @@ const ServiceSection = () => {
     ];
 
     return (
-        <div className="space-y-10 py-12">
+        <div className="space-y-10 pt-10">
             <div className="">
                 <div className="flex flex-col justify-center items-center mx-auto w-fit">
                     <h4 className="uppercase font-bold">Our Expertise, Your Success</h4>
@@ -73,7 +73,7 @@ const ServiceSection = () => {
                                 isLast && "border-none"
                             )}
                         >
-                            <TextMarque
+                            <AnimatedMarque
                                 direction={item.direction as "left" | "right"}
                                 hoverImageUrl={item.hoverImageUrl}
                                 duration={item.duration}
@@ -81,7 +81,7 @@ const ServiceSection = () => {
                                 textClassName="text-sudo-title-48 font-bold uppercase font-heading"
                             >
                                 {item.text}
-                            </TextMarque>
+                            </AnimatedMarque>
                         </Link>
                     );
                 })}

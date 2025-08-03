@@ -8,6 +8,7 @@ const Logo = () => {
     <div className='w-[110px] md:w-[130px] '>
       <Image
         className="object-cover w-full"
+        // src={'/logo/logo-black.png'}
         src={'/logo/logo.png'}
         alt="Logo"
         width={209}
