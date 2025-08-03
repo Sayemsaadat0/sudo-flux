@@ -1,10 +1,10 @@
 'use client'
-// src/components/AboutSectionCard.tsx
+// src/components/BlogCard.tsx
 import React from 'react';
 import clsx from 'clsx';
 import AnimatedImage from '@/components/animations/AnimatedImage';
 
-interface AboutSectionCardProps {
+interface BlogCardProps {
     thumbnailUrl: string;
     title: string;
     description: string;
@@ -12,7 +12,7 @@ interface AboutSectionCardProps {
     className?: string; // To allow for additional custom styling
 }
 
-const AboutSectionCard: React.FC<AboutSectionCardProps> = ({
+const BlogCard: React.FC<BlogCardProps> = ({
     thumbnailUrl,
     title,
     description,
@@ -65,4 +65,4 @@ const AboutSectionCard: React.FC<AboutSectionCardProps> = ({
     );
 };
 
-export default AboutSectionCard;
+export default BlogCard;

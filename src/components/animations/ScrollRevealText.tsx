@@ -142,7 +142,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 interface ColoredWord {
     text: string;
-    className?: string; // Tailwind or custom classes
+    className?: string;
     style?: React.CSSProperties;
 }
 
@@ -164,11 +164,15 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
 
     const processedText = useMemo(() => {
         if (!coloredWords || coloredWords.length === 0) {
-            return text.split('').map((char, index) => (
-                <span key={index} className={clsx('anim-char', 'inline-block')}>
-                    {char === ' ' ? '\u00A0' : char}
-                </span>
-            ));
+            // --- CHANGE: Split the entire text by words if no colored words ---
+            return text.split(/(\s+)/).map((word, index) => {
+                if (word.match(/^\s+$/)) return word; // Return spaces as-is
+                return (
+                    <span key={index} className={clsx('anim-word', 'inline-block')}>
+                        {word}
+                    </span>
+                );
+            });
         }
 
         const regex = new RegExp(
@@ -178,14 +182,17 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
 
         const parts = text.split(regex);
 
-        return parts.map((part, index) => {
+        return parts.flatMap((part, index) => { // Using flatMap to simplify
+            if (!part) return []; // Ignore empty parts from split
+
             const coloredWord = coloredWords.find((cw) => cw.text === part);
 
             if (coloredWord) {
+                // This is a special colored word, wrap it in a single span
                 return (
                     <span
                         key={index}
-                        className={clsx('anim-char', 'inline-block', coloredWord.className)}
+                        className={clsx('anim-word', 'inline-block', coloredWord.className)} // CHANGED: Use 'anim-word'
                         style={coloredWord.style}
                     >
                         {part}
@@ -193,11 +200,19 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
                 );
             }
 
-            return part.split('').map((char, charIndex) => (
-                <span key={`${index}-${charIndex}`} className={clsx('anim-char', 'inline-block')}>
-                    {char === ' ' ? '\u00A0' : char}
-                </span>
-            ));
+            // --- MAIN CHANGE: Split regular text parts by word, not by character ---
+            return part.split(/(\s+)/).map((word, wordIndex) => {
+                // If the "word" is just whitespace, render it directly to allow line breaks.
+                if (word.match(/^\s+$/)) {
+                    return <React.Fragment key={`${index}-${wordIndex}`}>{word}</React.Fragment>;
+                }
+                // If it's an actual word, wrap it in a span for animation.
+                return (
+                    <span key={`${index}-${wordIndex}`} className={clsx('anim-word', 'inline-block')}>
+                        {word}
+                    </span>
+                );
+            });
         });
     }, [text, coloredWords]);
 
@@ -205,10 +220,13 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
         const el = containerRef.current;
         if (!el) return;
 
-        const chars = el.querySelectorAll('.anim-char');
-        if (chars.length === 0) return;
+        // --- CHANGE: Select by the new class name ---
+        const words = el.querySelectorAll('.anim-word');
+        if (words.length === 0) return;
 
-        gsap.set(chars, {
+        // I've switched grayscale to blur, as it often looks smoother for word-by-word reveals.
+        // You can change it back to `filter: 'grayscale(100%)'` if you prefer.
+        gsap.set(words, {
             opacity: 0.2,
             filter: 'grayscale(100%)',
         });
@@ -222,10 +240,11 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
             },
         });
 
-        tl.to(chars, {
+        // --- CHANGE: Animate the words ---
+        tl.to(words, {
             opacity: 1,
             filter: 'blur(0px)',
-            stagger: 0.1,
+            stagger: 0.05, // Staggering by word feels better. You can adjust the value.
             ease: 'power2.out',
         });
 
@@ -236,8 +255,9 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
     }, [processedText]);
 
     return (
-        <div ref={containerRef} className={clsx('w-full text-2xl md:text-4xl lg:text-5xl font-bold leading-tight', className)}>
-            <p >
+        <div ref={containerRef} className={clsx('w-full text-sudo-title-22 md:text-sudo-title-28 lg:text-sudo-title-36 font-heading font-bold leading-tight', className)}>
+            {/* The 'whitespace-normal' class is good, it ensures default wrapping behavior */}
+            <p className="whitespace-normal">
                 {processedText}
             </p>
         </div>

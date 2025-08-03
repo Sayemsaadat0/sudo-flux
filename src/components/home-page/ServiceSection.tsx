@@ -50,7 +50,7 @@ const ServiceSection = () => {
     ];
 
     return (
-        <div className="space-y-10 py-12">
+        <div className="space-y-10 pt-10">
             <div className="">
                 <div className="flex flex-col justify-center items-center mx-auto w-fit">
                     <h4 className="uppercase font-bold">Our Expertise, Your Success</h4>

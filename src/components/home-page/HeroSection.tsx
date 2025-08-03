@@ -43,7 +43,7 @@ const HeroSection = () => {
                     <div className="w-full mx-auto">
                         <AnimatedImage
                             className="sm:rounded-[10px] md:rounded-[20px]"
-                            src="/images/Banner.png"
+                            src="https://placehold.co/600x300/1e1e1e/FFFFFF.png"
                             width={1272}
                             height={800}
                             layout="responsive"
@@ -59,7 +59,7 @@ const HeroSection = () => {
                 <div className="relative block sm:hidden ">
                     <Image
                         className="rounded-[20px] object-contain object-center"
-                        src="/images/Banner1.png"
+                        src="https://placehold.co/600x300/000000/FFFFFF.png"
                         width={630}
                         height={631}
                         objectFit="cover"

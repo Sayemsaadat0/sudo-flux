@@ -4,6 +4,9 @@ import useSmoothScroll from "@/hooks/useSmoothScroll"
 import HeroSection from "./HeroSection"
 import AboutSection from "./AboutSection"
 import ServiceSection from "./ServiceSection"
+import FaqSection from "./FaqSection"
+import BlogSection from "./BlogSection"
+// import ContactSection from "./ContactSection"
 
 const HomePageContainer = () => {
     useSmoothScroll()
@@ -13,6 +16,9 @@ const HomePageContainer = () => {
             <HeroSection />
             <AboutSection />
             <ServiceSection />
+            <FaqSection />
+            <BlogSection />
+            {/* <ContactSection/> */}
         </div>
     )
 }
