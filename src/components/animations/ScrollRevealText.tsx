@@ -148,7 +148,7 @@ interface ColoredWord {
 
 interface ScrollRevealTextProps {
     text: string;
-    coloredWords: ColoredWord[];
+    coloredWords?: ColoredWord[] | [];
     className?: string; // For main container wrapper
 }
 
@@ -255,7 +255,7 @@ const ScrollRevealText: React.FC<ScrollRevealTextProps> = ({
     }, [processedText]);
 
     return (
-        <div ref={containerRef} className={clsx('w-full text-sudo-title-22 md:text-sudo-title-28 lg:text-sudo-title-36 font-heading font-bold leading-tight', className)}>
+        <div ref={containerRef} className={clsx('w-full text-sudo-title-22 md:text-sudo-title-28 lg:text-sudo-title-36 font-heading font-bold ', className)}>
             {/* The 'whitespace-normal' class is good, it ensures default wrapping behavior */}
             <p className="whitespace-normal">
                 {processedText}

@@ -49,10 +49,9 @@ const HeroSection = () => {
                         <AnimatedImage
                             className="sm:rounded-[10px] md:rounded-[20px]"
                             src="https://placehold.co/600x300/1e1e1e/FFFFFF.png"
-                            width={1272}
-                            height={800}
-                            layout="responsive"
-                            objectFit="cover"
+                            width={1572}
+                            height={600}
+                            layout="intrinsic"
                             alt="header-img"
                             priority
                             placeholder="blur"

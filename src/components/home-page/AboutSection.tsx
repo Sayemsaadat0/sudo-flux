@@ -105,19 +105,14 @@ export default function AboutSection() {
                                             duration={1.5}
                                             separator=","
                                             direction="up"
-                                            className="text-minion-title-48 font-extrabold text-minion-yellow-5 count-up-text"
+                                            className="text-sudo-title-48 font-extrabold text-sudo-blue-5 count-up-text"
                                         />
                                         <p className="text-lg font-medium text-gray-700">{stat.label}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <Button
-                            label="More About us"
-                            icon={<ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                            }
-                        >
-                        </Button>
+                        <Button icon={<ArrowRight size={'18'} />} icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100" className="text-sudo-white-2 " label="More About Us" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
                         {featureCards.map((card, index) => (
@@ -133,24 +128,27 @@ export default function AboutSection() {
                 </div>
 
                 {/* Right Column */}
-                <div className="relative">
-                    <div className="relative  w-full">
+                {/* Right Column */}
+                <div className="relative  flex justify-end ">
+                    <div className="relative ">
                         <AnimatedImage
-                            className="sm:rounded-[10px] md:max-w-full md:rounded-[20px]"
-                            src="https://placehold.co/400x400/1e1e1e/FFFFFF.png"
-                            width={400}
-                            height={400}
-                            layout="responsive"
+                            className="sm:rounded-[10px] bg-minion-neutral-5  object-cover md:max-w-full md:rounded-[20px]"
+                            src="/images/banner.png"
+                            // src="https://placehold.co/400x400/FFFFFF/1e1e1e.png"
+                            width={650}
+                            height={650}
+                            // fill
+                            // layout="responsive"
                             objectFit="cover"
                             alt="header-img"
                             priority
                             placeholder="blur"
                             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkSPlfDwADswHkz8UV3wAAAABJRU5ErkJggg=="
                         />
-                        <div className="absolute top-4 right-4">
-                            <Button className="bg-white text-black hover:bg-gray-100 shadow-lg" label="Innovate Now">
-
-                            </Button>
+                        <div className="absolute border border-minion-neutral-2 shadow  text-minion-neutral-6 rounded-full bg-minion-white-1 animate-bounce duration-700 ease-in-out transition-all px-5 py-1 top-4 right-4 bounceSlight">
+                            Innovate Now
+                            {/* <Button className="" label="Innovate Now">
+                            </Button> */}
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-// CountUp.tsx
+// src/components/CountUp.tsx
 import { useEffect, useRef, cloneElement, isValidElement, ReactElement } from "react";
 import { useInView, useMotionValue, useSpring } from "framer-motion";
 
@@ -35,100 +35,94 @@ export default function CountUp({
     iconClassName = "",
     iconSize,
 }: CountUpProps) {
-    const ref = useRef<HTMLSpanElement>(null);
-    const motionValue = useMotionValue(direction === "down" ? to : from);
-
-    const damping = 20 + 40 * (1 / duration);
-    const stiffness = 100 * (1 / duration);
-
-    const springValue = useSpring(motionValue, {
-        damping,
-        stiffness,
-    });
-
-    // We need to attach the ref to the parent span that holds everything,
-    // so `isInView` can trigger correctly.
+    // ref for the number span itself, to update its textContent
+    const numberRef = useRef<HTMLSpanElement>(null);
+    
+    // ref for the container, to track when it enters the viewport
     const containerRef = useRef<HTMLSpanElement>(null);
+    
     const isInView = useInView(containerRef, { once: true, margin: "0px" });
 
-    // Helper function to get decimal places
+    const motionValue = useMotionValue(direction === "down" ? to : from);
+    const springValue = useSpring(motionValue, {
+        damping: 30,
+        stiffness: 100,
+        mass: 1 / duration,
+    });
+
     const getDecimalPlaces = (num: number): number => {
-        const str = num.toString();
-        if (str.includes(".")) {
-            const decimals = str.split(".")[1];
-            if (parseInt(decimals) !== 0) return decimals.length;
-        }
-        return 0;
+        const str = String(num);
+        return str.includes(".") ? str.split(".")[1].length : 0;
     };
     const maxDecimals = Math.max(getDecimalPlaces(from), getDecimalPlaces(to));
 
-    // ✅ RESTORED: This hook starts the animation when the component is in view
+    // Effect to start the animation when the component is in view
     useEffect(() => {
         if (isInView && startWhen) {
-            if (typeof onStart === "function") onStart();
+            onStart?.();
 
-            const timeoutId = setTimeout(() => {
+            const animationTimeout = setTimeout(() => {
                 motionValue.set(direction === "down" ? from : to);
             }, delay * 1000);
 
-            const durationTimeoutId = setTimeout(() => {
-                if (typeof onEnd === "function") onEnd();
-            }, delay * 1000 + duration * 1000);
+            const endTimeout = setTimeout(() => {
+                onEnd?.();
+            }, (delay + duration) * 1000);
 
             return () => {
-                clearTimeout(timeoutId);
-                clearTimeout(durationTimeoutId);
+                clearTimeout(animationTimeout);
+                clearTimeout(endTimeout);
             };
         }
     }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
 
-    // ✅ RESTORED: This hook updates the number text on every animation frame
+    // Effect to update the number display
     useEffect(() => {
+        // Helper to format the number consistently
+        const formatNumber = (num: number) => {
+            const options: Intl.NumberFormatOptions = {
+                useGrouping: !!separator,
+                minimumFractionDigits: maxDecimals,
+                maximumFractionDigits: maxDecimals,
+            };
+            const formatted = new Intl.NumberFormat("en-US", options).format(num);
+            return separator ? formatted.replace(/,/g, separator) : formatted;
+        };
+        
+        // **FIX**: Set the initial text content on mount so it's not invisible.
+        // It reads the initial value directly from `motionValue`.
+        if (numberRef.current) {
+            numberRef.current.textContent = formatNumber(motionValue.get());
+        }
+
+        // Subscribe to spring changes to update the number during animation
         const unsubscribe = springValue.on("change", (latest) => {
-            if (ref.current) {
-                const options: Intl.NumberFormatOptions = {
-                    useGrouping: !!separator,
-                    minimumFractionDigits: maxDecimals,
-                    maximumFractionDigits: maxDecimals,
-                };
-                const formattedNumber = Intl.NumberFormat("en-US", options).format(latest);
-                ref.current.textContent = separator
-                    ? formattedNumber.replace(/,/g, separator)
-                    : formattedNumber;
+            if (numberRef.current) {
+                numberRef.current.textContent = formatNumber(latest);
             }
         });
+
         return () => unsubscribe();
-    }, [springValue, separator, maxDecimals]);
-
-
-    const numberElement = <span className={className} ref={ref}></span>;
+    }, [springValue, separator, maxDecimals, motionValue]);
 
     const renderIcon = () => {
-        if (isValidElement(icon) && iconSize) {
-            return cloneElement(icon, { size: iconSize });
-        }
-        return icon;
+        if (!isValidElement(icon)) return null;
+        const iconProps = iconSize ? { size: iconSize } : {};
+        return (
+            <span className={`${iconPosition === 'before' ? 'mr-1' : 'ml-1'} ${iconClassName}`}>
+                {cloneElement(icon, iconProps)}
+            </span>
+        );
     };
 
-    // If there's no icon, we need to attach the ref for isInView to work.
-    if (!icon) {
-        return <span className={className} ref={containerRef}>{numberElement}</span>;
-    }
-
+    // **FIX**: Unified and cleaner JSX structure.
+    // The `containerRef` is always on the parent element for `useInView`.
+    // The `numberRef` is always on the number's span.
     return (
-        // Attach containerRef here so isInView can see the whole element
         <span ref={containerRef} className="inline-flex items-center">
-            {iconPosition === "before" && (
-                <span className={`mr-1 ${iconClassName}`}>
-                    {renderIcon()}
-                </span>
-            )}
-            {numberElement}
-            {iconPosition === "after" && (
-                <span className={`ml-1 ${iconClassName}`}>
-                    {renderIcon()}
-                </span>
-            )}
+            {icon && iconPosition === "before" && renderIcon()}
+            <span ref={numberRef} className={className} />
+            {icon && iconPosition === "after" && renderIcon()}
         </span>
     );
 }
