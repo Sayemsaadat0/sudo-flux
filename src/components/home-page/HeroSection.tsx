@@ -3,6 +3,8 @@ import LineAnimation from "../animations/LineAnimation"
 import CircularText from "../animations/CircularText"
 import Link from "next/link"
 import AnimatedImage from "../animations/AnimatedImage"
+import Button from "../ui/button"
+import { ArrowRight } from "lucide-react"
 
 const HeroSection = () => {
     return (
@@ -16,6 +18,9 @@ const HeroSection = () => {
                         <br />
                         <span className="gradient-text-static">{" "}  Sudo Flux</span>
                     </h1>
+                    <div>
+                        <Button icon={<ArrowRight size={'18'} />} icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100" className="text-sudo-white-2 " label="Free Consultation" />
+                    </div>
                 </div>
                 {/* second */}
                 <div className=" space-y-3 ">

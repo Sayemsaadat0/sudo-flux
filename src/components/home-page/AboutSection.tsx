@@ -1,5 +1,5 @@
 
-import { Lightbulb, Users, HeartHandshake, } from "lucide-react";
+import { Lightbulb, Users, HeartHandshake, Plus, } from "lucide-react";
 
 import { ArrowRight } from "lucide-react"
 import Button from "@/components/ui/button"
@@ -54,26 +54,27 @@ export default function AboutSection() {
     const stats = [
         {
             id: 1,
-            // icon: <ChartArea  className="text-3xl text-indigo-500" />,
+            icon: <Plus />,
             label: "Projects Delivered",
             from: 0,
             to: 120,
         },
         {
             id: 2,
-            // icon: <User  className=" text-green-500" />,
+            icon: <Plus />,
             label: "Happy Clients",
             from: 0,
             to: 80,
         },
         {
             id: 3,
-            // icon: <Clock  className=" text-yellow-500" />,
+            icon: <Plus />,
             label: "Years of Experience",
             from: 0,
             to: 5,
         },
     ];
+
 
     return (
         <section className="pt-16 px-4 md:px-6 lg:px-8 sudo-container ">
@@ -98,10 +99,13 @@ export default function AboutSection() {
                                         <CountUp
                                             from={stat.from}
                                             to={stat.to}
+                                            icon={stat.icon}
+                                            iconPosition="after"
+                                            iconSize={40} // This will now correctly make the icon 40px
                                             duration={1.5}
                                             separator=","
                                             direction="up"
-                                            className="text-sudo-title-48 font-extrabold text-gray-900 count-up-text"
+                                            className="text-minion-title-48 font-extrabold text-minion-yellow-5 count-up-text"
                                         />
                                         <p className="text-lg font-medium text-gray-700">{stat.label}</p>
                                     </div>
@@ -126,9 +130,6 @@ export default function AboutSection() {
                             </div>
                         ))}
                     </div>
-
-
-                    {/* bellow card  icon */}
                 </div>
 
                 {/* Right Column */}
@@ -146,12 +147,6 @@ export default function AboutSection() {
                             placeholder="blur"
                             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkSPlfDwADswHkz8UV3wAAAABJRU5ErkJggg=="
                         />
-                        {/* <Image
-                            src="/images/Banner.png"
-                            alt="Diverse team collaborating around laptops"
-                            fill
-                            className="object-cover rounded-lg max-h-[550px]"
-                        /> */}
                         <div className="absolute top-4 right-4">
                             <Button className="bg-white text-black hover:bg-gray-100 shadow-lg" label="Innovate Now">
 

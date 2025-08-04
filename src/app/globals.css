@@ -191,7 +191,8 @@
 }
 
 .flip-animate:hover {
-  transform: rotateX(90deg) translateY(-22px);
+  transform: rotateX(90deg) translateY(-22px); 
+  /* padding-left: 2px; */
 }
 /* === NEW: Flip on parent .group hover === */
 .flip-animate-group-hover {
@@ -219,6 +220,8 @@
 
 .group:hover .flip-animate-group-hover {
   transform: rotateX(90deg) translateY(-22px);
+    /* padding-left: 2px; */
+
 }
 
 .group:hover .flip-animate-group-hover::before {
