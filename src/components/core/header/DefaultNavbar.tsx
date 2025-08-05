@@ -72,12 +72,7 @@ const DefaultNavbar: React.FC = () => {
                 <div className="flex items-center gap-2 md:gap-[10px] cursor-pointer xl:gap-1 justify-end">
                     <div>
                         <Link href={'/quote'}>
-                            <Button variant={'outlineBtn'} label={'Contact Us'} />
-                        </Link>
-                    </div>
-                    <div className=' bg-sudo-blue-5  text-sudo-white-1 rounded-full flex'>
-                        <Link className=' p-2.5' href={'/#'}>
-                            <ArrowRight className='-rotate-45 transition-all hover:rotate-0 duration-300' size={'20'} />
+                            <Button icon={<ArrowRight size={'18'} />} variant={'outlineBtn'} icon_style="bg-sudo-blue-6 opacity-100 text-sudo-white-1 border-transparent" className="text-sudo-neutral-5 " label="Contact Us" />
                         </Link>
                     </div>
                     <div className="block lg:hidden pl-2">

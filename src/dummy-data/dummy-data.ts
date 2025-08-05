@@ -17,7 +17,7 @@ export const defaultNavMenuData = [
   },
   {
     title: "Blog",
-    url: "/sample",
+    url: "/blogs",
   },
 ];
 

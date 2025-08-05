@@ -1,124 +1,128 @@
-import { useEffect, useRef } from "react";
+// src/components/CountUp.tsx
+import { useEffect, useRef, cloneElement, isValidElement, ReactElement } from "react";
 import { useInView, useMotionValue, useSpring } from "framer-motion";
 
 interface CountUpProps {
-  to: number;
-  from?: number;
-  direction?: "up" | "down";
-  delay?: number;
-  duration?: number;
-  className?: string;
-  startWhen?: boolean;
-  separator?: string;
-  onStart?: () => void;
-  onEnd?: () => void;
+    to: number;
+    from?: number;
+    direction?: "up" | "down";
+    delay?: number;
+    duration?: number;
+    className?: string;
+    startWhen?: boolean;
+    separator?: string;
+    onStart?: () => void;
+    onEnd?: () => void;
+    icon?: ReactElement<{ size?: number }>;
+    iconPosition?: "before" | "after";
+    iconClassName?: string;
+    iconSize?: number; // Size in pixels
 }
 
 export default function CountUp({
-  to,
-  from = 0,
-  direction = "up",
-  delay = 0,
-  duration = 2,
-  className = "",
-  startWhen = true,
-  separator = "",
-  onStart,
-  onEnd,
-}: CountUpProps) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const motionValue = useMotionValue(direction === "down" ? to : from);
-
-  const damping = 20 + 40 * (1 / duration);
-  const stiffness = 100 * (1 / duration);
-
-  const springValue = useSpring(motionValue, {
-    damping,
-    stiffness,
-  });
-
-  const isInView = useInView(ref, { once: true, margin: "0px" });
-
-  // Get number of decimal places in a number
-  const getDecimalPlaces = (num: number): number => {
-    const str = num.toString();
-    if (str.includes(".")) {
-      const decimals = str.split(".")[1];
-      if (parseInt(decimals) !== 0) {
-        return decimals.length;
-      }
-    }
-    return 0;
-  };
-
-  const maxDecimals = Math.max(getDecimalPlaces(from), getDecimalPlaces(to));
-
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.textContent = String(direction === "down" ? to : from);
-    }
-  }, [from, to, direction]);
-
-  useEffect(() => {
-    if (isInView && startWhen) {
-      if (typeof onStart === "function") {
-        onStart();
-      }
-
-      const timeoutId = setTimeout(() => {
-        motionValue.set(direction === "down" ? from : to);
-      }, delay * 1000);
-
-      const durationTimeoutId = setTimeout(
-        () => {
-          if (typeof onEnd === "function") {
-            onEnd();
-          }
-        },
-        delay * 1000 + duration * 1000
-      );
-
-      return () => {
-        clearTimeout(timeoutId);
-        clearTimeout(durationTimeoutId);
-      };
-    }
-  }, [
-    isInView,
-    startWhen,
-    motionValue,
-    direction,
-    from,
     to,
-    delay,
+    from = 0,
+    direction = "up",
+    delay = 0,
+    duration = 2,
+    className = "",
+    startWhen = true,
+    separator = "",
     onStart,
     onEnd,
-    duration,
-  ]);
+    icon,
+    iconPosition = "before",
+    iconClassName = "",
+    iconSize,
+}: CountUpProps) {
+    // ref for the number span itself, to update its textContent
+    const numberRef = useRef<HTMLSpanElement>(null);
+    
+    // ref for the container, to track when it enters the viewport
+    const containerRef = useRef<HTMLSpanElement>(null);
+    
+    const isInView = useInView(containerRef, { once: true, margin: "0px" });
 
-  useEffect(() => {
-    const unsubscribe = springValue.on("change", (latest) => {
-      if (ref.current) {
-        const hasDecimals = maxDecimals > 0;
-
-        const options: Intl.NumberFormatOptions = {
-          useGrouping: !!separator,
-          minimumFractionDigits: hasDecimals ? maxDecimals : 0,
-          maximumFractionDigits: hasDecimals ? maxDecimals : 0,
-        };
-
-        const formattedNumber = Intl.NumberFormat("en-US", options).format(
-          latest
-        );
-
-        ref.current.textContent = separator
-          ? formattedNumber.replace(/,/g, separator)
-          : formattedNumber;
-      }
+    const motionValue = useMotionValue(direction === "down" ? to : from);
+    const springValue = useSpring(motionValue, {
+        damping: 30,
+        stiffness: 100,
+        mass: 1 / duration,
     });
 
-    return () => unsubscribe();
-  }, [springValue, separator, maxDecimals]);
+    const getDecimalPlaces = (num: number): number => {
+        const str = String(num);
+        return str.includes(".") ? str.split(".")[1].length : 0;
+    };
+    const maxDecimals = Math.max(getDecimalPlaces(from), getDecimalPlaces(to));
 
-  return <span className={className} ref={ref} />;
+    // Effect to start the animation when the component is in view
+    useEffect(() => {
+        if (isInView && startWhen) {
+            onStart?.();
+
+            const animationTimeout = setTimeout(() => {
+                motionValue.set(direction === "down" ? from : to);
+            }, delay * 1000);
+
+            const endTimeout = setTimeout(() => {
+                onEnd?.();
+            }, (delay + duration) * 1000);
+
+            return () => {
+                clearTimeout(animationTimeout);
+                clearTimeout(endTimeout);
+            };
+        }
+    }, [isInView, startWhen, motionValue, direction, from, to, delay, onStart, onEnd, duration]);
+
+    // Effect to update the number display
+    useEffect(() => {
+        // Helper to format the number consistently
+        const formatNumber = (num: number) => {
+            const options: Intl.NumberFormatOptions = {
+                useGrouping: !!separator,
+                minimumFractionDigits: maxDecimals,
+                maximumFractionDigits: maxDecimals,
+            };
+            const formatted = new Intl.NumberFormat("en-US", options).format(num);
+            return separator ? formatted.replace(/,/g, separator) : formatted;
+        };
+        
+        // **FIX**: Set the initial text content on mount so it's not invisible.
+        // It reads the initial value directly from `motionValue`.
+        if (numberRef.current) {
+            numberRef.current.textContent = formatNumber(motionValue.get());
+        }
+
+        // Subscribe to spring changes to update the number during animation
+        const unsubscribe = springValue.on("change", (latest) => {
+            if (numberRef.current) {
+                numberRef.current.textContent = formatNumber(latest);
+            }
+        });
+
+        return () => unsubscribe();
+    }, [springValue, separator, maxDecimals, motionValue]);
+
+    const renderIcon = () => {
+        if (!isValidElement(icon)) return null;
+        const iconProps = iconSize ? { size: iconSize } : {};
+        return (
+            <span className={`${iconPosition === 'before' ? 'mr-1' : 'ml-1'} ${iconClassName}`}>
+                {cloneElement(icon, iconProps)}
+            </span>
+        );
+    };
+
+    // **FIX**: Unified and cleaner JSX structure.
+    // The `containerRef` is always on the parent element for `useInView`.
+    // The `numberRef` is always on the number's span.
+    return (
+        <span ref={containerRef} className="inline-flex items-center">
+            {icon && iconPosition === "before" && renderIcon()}
+            <span ref={numberRef} className={className} />
+            {icon && iconPosition === "after" && renderIcon()}
+        </span>
+    );
 }

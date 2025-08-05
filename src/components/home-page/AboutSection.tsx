@@ -1,5 +1,5 @@
 
-import { Lightbulb, Users, HeartHandshake, } from "lucide-react";
+import { Lightbulb, Users, HeartHandshake, Plus, } from "lucide-react";
 
 import { ArrowRight } from "lucide-react"
 import Button from "@/components/ui/button"
@@ -54,26 +54,27 @@ export default function AboutSection() {
     const stats = [
         {
             id: 1,
-            // icon: <ChartArea  className="text-3xl text-indigo-500" />,
+            icon: <Plus />,
             label: "Projects Delivered",
             from: 0,
             to: 120,
         },
         {
             id: 2,
-            // icon: <User  className=" text-green-500" />,
+            icon: <Plus />,
             label: "Happy Clients",
             from: 0,
             to: 80,
         },
         {
             id: 3,
-            // icon: <Clock  className=" text-yellow-500" />,
+            icon: <Plus />,
             label: "Years of Experience",
             from: 0,
             to: 5,
         },
     ];
+
 
     return (
         <section className="pt-16 px-4 md:px-6 lg:px-8 sudo-container ">
@@ -98,22 +99,20 @@ export default function AboutSection() {
                                         <CountUp
                                             from={stat.from}
                                             to={stat.to}
+                                            icon={stat.icon}
+                                            iconPosition="after"
+                                            iconSize={40} // This will now correctly make the icon 40px
                                             duration={1.5}
                                             separator=","
                                             direction="up"
-                                            className="text-sudo-title-48 font-extrabold text-gray-900 count-up-text"
+                                            className="text-sudo-title-48 font-extrabold text-sudo-blue-5 count-up-text"
                                         />
                                         <p className="text-lg font-medium text-gray-700">{stat.label}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                        <Button
-                            label="More About us"
-                            icon={<ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                            }
-                        >
-                        </Button>
+                        <Button icon={<ArrowRight size={'18'} />} icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100" className="text-sudo-white-2 " label="More About Us" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
                         {featureCards.map((card, index) => (
@@ -126,36 +125,30 @@ export default function AboutSection() {
                             </div>
                         ))}
                     </div>
-
-
-                    {/* bellow card  icon */}
                 </div>
 
                 {/* Right Column */}
-                <div className="relative">
-                    <div className="relative  w-full">
+                {/* Right Column */}
+                <div className="relative  flex justify-end ">
+                    <div className="relative ">
                         <AnimatedImage
-                            className="sm:rounded-[10px] md:max-w-full md:rounded-[20px]"
-                            src="https://placehold.co/400x400/1e1e1e/FFFFFF.png"
-                            width={400}
-                            height={400}
-                            layout="responsive"
+                            className="sm:rounded-[10px] bg-minion-neutral-5  object-cover md:max-w-full md:rounded-[20px]"
+                            src="/images/banner.png"
+                            // src="https://placehold.co/400x400/FFFFFF/1e1e1e.png"
+                            width={650}
+                            height={650}
+                            // fill
+                            // layout="responsive"
                             objectFit="cover"
                             alt="header-img"
                             priority
                             placeholder="blur"
                             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkSPlfDwADswHkz8UV3wAAAABJRU5ErkJggg=="
                         />
-                        {/* <Image
-                            src="/images/Banner.png"
-                            alt="Diverse team collaborating around laptops"
-                            fill
-                            className="object-cover rounded-lg max-h-[550px]"
-                        /> */}
-                        <div className="absolute top-4 right-4">
-                            <Button className="bg-white text-black hover:bg-gray-100 shadow-lg" label="Innovate Now">
-
-                            </Button>
+                        <div className="absolute border border-minion-neutral-2 shadow  text-minion-neutral-6 rounded-full bg-minion-white-1 animate-bounce duration-700 ease-in-out transition-all px-5 py-1 top-4 right-4 bounceSlight">
+                            Innovate Now
+                            {/* <Button className="" label="Innovate Now">
+                            </Button> */}
                         </div>
                     </div>
                 </div>
