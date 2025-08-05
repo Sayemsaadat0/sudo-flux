@@ -34,7 +34,7 @@ export default function AboutUsBanner() {
                     <div className="relative ">
                         <AnimatedImage
                             className="sm:rounded-[10px] bg-minion-neutral-5  object-cover md:max-w-full md:rounded-[20px]"
-                            src="/images/banner.png"
+                            src="/images/Banner.png"
                             // src="https://placehold.co/400x400/FFFFFF/1e1e1e.png"
                             width={600}
                             height={600}
