@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import {  QuoteIcon } from 'lucide-react';
+import { QuoteIcon } from 'lucide-react';
 import clsx from 'clsx';
 
 interface TestimonialCardProps {
@@ -22,15 +22,17 @@ export const TestimonialCard = ({
   author,
 }: TestimonialCardProps) => {
   return (
-    <div className="bg-sudo-white-1 text-left p-6 max-w-80 h-96 rounded-xl shadow-md  space-y-4 border  border-gray-200">
-      {/* Quote Icon */}
-      <QuoteIcon  className={clsx('w-12 h-12', quoteColor)} />
+    <div className="bg-sudo-white-1  text-left p-6  max-w-80 min-h-[420px] rounded-xl shadow-md flex flex-col justify-between  space-y-4 border  border-gray-200">
+      <div className='space-y-4'>
+        {/* Quote Icon */}
+        <QuoteIcon className={clsx('w-12 h-12', quoteColor)} />
 
-      {/* Title */}
-      <h3 className="font-semibold  text-sudo-title-22 font-heading line-clamp-2">{title}</h3>
+        {/* Title */}
+        <h3 className="font-semibold  text-sudo-title-22 font-heading line-clamp-2">{title}</h3>
 
-      {/* Feedback */}
-      <p className="text-gray-600  leading-relaxed line-clamp-6">{feedback}</p>
+        {/* Feedback */}
+        <p className="text-gray-600  leading-relaxed line-clamp-6">{feedback}</p>
+      </div>
 
       {/* Author */}
       <div className="flex items-center gap-3 pt-4">

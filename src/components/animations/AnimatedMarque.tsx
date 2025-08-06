@@ -5,7 +5,6 @@ import { gsap } from 'gsap';
 import clsx from 'clsx';
 import Image from 'next/image';
 
-// --- MODIFIED Props interface ---
 interface AnimatedMarqueProps {
     children: ReactNode;
     direction?: 'left' | 'right';
@@ -13,12 +12,13 @@ interface AnimatedMarqueProps {
     className?: string;
     textClassName?: string;
     hoverBgClassName?: string;
+    duplicateNumber?: number;
     hoverImageUrl?: string;
     fadeLeft?: boolean;
     fadeRight?: boolean;
     fadeWidth?: number;
-    /** If false, all hover effects (background, text color, image) will be disabled. Defaults to true. */
     isHoverActive?: boolean;
+    pauseOnHover?: boolean;
 }
 
 const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
@@ -28,18 +28,19 @@ const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
     className,
     textClassName,
     hoverBgClassName,
+    duplicateNumber = 5,
     hoverImageUrl,
     fadeLeft = false,
     fadeRight = false,
     fadeWidth = 100,
-    // --- NEW PROP with default value ---
     isHoverActive = true,
+    pauseOnHover = false,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const marqueeContentRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
+    const tweenRef = useRef<gsap.core.Tween | null>(null);
 
-    // Memoized style for the fade mask (no changes here)
     const maskStyle = useMemo((): CSSProperties => {
         if (!fadeLeft && !fadeRight) return {};
         const colorStops: string[] = [];
@@ -62,7 +63,6 @@ const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
         };
     }, [fadeLeft, fadeRight, fadeWidth]);
 
-    // Marquee scroll effect (no changes here)
     useEffect(() => {
         const content = marqueeContentRef.current;
         if (!content || !content.children[0]) return;
@@ -80,51 +80,73 @@ const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
                 x: (x) => (parseFloat(x) % itemWidth) + 'px',
             },
         });
+        
+        tweenRef.current = tween;
+        
         return () => {
             tween.kill();
+            tweenRef.current = null;
         };
     }, [children, direction, duration]);
 
-    // --- MODIFIED Effect for the hover image ---
     useEffect(() => {
         const container = containerRef.current;
         const image = imageRef.current;
 
-        // --- KEY CHANGE: Exit early if hover is disabled or image is not provided ---
-        if (!isHoverActive || !hoverImageUrl || !container || !image) {
-            return; // Do not attach any event listeners
-        }
+        if (!container) return;
 
-        gsap.set(image, { scale: 0, autoAlpha: 0 });
-        let imageDimensions = { width: 0, height: 0 };
+        // Combined hover handlers for both pause and image functionality
+        const onMouseEnter = () => {
+            // Handle pause on hover
+            if (pauseOnHover && tweenRef.current) {
+                tweenRef.current.pause();
+            }
+            
+            // Handle hover image
+            if (isHoverActive && hoverImageUrl && image) {
+                gsap.to(image, { scale: 1, autoAlpha: 1, duration: 0.3 });
+            }
+        };
+
+        const onMouseLeave = () => {
+            // Handle resume on hover leave
+            if (pauseOnHover && tweenRef.current) {
+                tweenRef.current.resume();
+            }
+            
+            // Handle hover image
+            if (isHoverActive && hoverImageUrl && image) {
+                gsap.to(image, { scale: 0, autoAlpha: 0, duration: 0.3 });
+            }
+        };
 
         const onMouseMove = (e: MouseEvent) => {
+            if (!isHoverActive || !hoverImageUrl || !image) return;
+            
             const rect = container.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
+            const imageDimensions = { width: image.offsetWidth, height: image.offsetHeight };
             const targetX = mouseX - imageDimensions.width / 2;
             const targetY = mouseY - imageDimensions.height / 2;
             gsap.to(image, { x: targetX, y: targetY, duration: 0.6, ease: 'power2.out' });
         };
-        const onMouseEnter = () => {
-            imageDimensions = { width: image.offsetWidth, height: image.offsetHeight };
-            gsap.to(image, { scale: 1, autoAlpha: 1, duration: 0.3 });
-        };
-        const onMouseLeave = () => {
-            gsap.to(image, { scale: 0, autoAlpha: 0, duration: 0.3 });
-        };
 
-        container.addEventListener('mousemove', onMouseMove);
         container.addEventListener('mouseenter', onMouseEnter);
         container.addEventListener('mouseleave', onMouseLeave);
+        container.addEventListener('mousemove', onMouseMove);
+
+        // Initialize image if needed
+        if (isHoverActive && hoverImageUrl && image) {
+            gsap.set(image, { scale: 0, autoAlpha: 0 });
+        }
 
         return () => {
-            container.removeEventListener('mousemove', onMouseMove);
             container.removeEventListener('mouseenter', onMouseEnter);
             container.removeEventListener('mouseleave', onMouseLeave);
+            container.removeEventListener('mousemove', onMouseMove);
         };
-        // --- Add isHoverActive to dependency array ---
-    }, [hoverImageUrl, isHoverActive]);
+    }, [hoverImageUrl, isHoverActive, pauseOnHover]);
 
     return (
         <div
@@ -139,20 +161,19 @@ const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
                 className="relative overflow-hidden py-5"
                 style={maskStyle}
             >
-            
                 <div
                     className={clsx(
                         'absolute w-full h-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inset-0 group-hover:h-full transition-all duration-500 ease-in-out',
-                        'bg-sudo-blue-6',
+                        'bg-minion-yellow-6',
                         hoverBgClassName
                     )}
                 />
-                <div ref={marqueeContentRef} className="flex whitespace-nowrap">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                <div ref={marqueeContentRef} className="flex whitespace-nowrap items-center">
+                    {Array.from({ length: duplicateNumber }).map((_, i) => (
                         <div
                             key={i}
                             className={clsx(
-                                'px-2 text-sudo-neutral-6 group-hover:text-white transition-colors duration-500 relative z-10',
+                                'flex-shrink-0 text-minion-neutral-6 group-hover:text-white transition-colors duration-500 relative z-10',
                                 textClassName
                             )}
                         >

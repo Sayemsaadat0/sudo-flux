@@ -64,21 +64,20 @@ export default function TestimonialsSection() {
                 </div>
             </div>
 
-            {/* --- Marquee Integration --- */}
-            {/* The static grid is replaced by our AnimatedMarque component */}
-            <div className="mt-16">
+            <div className="mt-16 ">
                 <AnimatedMarque
                     direction="left"
                     isHoverActive={false}
-                    duration={50}
+                    duplicateNumber={3}
+                    duration={10}
                     textClassName="!whitespace-normal"
                     fadeLeft
                     fadeRight
                     fadeWidth={150}
                 >
-                    <div className="flex py-12">
+                    <div className=" py-12 flex  ">
                         {testimonials.map((testimonial, idx) => (
-                            <div key={idx} className={`mx-4 flex-shrink-0 ${idx % 2 === 0 && '-mt-16'} `}>
+                            <div key={idx} className={`flex-shrink-0 px-5 ${idx % 2 === 0 && '-mt-16'} `}>
                                 <TestimonialCard
                                     title={testimonial.title}
                                     feedback={testimonial.feedback}
@@ -90,6 +89,7 @@ export default function TestimonialsSection() {
                     </div>
                 </AnimatedMarque>
             </div>
+           
         </section>
     );
 }
