@@ -1,10 +1,11 @@
-import Image from "next/legacy/image"
+// import Image from "next/legacy/image"
 import LineAnimation from "../animations/LineAnimation"
 import CircularText from "../animations/CircularText"
 import Link from "next/link"
-import AnimatedImage from "../animations/AnimatedImage"
+// import AnimatedImage from "../animations/AnimatedImage"
 import Button from "../ui/button"
 import { ArrowRight } from "lucide-react"
+import ZoomScrollReveal from "../animations/ZoomScrollReveal"
 
 const HeroSection = () => {
     return (
@@ -44,7 +45,8 @@ const HeroSection = () => {
                 </div>
             </div>
             <div>
-                <div className="relative hidden sm:block ">
+                <ZoomScrollReveal videoUrl="https://www.youtube.com/embed/bON-KPiiNCk?si=CwqmdZg1_5lnrCYh" />
+                {/* <div className="relative hidden sm:block ">
                     <div className="w-full mx-auto">
                         <AnimatedImage
                             className="sm:rounded-[10px] md:rounded-[20px]"
@@ -69,7 +71,7 @@ const HeroSection = () => {
                         objectFit="cover"
                         alt="header-img"
                     />
-                </div>
+                </div> */}
             </div>
         </div>
     )
