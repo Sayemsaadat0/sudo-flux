@@ -26,21 +26,17 @@ const BlogCard: React.FC<BlogCardProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             className={clsx(
-                'group block w-full max-w-lg rounded-3xl p-4 transition-all duration-300',
-                ' backdrop-blur-lg',
-                'border border-white/30', 
-                'shadow-lg shadow-black/10',
-                ' hover:shadow-xl hover:-translate-y-2',
+                'block w-full max-w-md ',
                 className // Allows for passing extra classes
             )}
         >
             {/* 1. THUMBNAIL CONTAINER with 3/4 aspect ratio */}
-            <div className="overflow-hidden rounded-xl mb-4">
+            <div className=" rounded-md mb-4">
                 <AnimatedImage
-                    className="sm:rounded-[10px] max-h-[200px] md:rounded-[20px]"
+                    className="max-w-md  max-h-[200px]  rounded-lg"
                     src={thumbnailUrl}
-                    width={500}
-                    height={200}
+                    width={550}
+                    height={220}
                     objectFit="cover"
                     alt="header-img"
                     priority

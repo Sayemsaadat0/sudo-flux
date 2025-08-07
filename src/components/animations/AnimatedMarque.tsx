@@ -164,7 +164,7 @@ const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
                 <div
                     className={clsx(
                         'absolute w-full h-0 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inset-0 group-hover:h-full transition-all duration-500 ease-in-out',
-                        'bg-minion-yellow-6',
+                        'bg-sudo-blue-6',
                         hoverBgClassName
                     )}
                 />
@@ -173,7 +173,7 @@ const AnimatedMarque: React.FC<AnimatedMarqueProps> = ({
                         <div
                             key={i}
                             className={clsx(
-                                'flex-shrink-0 text-minion-neutral-6 group-hover:text-white transition-colors duration-500 relative z-10',
+                                'flex-shrink-0 text-sudo-neutral-6 group-hover:text-white transition-colors duration-500 relative z-10',
                                 textClassName
                             )}
                         >

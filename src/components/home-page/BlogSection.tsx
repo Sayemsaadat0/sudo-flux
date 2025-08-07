@@ -3,6 +3,7 @@ import Button from "../ui/button";
 import AboutSectionCard from "../core/cards/BlogCard";
 import LineAnimation from "../animations/LineAnimation";
 import Link from "next/link";
+// import { div } from "framer-motion/client";
 
 const BlogSection = () => {
 
@@ -29,8 +30,11 @@ const BlogSection = () => {
                 "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
         },
     ];
+
+
     return (
-        <div className="sudo-container py-10 space-y-10">
+       <div className="bg-sudo-white-1">
+         <div className="sudo-container  space-y-10  py-20">
             <div className="flex flex-col items-center justify-center">
                 <div className="flex flex-col justify-center items-center mx-auto w-fit">
                     <h4 className="uppercase font-bold">Our Expertise, Your Success</h4>
@@ -40,27 +44,30 @@ const BlogSection = () => {
                 </div>
                 <h2 className="text-sudo-title-48 text-sudo-neutral-6 font-heading w-2/3 mx-auto text-center">Our Latest Blogs
                 </h2>
+
+            </div>
+            <div className="space-y-12 flex flex-col items-center justify-center">
+
+                <div className="grid gap-16 grid-cols-1 md:grid-cols-3 ">
+                    {aboutData.map((item, index) => (
+                        <AboutSectionCard
+                            key={index}
+                            title={item.title}
+                            description={item.description}
+                            thumbnailUrl={item.thumbnailUrl}
+                            link="#"
+                        />
+                    ))}
+                </div>
+
                 <Link href={'/about'} className="py-3">
                     <Button label="Explore more" />
                 </Link>
             </div>
-            <div>
-                <div className="space-y-12">
-                    <div className="grid gap-5 grid-cols-1 md:grid-cols-3 ">
-                        {aboutData.map((item, index) => (
-                            <AboutSectionCard
-                                key={index}
-                                title={item.title}
-                                description={item.description}
-                                thumbnailUrl={item.thumbnailUrl}
-                                link="#"
-                            />
-                        ))}
-                    </div>
-                </div>
-            </div>
+
 
         </div>
+       </div>
     )
 }
 export default BlogSection
