@@ -211,13 +211,13 @@ export default function ContactSection() {
         relative
         overflow-hidden
       "
-      style={{
-        // Corrected: Wrapped the URL in url('') to make it a valid CSS value
-        backgroundImage: "url('https://images.unsplash.com/photo-1636955903101-d6b4b926018c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
-      }}
+      // style={{
+      //   // Corrected: Wrapped the URL in url('') to make it a valid CSS value
+      //   backgroundImage: "url('https://images.unsplash.com/photo-1636955903101-d6b4b926018c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+      // }}
     >
       {/* Overlay to darken background */}
-      <div className="absolute inset-0 bg-sudo-neutral-6/60" />
+      <div className="absolute inset-0 bg-sudo-neutral-6" />
 
       {/* Content wrapper */}
       <div className="relative z-10 h-full flex items-center justify-center px-4 py-8">
