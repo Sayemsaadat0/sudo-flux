@@ -327,7 +327,7 @@ export default function ContactSection() {
                     </div>
 
                     <div className="pt-2 w-full ">
-                      <Button type='submit' icon_style="border border-sudo-white-1  text-sudo-neutral-5  bg-sudo-white-2 opacity-100" className="text-sudo-white-2 !rounded-lg w-full" label="Free Consultation" />
+                      <Button type='submit' icon_style="border border-sudo-white-1  text-sudo-neutral-5  bg-sudo-white-2 opacity-100" className="text-sudo-white-2 !rounded-lg w-full" label="Send Now" />
                     </div>
                   </form>
                 </div>
