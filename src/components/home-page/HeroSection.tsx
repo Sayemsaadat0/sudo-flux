@@ -19,8 +19,11 @@ const HeroSection = () => {
                         <br />
                         <span className="gradient-text-static">{" "}  Sudo Flux</span>
                     </h1>
-                    <div>
+                    <div className="space-x-2">
                         <Button icon={<ArrowRight size={'18'} />} icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100" className="text-sudo-white-2 " label="Free Consultation" />
+                        <Link href={'/#'}>
+                            <Button icon={<ArrowRight size={'18'} />} variant={'outlineBtn'} icon_style="bg-sudo-blue-6 opacity-100 text-sudo-white-1 border-transparent" className="text-sudo-neutral-5 " label="Book Now" />
+                        </Link>
                     </div>
                 </div>
                 {/* second */}

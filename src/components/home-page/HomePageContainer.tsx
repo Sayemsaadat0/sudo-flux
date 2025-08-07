@@ -24,11 +24,11 @@ const HomePageContainer = () => {
                 <IndustryWeServe />
                 <WhyChooseUs />
                 <AboutSection />
-                <FaqSection />
                 <TestimonialsSection />
             </div>
             <div>
                 <ContactSection />
+                <FaqSection />
                 <BlogSection />
                 {/* <ServiceSection /> */}
                 <CtaSection />

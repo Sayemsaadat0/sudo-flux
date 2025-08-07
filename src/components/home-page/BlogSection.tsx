@@ -33,7 +33,7 @@ const BlogSection = () => {
 
 
     return (
-       <div className="bg-sudo-white-1">
+       <div className="">
          <div className="sudo-container  space-y-10  py-20">
             <div className="flex flex-col items-center justify-center">
                 <div className="flex flex-col justify-center items-center mx-auto w-fit">
@@ -48,7 +48,7 @@ const BlogSection = () => {
             </div>
             <div className="space-y-12 flex flex-col items-center justify-center">
 
-                <div className="grid gap-16 grid-cols-1 md:grid-cols-3 ">
+                <div className="grid gap-10 grid-cols-1 md:grid-cols-3 ">
                     {aboutData.map((item, index) => (
                         <AboutSectionCard
                             key={index}
