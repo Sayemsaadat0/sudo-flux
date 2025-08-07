@@ -1,15 +1,16 @@
-'use client'
-// src/components/BlogCard.tsx
+'use client';
+
 import React from 'react';
 import clsx from 'clsx';
 import AnimatedImage from '@/components/animations/AnimatedImage';
+import Link from 'next/link';
 
 interface BlogCardProps {
     thumbnailUrl: string;
     title: string;
     description: string;
     link: string;
-    className?: string; // To allow for additional custom styling
+    className?: string;
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({
@@ -20,48 +21,42 @@ const BlogCard: React.FC<BlogCardProps> = ({
     className,
 }) => {
     return (
-        // The entire card is a link for better accessibility and UX
-        <a
+        <Link
             href={link}
             target="_blank"
             rel="noopener noreferrer"
             className={clsx(
-                'group block w-full max-w-lg rounded-3xl p-4 transition-all duration-300',
-                ' backdrop-blur-lg',
-                'border border-white/30', 
-                'shadow-lg shadow-black/10',
-                ' hover:shadow-xl hover:-translate-y-2',
-                className // Allows for passing extra classes
+                'group block w-full rounded-2xl bg-sudo-white-1 border border-sudo-white-2 shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden',
+                className
             )}
         >
-            {/* 1. THUMBNAIL CONTAINER with 3/4 aspect ratio */}
-            <div className="overflow-hidden rounded-xl mb-4">
+            {/* Thumbnail */}
+            <div className="relative aspect-video overflow-hidden">
                 <AnimatedImage
-                    className="sm:rounded-[10px] max-h-[200px] md:rounded-[20px]"
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
                     src={thumbnailUrl}
-                    width={500}
-                    height={200}
-                    objectFit="cover"
-                    alt="header-img"
+                    width={550}
+                    height={220}
+                    alt="Blog Thumbnail"
                     priority
                     placeholder="blur"
                     blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkSPlfDwADswHkz8UV3wAAAABJRU5ErkJggg=="
                 />
             </div>
 
-            {/* 2. TEXT CONTENT */}
-            <div className="flex flex-col">
+            {/* Text Content */}
+            <div className="px-5 py-4 flex flex-col gap-2">
                 <h2
-                    className="text-sudo-title-22 font-bold text-sudo-neutral-6 line-clamp-2"
-                    title={title} // Show full title on hover
+                    className="text-lg sm:text-xl font-semibold text-sudo-neutral-6 line-clamp-2 leading-snug group-hover:text-sudo-neutral-7 transition-colors"
+                    title={title}
                 >
                     {title}
                 </h2>
-                <p className="mt-2  text-sudo-neutral-5 line-clamp-6">
+                <p className="text-sm text-sudo-neutral-5 line-clamp-4 leading-relaxed">
                     {description}
                 </p>
             </div>
-        </a>
+        </Link>
     );
 };
 

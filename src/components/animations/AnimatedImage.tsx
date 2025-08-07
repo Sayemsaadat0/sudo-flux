@@ -91,7 +91,7 @@ const AnimatedImage: React.FC<AnimatedImageProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative overflow-hidden ${className}`}
+      className={`relative shrink-0 inline-block overflow-hidden ${className}`}
       style={
         layout === 'fill' ? { width, height } : { display: 'inline-block', lineHeight: 0 }
       }

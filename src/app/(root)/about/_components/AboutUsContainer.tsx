@@ -3,7 +3,11 @@ import useSmoothScroll from "@/hooks/useSmoothScroll"
 import AboutUsBanner from "./AboutUsBanner"
 import AboutStats from "./AboutStats"
 import MoreAboutUs from "./MoreAboutUs"
-import WhatSetUsApart from "./WhatSetUsApart"
+import TestimonialsSection from "@/components/home-page/TestimonialSection"
+import ContactSection from "@/components/home-page/ContactSection"
+import BlogSection from "@/components/home-page/BlogSection"
+import CtaSection from "@/components/home-page/CtaSection"
+import TeamSection from "./TeamSection"
 
 const AboutUsContainer = () => {
     useSmoothScroll()
@@ -13,7 +17,12 @@ const AboutUsContainer = () => {
             <MoreAboutUs />
             <div>
                 <AboutStats />
-                <WhatSetUsApart />
+                <TestimonialsSection />
+                <ContactSection />
+                <TeamSection />
+                <BlogSection />
+                <CtaSection />
+                {/* <WhatSetUsApart /> */}
             </div>
         </div>
     )

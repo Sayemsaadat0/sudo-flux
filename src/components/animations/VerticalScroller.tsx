@@ -15,6 +15,8 @@ interface VerticalScrollerProps {
   direction?: 'top' | 'bottom';
   /** Duration of one full scroll cycle in seconds */
   duration?: number;
+  /** Pauses the animation when the mouse is over the scroller. Defaults to false. */
+  pauseOnHover?: boolean;
   /** Custom classes for the main container */
   className?: string;
   /** Array of sides to apply the fade effect to. Defaults to both. */
@@ -49,7 +51,7 @@ const generateMaskStyle = (
   }
 
   gradient += ')';
-  
+
   return {
     maskImage: gradient,
     WebkitMaskImage: gradient, // For Safari and older Chrome/Edge
@@ -61,27 +63,31 @@ const VerticalScroller: React.FC<VerticalScrollerProps> = ({
   children,
   direction = 'top',
   duration = 40,
+  pauseOnHover = false,
   className,
   fadeSides = ['top', 'bottom'], // Default to fading both sides
   fadeSize = '15%', // Default to a 15% fade size
 }) => {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  // Ref to store the GSAP tween instance
+  const tweenRef = useRef<gsap.core.Tween | null>(null);
 
-  // The core GSAP animation logic remains unchanged
   useEffect(() => {
     const content = contentRef.current;
     if (!content) return;
 
+    // Set initial position for a seamless loop
     const contentHeight = content.offsetHeight / 2;
     if (direction === 'bottom') {
       gsap.set(content, { y: -contentHeight });
     }
 
-    const distanceToMove = direction === 'top' ? -contentHeight : contentHeight;
+    const distanceToMove = direction === 'top' ? -contentHeight : 0;
 
-    const tween = gsap.to(content, {
-      y: `+=${distanceToMove}`,
+    // Create the GSAP tween and store it in the ref
+    tweenRef.current = gsap.to(content, {
+      y: distanceToMove,
       duration: duration,
       ease: 'none',
       repeat: -1,
@@ -90,22 +96,39 @@ const VerticalScroller: React.FC<VerticalScrollerProps> = ({
       },
     });
 
+    // Cleanup function to kill the tween on unmount
     return () => {
-      tween.kill();
+      tweenRef.current?.kill();
     };
   }, [children, direction, duration]);
 
   // Memoize the mask style object to prevent re-calculation on every render
-  const maskStyle = useMemo(() => 
-    generateMaskStyle(fadeSides, fadeSize),
-  [fadeSides, fadeSize]);
+  const maskStyle = useMemo(
+    () => generateMaskStyle(fadeSides, fadeSize),
+    [fadeSides, fadeSize]
+  );
+
+  // Event handlers for pausing and resuming the animation on hover
+  const handleMouseEnter = () => {
+    if (pauseOnHover) {
+      tweenRef.current?.pause();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (pauseOnHover) {
+      tweenRef.current?.resume();
+    }
+  };
 
   return (
-    // The mask style is applied here
+    // The mask style and hover event handlers are applied here
     <div
       ref={scrollerRef}
       className={clsx('relative w-full h-full overflow-hidden', className)}
       style={maskStyle}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div ref={contentRef} className="w-full">
         {/* Render children twice for a seamless loop */}
