@@ -17,9 +17,9 @@ const AboutUsContainer = () => {
             <MoreAboutUs />
             <div>
                 <AboutStats />
+                <TeamSection />
                 <TestimonialsSection />
                 <ContactSection />
-                <TeamSection />
                 <BlogSection />
                 <CtaSection />
                 {/* <WhatSetUsApart /> */}
