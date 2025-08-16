@@ -51,7 +51,7 @@ export default function WhyChooseUs() {
             <section className=" sudo-container space-y-16">
                 {/* Section Title */}
                 <div className="flex justify-center">
-                    <div className="space-y-6 text-center max-w-2/3">
+                    <div className="space-y-6 text-center md:max-w-2/3">
                         <div>
                             <h4 className="uppercase font-bold text-sudo-white-2">What We Build</h4>
                             <div className="w-[100px] mx-auto">
@@ -59,7 +59,7 @@ export default function WhyChooseUs() {
                             </div>
                         </div>
 
-                        <h2 className="text-sudo-title-48 leading-[60px] text-sudo-white-1 font-heading">
+                        <h2 className=" text-sudo-title-28 lg:text-sudo-title-48  md:leading-[60px]  text-sudo-white-1 font-heading">
                             Choosing the Right Team Changes Everything
                         </h2>
 

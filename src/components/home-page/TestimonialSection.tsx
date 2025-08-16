@@ -56,7 +56,7 @@ export default function TestimonialsSection() {
                             <LineAnimation />
                         </div>
                     </div>
-                    <h2 className="text-sudo-title-48 text-sudo-neutral-6 font-heading w-3/4 mx-auto text-center">Don’t take our word, see what our clients say.
+                    <h2 className="text-sudo-title-28 lg:text-sudo-title-48  md:leading-[60px] text-sudo-neutral-6 font-heading md:w-3/4 mx-auto text-center">Don’t take our word, see what our clients say.
                     </h2>
                     <Link href={'/about'} className="py-3">
                         <Button label="Explore more" />

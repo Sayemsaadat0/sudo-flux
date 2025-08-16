@@ -9,45 +9,69 @@ import ZoomScrollReveal from "../animations/ZoomScrollReveal"
 
 const HeroSection = () => {
     return (
-        <div className="sudo-container !text-sudo-neutral-6 space-y-10">
-            <div className="flex relative items-center z-10">
-                <div className="w-full  px-5 space-y-5">
-                    <div className="border border-sudo-blue-2 w-fit text-sudo-blue-6 font-semibold  px-4 py-1.5 text-sm bg-sudo-blue-1/70 rounded-full">
-                        <span className=' !text-amber-300'>✨</span> Trusted by 500+ Businesses
+        <div className="sudo-container !text-sudo-neutral-6 space-y-8 sm:space-y-10 lg:space-y-12">
+            <div className="flex flex-col lg:flex-row relative items-start lg:items-center z-10 gap-8 lg:gap-12">
+                {/* Main Content */}
+                <div className="w-full lg:w-2/3 px-4 sm:px-5 space-y-4 sm:space-y-5 lg:space-y-6">
+                    <div className="border border-sudo-blue-2 w-fit text-sudo-blue-6 font-semibold px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-sudo-blue-1/70 rounded-full">
+                        <span className='!text-amber-300'>✨</span> Trusted by 500+ Businesses
                     </div>
-                    <h1 className="text-sudo-header-60 font-heading leading-[70px]  ">Transform Your Business with
+                    <h1 className="text-sudo-header-42 md:text-sudo-header-56  text-center md:text-left xl:text-sudo-header-60 font-heading leading-tight sm:leading-[1.1] md:leading-[1.15] lg:leading-[70px]">
+                        Transform Your Business with
                         <br />
-                        <span className="gradient-text-static">{" "}  Sudo Flux</span>
+                        <span className="gradient-text-static">{" "}Sudo Flux</span>
                     </h1>
-                    <div className="space-x-2">
-                        <Button icon={<ArrowRight size={'18'} />} icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100" className="text-sudo-white-2 " label="Free Consultation" />
-                        <Link href={'/#'}>
-                            <Button icon={<ArrowRight size={'18'} />} variant={'outlineBtn'} icon_style="bg-sudo-blue-6 opacity-100 text-sudo-white-1 border-transparent" className="text-sudo-neutral-5 " label="Book Now" />
+                    <p className="text-sm block lg:hidden sm:text-base lg:text-lg leading-relaxed sm:leading-relaxed lg:leading-relaxed lg:text-justify text-center md:text-left max-w-full lg:max-w-2/3">
+                        We help businesses scale and succeed in the digital landscape through innovative strategies, cutting-edge technology, and personalized consulting services.
+                    </p>
+                    <div className="flex  justify-center md:justify-start items-center gap-3 sm:gap-4 w-full">
+                        <Button
+                            icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />}
+                            icon_style="border  border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100"
+                            className="text-sudo-white-2 w-full sm:w-auto min-w-[100px] max-w-[w00px]"
+                            label="Free Consultation"
+                            size="md"
+                        />
+                        <Link className="w-full sm:w-auto" href={'/#'}>
+                            <Button
+                                icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />}
+                                variant={'outlineBtn'}
+                                icon_style="bg-sudo-blue-6 opacity-100 text-sudo-white-1 border-transparent"
+                                className="text-sudo-neutral-5 w-full sm:w-auto min-w-[100px] max-w-[w00px]"
+                                label="Book Now"
+                                size="md"
+                            />
                         </Link>
                     </div>
                 </div>
-                {/* second */}
-                <div className=" space-y-3 ">
-                    <div>
-                        <h4 className="uppercase font-bold">17 Years of Experience</h4>
+
+                {/* Experience Section */}
+                <div className="w-full hidden lg:block lg:w-1/3 space-y-3 sm:space-y-4 px-4 sm:px-5 lg:px-0">
+                    <div className="">
+                        <h4 className="uppercase font-bold text-sm sm:text-base lg:text-lg">17 Years of Experience</h4>
                         <div className="w-1/5">
                             <LineAnimation />
                         </div>
                     </div>
-                    <p className="max-w-2/3 text-justify">We help businesses scale and succeed in the digital landscape through innovative strategies, cutting-edge technology, and personalized consulting services.</p>
+                    <p className="text-sm sm:text-base lg:text-lg leading-relaxed sm:leading-relaxed lg:leading-relaxed text-justify lg:text-left max-w-full lg:max-w-2/3">
+                        We help businesses scale and succeed in the digital landscape through innovative strategies, cutting-edge technology, and personalized consulting services.
+                    </p>
                 </div>
-                <div className="whitespace-nowrap ">
 
+                {/* Circular Text - Hidden on mobile, visible on tablet and up */}
+                <div className="hidden md:block whitespace-nowrap lg:flex-shrink-0">
                     <Link className="" href="/">
                         <CircularText
                             text={`Design • Development • Marketing •`}
                             size={180}
-                            letterClassName="font-bold text-2xl"
+                            letterClassName="font-bold text-lg lg:text-2xl"
                         />
                     </Link>
                 </div>
             </div>
-            <div>
+
+            {/* Video Section */}
+            <div className="sm:px-5 lg:px-0">
                 <ZoomScrollReveal videoUrl="https://www.youtube.com/embed/bON-KPiiNCk?si=CwqmdZg1_5lnrCYh" />
                 {/* <div className="relative hidden sm:block ">
                     <div className="w-full mx-auto">

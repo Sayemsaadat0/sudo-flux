@@ -42,7 +42,7 @@ const BlogSection = () => {
                         <LineAnimation />
                     </div>
                 </div>
-                <h2 className="text-sudo-title-48 text-sudo-neutral-6 font-heading w-2/3 mx-auto text-center">Our Latest Blogs
+                <h2 className="text-sudo-title-28 lg:text-sudo-title-48  md:leading-[60px] text-sudo-neutral-6 font-heading md:w-2/3 mx-auto text-center">Our Latest Blogs
                 </h2>
 
             </div>

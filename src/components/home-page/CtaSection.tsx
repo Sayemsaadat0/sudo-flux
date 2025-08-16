@@ -4,8 +4,8 @@ const CtaSection = () => {
     return (
         <div className="bg-sudo-neutral-5  text-sudo-white-1 flex  min-h-[calc(100vh)] py-20">
             <div className="sudo-container ">
-                <div className="max-w-[70%] mx-auto  h-full space-y-20 flex flex-col justify-evenly items-center">
-                    <p className="text-sudo-header-56 font-heading text-center">Let’s Build What You’ve Been Dreaming Of</p>
+                <div className="md:max-w-[70%] mx-auto  h-full space-y-20 flex flex-col justify-evenly items-center">
+                    <p className="text-sudo-header-28  md:text-sudo-header-56 font-heading text-center">Let’s Build What You’ve Been Dreaming Of</p>
                     <div className="group w-[350px] relative grid grid-rows-2   group-hover:bg-transparent h-[350px] bg-sudo-blue-4  text-sudo-neutral-1">
 
                         <div className="absolute group-hover:bg-sudo-white-1 transition-all duration-700 group-hover:w-[350px] group-hover:h-[350px] w-full h-0  bg-none  -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"></div>
