@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Unbounded, Manrope } from "next/font/google";
 import "./globals.css";
+import PerformanceWrapper from "@/components/animations/PerformanceWrapper";
 
 const unbounded = Unbounded({
   variable: "--font-unbounded",
@@ -32,7 +33,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${unbounded.variable} ${manrope.variable}`}>
       <body className="antialiased">
-        {children}
+        <PerformanceWrapper>
+          {children}
+        </PerformanceWrapper>
       </body>
     </html>
   );

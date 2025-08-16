@@ -62,13 +62,13 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
 
     return (
         <section className={clsx('w-full max-w-4xl mx-auto', className)}>
-            {title && <h2 className={clsx('text-3xl md:text-4xl font-bold text-center mb-10 text-gray-900', titleClassName)}>
+            {title && <h2 className={clsx('text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 sm:mb-10 text-gray-900', titleClassName)}>
                 {title}
             </h2>}
             
             {/* --- CHANGE 1: Create a new wrapper div with spacing --- */}
             {/* This div will hold the list of cards and add space between them */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
                 {faqs.map((faq, index) => {
                     const isActive = activeIndex === index;
                     return (
@@ -77,7 +77,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
                         <div
                             key={index}
                             className={clsx(
-                                'rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden',
+                                'rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md',
                                 itemClassName // Your custom class can still override styles
                             )}
                         >
@@ -86,19 +86,20 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
                                     type="button"
                                     onClick={() => handleItemClick(index)}
                                     className={clsx(
-                                        'flex w-full items-center justify-between text-left py-6 px-6 sm:px-8',
-                                        'font-semibold text-lg text-gray-800 hover:bg-gray-50 transition-colors duration-200',
+                                        'flex w-full items-center justify-between text-left py-4 sm:py-5 md:py-6 px-4 sm:px-6 md:px-8',
+                                        'font-semibold text-base sm:text-lg md:text-xl text-gray-800 hover:bg-gray-50 transition-colors duration-200',
+                                        'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                                         questionClassName
                                     )}
                                     aria-expanded={isActive}
                                     aria-controls={`faq-content-${index}`}
                                 >
-                                    <span className="flex-1 pr-4">{faq.question}</span>
+                                    <span className="flex-1 pr-3 sm:pr-4 text-left leading-relaxed">{faq.question}</span>
                                     <div
                                         ref={(el) => { iconRefs.current[index] = el; }}
-                                        className="flex-shrink-0"
+                                        className="flex-shrink-0 p-1"
                                     >
-                                        <PlusIcon className="h-6 w-6 text-gray-500" />
+                                        <PlusIcon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500 transition-colors duration-200" />
                                     </div>
                                 </button>
                             </h3>
@@ -108,7 +109,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
                                 className="h-0 overflow-hidden opacity-0"
                                 style={{ height: 0, willChange: 'height, opacity' }}
                             >
-                                <div className="text-gray-600 leading-relaxed py-4 px-6 sm:px-8">
+                                <div className="text-gray-600 leading-relaxed py-3 sm:py-4 px-4 sm:px-6 md:px-8 text-sm sm:text-base">
                                     {faq.answer}
                                 </div>
                             </div>
