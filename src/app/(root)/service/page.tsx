@@ -1,8 +1,6 @@
-const Service = () => {
-  return (
-    <div className="sudo-container space-y-10 py-24">
-      <div className="min-h-screen">Service Page</div>
-    </div>
-  )
+import React from 'react';
+import ServiceContainer from '@/components/service-page/ServiceContainer';
+
+export default function ServicePage() {
+  return <ServiceContainer />;
 }
-export default Service
