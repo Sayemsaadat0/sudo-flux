@@ -12,6 +12,10 @@ export const defaultNavMenuData = [
     url: "/service",
   },
   {
+    title: "Portfolio",
+    url: "/portfolio",
+  },
+  {
     title: "Pricing",
     url: "/pricing",
   },
