@@ -11,9 +11,14 @@ const BlogSection = () => {
         {
             title: "What Inspires Us",
             description:
-                "We are fueled by curiosity, creativity, and a passion for meaningful progress. The world’s complexities inspire us to think deeper, challenge the status quo, and find better ways to make things work. Whether it’s solving a problem or enhancing an experience, we’re constantly looking for ways to leave a positive mark — not just through technology, but through thoughtful, human-centered innovation.",
+                "We are fueled by curiosity, creativity, and a passion for meaningful progress. The world's complexities inspire us to think deeper, challenge the status quo, and find better ways to make things work. Whether it's solving a problem or enhancing an experience, we're constantly looking for ways to leave a positive mark — not just through technology, but through thoughtful, human-centered innovation.",
             thumbnailUrl:
                 "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
+            category: "Inspiration",
+            date: "Dec 15, 2024",
+            readTime: "3 min read",
+            author: "Sudo Flux Team",
+            link: "#"
         },
         {
             title: "What We Build",
@@ -21,13 +26,23 @@ const BlogSection = () => {
                 "We create solutions that merge form and function — blending elegant design with reliable performance. Our work spans digital experiences, tools, and systems built to serve real needs and scale with purpose. Every product we build is guided by clarity, empathy, and attention to detail, ensuring that it not only works but resonates with the people who use it.",
             thumbnailUrl:
                 "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
+            category: "Development",
+            date: "Dec 12, 2024",
+            readTime: "4 min read",
+            author: "Sudo Flux Team",
+            link: "#"
         },
         {
             title: "What Sets Us Apart",
             description:
-                "Beyond our skills and tools, it’s our mindset that makes the difference. We don’t chase trends — we chase impact. We believe in asking the right questions, in listening closely, and in building with integrity. From how we collaborate to how we ship, everything we do is rooted in care, excellence, and a deep respect for the craft and the people behind it.",
+                "Beyond our skills and tools, it's our mindset that makes the difference. We don't chase trends — we chase impact. We believe in asking the right questions, in listening closely, and in building with integrity. From how we collaborate to how we ship, everything we do is rooted in care, excellence, and a deep respect for the craft and the people behind it.",
             thumbnailUrl:
                 "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
+            category: "Culture",
+            date: "Dec 10, 2024",
+            readTime: "5 min read",
+            author: "Sudo Flux Team",
+            link: "#"
         },
     ];
 
@@ -55,7 +70,11 @@ const BlogSection = () => {
                             title={item.title}
                             description={item.description}
                             thumbnailUrl={item.thumbnailUrl}
-                            link="#"
+                            category={item.category}
+                            date={item.date}
+                            readTime={item.readTime}
+                            author={item.author}
+                            link={item.link}
                         />
                     ))}
                 </div>
