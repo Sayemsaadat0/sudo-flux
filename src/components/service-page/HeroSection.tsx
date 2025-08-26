@@ -98,7 +98,7 @@ const HeroSection = () => {
               <Button 
                 icon={<ArrowRight size={20} />} 
                 icon_style="border border-sudo-purple-3 text-sudo-purple-3 bg-sudo-white-2" 
-                className="text-sudo-neutral-6 bg-gradient-to-r from-sudo-purple-3 to-sudo-blue-3 hover:from-sudo-purple-4 hover:to-sudo-blue-4 text-white shadow-lg hover:shadow-xl transition-all duration-300" 
+                className="text-sudo-neutral-6 bg-gradient-to-r from-sudo-purple-3 to-sudo-blue-3 hover:from-sudo-purple-4 hover:to-sudo-blue-4  shadow-lg hover:shadow-xl transition-all duration-300" 
                 label="Get Started Today"
                 size="lg"
               />

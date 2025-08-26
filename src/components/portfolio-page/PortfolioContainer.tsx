@@ -1,10 +1,9 @@
 import React from 'react';
 import HeroSection from './HeroSection';
-import ServicesSection from './ServicesSection';
+import WorkProcessSection from './WorkProcessSection';
 import ProjectsSection from './ProjectsSection';
-import IndustriesSection from './IndustriesSection';
-import TestimonialsSection from './TestimonialsSection';
-import ContactSection from './ContactSection';
+import TestimonialsSection from '@/components/home-page/TestimonialSection';
+import ContactSection from '@/components/home-page/ContactSection';
 
 const PortfolioContainer = () => {
   return (
@@ -12,20 +11,17 @@ const PortfolioContainer = () => {
       {/* Section 1: Hero (Dark) */}
       <HeroSection />
       
-      {/* Section 2: Services (White) */}
-      <ServicesSection />
+      {/* Section 2: Work Process (White) */}
+      <WorkProcessSection />
       
-      {/* Section 3: Projects (Dark) */}
-      <ProjectsSection />
+             {/* Section 3: Projects (Dark) */}
+       <ProjectsSection />
+       
+       {/* Section 4: Testimonials (Dark) */}
+       <TestimonialsSection />
       
-      {/* Section 4: Industries (White) */}
-      <IndustriesSection />
-      
-      {/* Section 5: Testimonials (Dark) */}
-      <TestimonialsSection />
-      
-      {/* Section 6: Contact (White) */}
-      <ContactSection />
+             {/* Section 5: Contact (Dark) */}
+       <ContactSection />
     </main>
   );
 };
