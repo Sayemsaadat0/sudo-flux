@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '@/components/ui/button';
-import { ArrowRight, Play, Star } from 'lucide-react';
+import { ArrowRight, Play } from 'lucide-react';
 // import LineAnimation from '@/components/animations/LineAnimation';
 
 const HeroSection = () => {
@@ -52,32 +52,7 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pt-16 border-t border-sudo-neutral-4">
-            <div className="space-y-4">
-              <div className="text-3xl font-bold text-sudo-purple-3">200+</div>
-              <div className="text-sudo-white-4 text-sm uppercase tracking-wider">Projects Completed</div>
-            </div>
-            <div className="space-y-4">
-              <div className="text-3xl font-bold text-sudo-blue-3">50+</div>
-              <div className="text-sudo-white-4 text-sm uppercase tracking-wider">Happy Clients</div>
-            </div>
-            <div className="space-y-4">
-              <div className="text-3xl font-bold text-sudo-purple-3">8+</div>
-              <div className="text-sudo-white-4 text-sm uppercase tracking-wider">Years Experience</div>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center justify-center gap-1">
-                <div className="text-3xl font-bold text-sudo-blue-3">4.9</div>
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} className="text-sudo-purple-3 fill-current" />
-                  ))}
-                </div>
-              </div>
-              <div className="text-sudo-white-4 text-sm uppercase tracking-wider">Client Rating</div>
-            </div>
-          </div>
+
         </div>
       </div>
     </section>

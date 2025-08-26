@@ -23,6 +23,10 @@ export const defaultNavMenuData = [
     title: "Blog",
     url: "/blogs",
   },
+  {
+    title: "Contact",
+    url: "/contact",
+  },
 ];
 
 export const footerLinks = [

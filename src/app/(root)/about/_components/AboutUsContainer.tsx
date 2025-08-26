@@ -8,6 +8,7 @@ import ContactSection from "@/components/home-page/ContactSection"
 import BlogSection from "@/components/home-page/BlogSection"
 import CtaSection from "@/components/home-page/CtaSection"
 import TeamSection from "./TeamSection"
+import WhereWeAreBased from "./WhereWeAreBased"
 
 const AboutUsContainer = () => {
     useSmoothScroll()
@@ -17,6 +18,7 @@ const AboutUsContainer = () => {
             <MoreAboutUs />
             <div>
                 <AboutStats />
+                <WhereWeAreBased />
                 <TeamSection />
                 <TestimonialsSection />
                 <ContactSection />
