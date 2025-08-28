@@ -3,88 +3,86 @@
 import { useState } from 'react'
 import { Search, Plus, Edit, Trash2, Eye, MoreHorizontal, Calendar, User } from 'lucide-react'
 
-// Mock data for testimonials
-const mockTestimonials = [
+// Mock data for project categories
+const mockCategories = [
   {
     id: 1,
-    name: "Sarah Johnson",
-    company: "TechCorp Solutions",
-    position: "CEO",
-    rating: 5,
-    status: "Published",
+    name: "Web Development",
+    description: "Custom websites, web applications, and e-commerce solutions",
+    projects: 25,
+    status: "Active",
     date: "2024-01-15",
-    content: "Sudo Flux transformed our digital presence completely. Their expertise in web development and marketing strategies helped us achieve remarkable growth.",
-    featured: true
+    color: "#8B5CF6",
+    featured: true,
+    skills: ["React", "Node.js", "PHP", "WordPress"]
   },
   {
     id: 2,
-    name: "Michael Chen",
-    company: "Innovate Labs",
-    position: "CTO",
-    rating: 5,
-    status: "Draft",
+    name: "Mobile Development",
+    description: "iOS and Android mobile applications with cross-platform solutions",
+    projects: 18,
+    status: "Active",
     date: "2024-01-10",
-    content: "The team at Sudo Flux delivered exceptional results. Their attention to detail and innovative solutions exceeded our expectations.",
-    featured: false
+    color: "#3B82F6",
+    featured: false,
+    skills: ["React Native", "Flutter", "Swift", "Kotlin"]
   },
   {
     id: 3,
-    name: "Emily Rodriguez",
-    company: "Growth Marketing",
-    position: "Marketing Director",
-    rating: 4,
-    status: "Published",
+    name: "Digital Marketing",
+    description: "SEO, PPC, social media marketing, and content strategy",
+    projects: 32,
+    status: "Active",
     date: "2024-01-08",
-    content: "Working with Sudo Flux was a game-changer for our marketing campaigns. Their strategic approach and creative solutions drove significant results.",
-    featured: true
+    color: "#10B981",
+    featured: true,
+    skills: ["SEO", "Google Ads", "Facebook Ads", "Content Marketing"]
   },
   {
     id: 4,
-    name: "David Thompson",
-    company: "StartupXYZ",
-    position: "Founder",
-    rating: 5,
-    status: "Scheduled",
+    name: "UI/UX Design",
+    description: "User interface design, user experience, and design systems",
+    projects: 15,
+    status: "Active",
     date: "2024-01-20",
-    content: "Sudo Flux helped us build a solid foundation for our startup. Their expertise in both development and business strategy was invaluable.",
-    featured: false
+    color: "#EC4899",
+    featured: false,
+    skills: ["Figma", "Adobe XD", "Sketch", "Prototyping"]
   },
   {
     id: 5,
-    name: "Lisa Wang",
-    company: "Design Studio Pro",
-    position: "Creative Director",
-    rating: 5,
-    status: "Published",
+    name: "Infrastructure",
+    description: "Cloud migration, DevOps, and infrastructure management",
+    projects: 12,
+    status: "Inactive",
     date: "2024-01-05",
-    content: "The design work from Sudo Flux was outstanding. They perfectly captured our vision and delivered a beautiful, functional website.",
-    featured: false
+    color: "#F59E0B",
+    featured: false,
+    skills: ["AWS", "Docker", "Kubernetes", "CI/CD"]
   }
 ]
 
 const statusColors = {
-  Published: "bg-green-100 text-green-700",
-  Draft: "bg-gray-100 text-gray-700",
-  Scheduled: "bg-blue-100 text-blue-700"
+  Active: "bg-green-100 text-green-700",
+  Inactive: "bg-gray-100 text-gray-700",
+  Pending: "bg-yellow-100 text-yellow-700"
 }
 
-export default function TestimonialsPage() {
+export default function ProjectsCategoryPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All')
-  const [selectedRating, setSelectedRating] = useState('All')
   const [sortBy, setSortBy] = useState('date')
   const [sortOrder, setSortOrder] = useState('desc')
 
   // Filter and sort data
-  const filteredAndSortedTestimonials = mockTestimonials
-    .filter(testimonial => {
-      const matchesSearch = testimonial.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           testimonial.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           testimonial.content.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesStatus = selectedStatus === 'All' || testimonial.status === selectedStatus
-      const matchesRating = selectedRating === 'All' || testimonial.rating.toString() === selectedRating
+  const filteredAndSortedCategories = mockCategories
+    .filter(category => {
+      const matchesSearch = category.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           category.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           category.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+      const matchesStatus = selectedStatus === 'All' || category.status === selectedStatus
       
-      return matchesSearch && matchesStatus && matchesRating
+      return matchesSearch && matchesStatus
     })
     .sort((a, b) => {
       let aValue = a[sortBy as keyof typeof a]
@@ -102,8 +100,7 @@ export default function TestimonialsPage() {
       }
     })
 
-  const statuses = ['All', ...Array.from(new Set(mockTestimonials.map(testimonial => testimonial.status)))]
-  const ratings = ['All', ...Array.from(new Set(mockTestimonials.map(testimonial => testimonial.rating.toString())))]
+  const statuses = ['All', ...Array.from(new Set(mockCategories.map(category => category.status)))]
 
   const handleSort = (field: string) => {
     if (sortBy === field) {
@@ -122,28 +119,28 @@ export default function TestimonialsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-sudo-neutral-5 mb-1">
-                Testimonials Management
+                Project Categories Management
               </h1>
               <p className="text-sudo-neutral-3 text-sm">
-                Manage customer testimonials and reviews
+                Manage project categories and their associated skills
               </p>
             </div>
             <button className="bg-gradient-to-r from-sudo-purple-6 to-sudo-blue-6 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:shadow-lg transition-all duration-200 text-sm">
               <Plus size={16} />
-              Add New Testimonial
+              Add New Category
             </button>
           </div>
         </div>
 
         {/* Filters and Search */}
         <div className="bg-white rounded-lg shadow-sm border border-sudo-white-2 p-4 mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sudo-neutral-3" size={16} />
               <input
                 type="text"
-                placeholder="Search testimonials..."
+                placeholder="Search categories..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 border border-sudo-white-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sudo-purple-6 focus:border-transparent text-sm"
@@ -161,20 +158,9 @@ export default function TestimonialsPage() {
               ))}
             </select>
 
-            {/* Rating Filter */}
-            <select
-              value={selectedRating}
-              onChange={(e) => setSelectedRating(e.target.value)}
-              className="px-3 py-2 border border-sudo-white-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sudo-purple-6 focus:border-transparent text-sm"
-            >
-              {ratings.map(rating => (
-                <option key={rating} value={rating}>{rating === 'All' ? 'All Ratings' : `${rating} Stars`}</option>
-              ))}
-            </select>
-
             {/* Results Count */}
             <div className="flex items-center justify-end text-sudo-neutral-3 text-sm">
-              {filteredAndSortedTestimonials.length} of {mockTestimonials.length} testimonials
+              {filteredAndSortedCategories.length} of {mockCategories.length} categories
             </div>
           </div>
         </div>
@@ -191,7 +177,7 @@ export default function TestimonialsPage() {
                       onClick={() => handleSort('name')}
                       className="flex items-center gap-1 hover:text-sudo-purple-6 transition-colors"
                     >
-                      Customer
+                      Category
                       {sortBy === 'name' && (
                         <span className="text-xs">
                           {sortOrder === 'asc' ? '↑' : '↓'}
@@ -199,8 +185,21 @@ export default function TestimonialsPage() {
                       )}
                     </button>
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Company</th>
-                  <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Rating</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Description</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Skills</th>
+                  <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">
+                    <button 
+                      onClick={() => handleSort('projects')}
+                      className="flex items-center gap-1 hover:text-sudo-purple-6 transition-colors"
+                    >
+                      Projects
+                      {sortBy === 'projects' && (
+                        <span className="text-xs">
+                          {sortOrder === 'asc' ? '↑' : '↓'}
+                        </span>
+                      )}
+                    </button>
+                  </th>
                   <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Status</th>
                   <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">
                     <button 
@@ -219,37 +218,59 @@ export default function TestimonialsPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAndSortedTestimonials.map((testimonial, index) => (
-                  <tr key={testimonial.id} className={`border-b border-sudo-white-1 hover:bg-sudo-white-1 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-sudo-white-1/30'}`}>
+                {filteredAndSortedCategories.map((category, index) => (
+                  <tr key={category.id} className={`border-b border-sudo-white-1 hover:bg-sudo-white-1 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-sudo-white-1/30'}`}>
                     <td className="py-3 px-4">
                       <span className="text-sudo-neutral-4 font-medium text-sm">{index + 1}</span>
                     </td>
                     <td className="py-3 px-4">
-                      <div>
-                        <div className="font-medium text-sudo-neutral-5 text-sm">{testimonial.name}</div>
-                        <div className="text-sudo-neutral-4 text-xs">{testimonial.position}</div>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-8 h-8 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: category.color }}
+                        >
+                          <User size={14} className="text-white" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sudo-neutral-5 text-sm">{category.name}</div>
+                          {category.featured && (
+                            <span className="text-xs text-sudo-purple-6 font-medium">Featured</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="px-2 py-1 bg-sudo-purple-1 text-sudo-purple-6 text-xs rounded-full">
-                        {testimonial.company}
+                      <div className="max-w-xs">
+                        <div className="text-sudo-neutral-4 text-xs line-clamp-2">{category.description}</div>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex flex-wrap gap-1">
+                        {category.skills.slice(0, 3).map((skill, skillIndex) => (
+                          <span key={skillIndex} className="px-2 py-0.5 bg-sudo-white-2 text-sudo-neutral-4 text-xs rounded-full">
+                            {skill}
+                          </span>
+                        ))}
+                        {category.skills.length > 3 && (
+                          <span className="text-sudo-neutral-3 text-xs">+{category.skills.length - 3}</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-sudo-neutral-5 font-medium text-sm">
+                        {category.projects}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <div className="flex items-center gap-1">
-                        <span className="text-yellow-500 text-sm">{testimonial.rating} ★</span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 text-xs rounded-full ${statusColors[testimonial.status as keyof typeof statusColors]}`}>
-                        {testimonial.status}
+                      <span className={`px-2 py-1 text-xs rounded-full ${statusColors[category.status as keyof typeof statusColors]}`}>
+                        {category.status}
                       </span>
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-1">
                         <Calendar size={14} className="text-sudo-neutral-3" />
                         <span className="text-sudo-neutral-5 text-sm">
-                          {new Date(testimonial.date).toLocaleDateString()}
+                          {new Date(category.date).toLocaleDateString()}
                         </span>
                       </div>
                     </td>
@@ -276,11 +297,11 @@ export default function TestimonialsPage() {
           </div>
 
           {/* Empty State */}
-          {filteredAndSortedTestimonials.length === 0 && (
+          {filteredAndSortedCategories.length === 0 && (
             <div className="text-center py-8">
               <div className="text-sudo-neutral-3">
                 <Search size={32} className="mx-auto mb-3" />
-                <h3 className="text-base font-medium text-sudo-neutral-5 mb-1">No testimonials found</h3>
+                <h3 className="text-base font-medium text-sudo-neutral-5 mb-1">No categories found</h3>
                 <p className="text-sudo-neutral-3 text-sm">Try adjusting your search or filter criteria</p>
               </div>
             </div>
@@ -290,7 +311,7 @@ export default function TestimonialsPage() {
         {/* Pagination */}
         <div className="mt-4 flex items-center justify-between">
           <div className="text-sudo-neutral-3 text-sm">
-            Showing {filteredAndSortedTestimonials.length} of {mockTestimonials.length} testimonials
+            Showing {filteredAndSortedCategories.length} of {mockCategories.length} categories
           </div>
           <div className="flex items-center gap-2">
             <button className="px-3 py-1.5 border border-sudo-white-3 rounded-lg text-sudo-neutral-3 hover:bg-sudo-white-1 transition-colors text-sm">
