@@ -19,7 +19,7 @@ const Template = ({ children }: { children: React.ReactNode }) => {
       
       {/* Main content */}
       <div className={`transition-all duration-300 ${isSidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <main className="pt-24 p-4">
+        <main className="pt-24 bg-sudo-white-2 p-4">
           {children}
         </main>
       </div>

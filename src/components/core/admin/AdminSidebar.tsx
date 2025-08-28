@@ -24,32 +24,49 @@ const sidebarItems: SidebarItem[] = [
     )
   },
   {
-    name: 'Blog Management',
+    name: 'Industry',
+    href: '/admin/industry',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    )
+  },
+  {
+    name: 'Testimonials',
+    href: '/admin/testimonials',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+    )
+  },
+  {
+    name: 'Contacts',
+    href: '/admin/contacts',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    )
+  },
+  {
+    name: 'FAQ',
+    href: '/admin/faq',
+    icon: (
+      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    )
+  },
+  {
+    name: 'Blogs',
     href: '/admin/blogs',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
       </svg>
-    ),
-    children: [
-      { name: 'All Posts', href: '/admin/blogs' },
-      { name: 'Create Post', href: '/admin/blogs/create' },
-      { name: 'Categories', href: '/admin/blogs/categories' }
-    ]
-  },
-  {
-    name: 'Portfolio',
-    href: '/admin/portfolio',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
-    ),
-    children: [
-      { name: 'All Projects', href: '/admin/portfolio' },
-      { name: 'Add Project', href: '/admin/portfolio/create' },
-      { name: 'Skills', href: '/admin/portfolio/skills' }
-    ]
+    )
   },
   {
     name: 'Services',
@@ -61,49 +78,27 @@ const sidebarItems: SidebarItem[] = [
     ),
     children: [
       { name: 'All Services', href: '/admin/services' },
-      { name: 'Add Service', href: '/admin/services/create' },
-      { name: 'Service Categories', href: '/admin/services/categories' }
+      { name: 'Category', href: '/admin/services/category' }
     ]
   },
   {
-    name: 'Testimonials',
-    href: '/admin/testimonials',
+    name: 'Projects',
+    href: '/admin/projects',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
       </svg>
-    ),
-    children: [
-      { name: 'All Testimonials', href: '/admin/testimonials' },
-      { name: 'Add Testimonial', href: '/admin/testimonials/create' }
-    ]
+    )
   },
   {
-    name: 'Team',
-    href: '/admin/team',
+    name: 'Visitors',
+    href: '/admin/visitors',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
       </svg>
-    ),
-    children: [
-      { name: 'All Members', href: '/admin/team' },
-      { name: 'Add Member', href: '/admin/team/create' }
-    ]
-  },
-  {
-    name: 'Analytics',
-    href: '/admin/analytics',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-    children: [
-      { name: 'Overview', href: '/admin/analytics' },
-      { name: 'Traffic', href: '/admin/analytics/traffic' },
-      { name: 'Engagement', href: '/admin/analytics/engagement' }
-    ]
+    )
   },
   {
     name: 'Settings',
@@ -237,7 +232,7 @@ export function AdminSidebar({ isCollapsed, setIsCollapsed }: { isCollapsed: boo
                   href={item.href}
                   className={cn(
                     "flex items-center w-full p-3 rounded-xl transition-all duration-200",
-                    "text-sudo-paragraph-20 font-medium",
+                    " font-medium",
                     "hover:bg-gradient-to-r hover:from-sudo-purple-1 hover:to-sudo-blue-1",
                     "hover:text-sudo-purple-7 focus:outline-none",
                     isActive(item.href) && "bg-gradient-to-r from-sudo-purple-2 to-sudo-blue-2 text-sudo-purple-8",
