@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import BlogDetails from '@/components/blog-page/BlogDetails';
+import BlogDetails from '../_components/BlogDetails';
 
 // Sample blog data - in a real app, this would come from a CMS or database
 const blogPosts = [
