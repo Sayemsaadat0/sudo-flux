@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create user
+    // Create user (password will be hashed by pre-save hook)
     const newUser = await User.create({ name, email, password, role });
 
     return NextResponse.json(
