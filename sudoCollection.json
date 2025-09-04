@@ -1,0 +1,979 @@
+{
+  "info": {
+    "name": "Sudo Flux API Collection",
+    "description": "Complete API collection for Sudo Flux project with RESTful endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "blog_id",
+      "value": "",
+      
+      "type": "string"
+    },
+    {
+      "key": "contact_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "career_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "faq_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "industry_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset_token_here\",\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "reset-password"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"oldpassword123\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "change-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "Get All Blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/blogs?page=1&per_page=10&ordering=-createdAt&search=&author=&tags=&published=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-createdAt"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "author",
+                  "value": ""
+                },
+                {
+                  "key": "tags",
+                  "value": ""
+                },
+                {
+                  "key": "published",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Blog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/blogs/{{blog_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "{{blog_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Blog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sample Blog Title\",\n  \"content\": \"This is the blog content...\",\n  \"author\": \"John Doe\",\n  \"tags\": [\"tech\", \"web\"],\n  \"published\": true,\n  \"metaTitle\": \"SEO Title\",\n  \"metaDescription\": \"SEO Description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/blogs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs"]
+            }
+          }
+        },
+        {
+          "name": "Update Blog (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Blog Title\",\n  \"content\": \"Updated blog content...\",\n  \"author\": \"John Doe\",\n  \"tags\": [\"tech\", \"web\", \"updated\"],\n  \"published\": true,\n  \"metaTitle\": \"Updated SEO Title\",\n  \"metaDescription\": \"Updated SEO Description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/blogs/{{blog_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "{{blog_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Blog (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Partially Updated Title\",\n  \"published\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/blogs/{{blog_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "{{blog_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/blogs/{{blog_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "blogs", "{{blog_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contacts",
+      "item": [
+        {
+          "name": "Get All Contacts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contact?page=1&per_page=10&ordering=-createdAt&search=&status=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-createdAt"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Contact",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/contact/{{contact_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "{{contact_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Contact",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phone\": \"+1234567890\",\n  \"subject\": \"Inquiry\",\n  \"message\": \"Hello, I have a question...\",\n  \"status\": \"new\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contact",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact"]
+            }
+          }
+        },
+        {
+          "name": "Update Contact (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"phone\": \"+1234567890\",\n  \"subject\": \"Updated Inquiry\",\n  \"message\": \"Updated message content...\",\n  \"status\": \"in-progress\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contact/{{contact_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "{{contact_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Contact (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/contact/{{contact_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "{{contact_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Contact",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/contact/{{contact_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "contact", "{{contact_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Careers",
+      "item": [
+        {
+          "name": "Get All Careers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/careers?page=1&per_page=10&ordering=-createdAt&search=&department=&location=&type=&status=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "careers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-createdAt"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "department",
+                  "value": ""
+                },
+                {
+                  "key": "location",
+                  "value": ""
+                },
+                {
+                  "key": "type",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Career",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/careers/{{career_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "careers", "{{career_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Career",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Software Developer\",\n  \"department\": \"Engineering\",\n  \"location\": \"Remote\",\n  \"type\": \"Full-time\",\n  \"description\": \"We are looking for a skilled developer...\",\n  \"responsibilities\": [\"Develop web applications\", \"Write clean code\"],\n  \"requirements\": [\"3+ years experience\", \"JavaScript knowledge\"],\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/careers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "careers"]
+            }
+          }
+        },
+        {
+          "name": "Update Career (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Senior Software Developer\",\n  \"department\": \"Engineering\",\n  \"location\": \"Remote\",\n  \"type\": \"Full-time\",\n  \"description\": \"Updated job description...\",\n  \"responsibilities\": [\"Lead development\", \"Mentor junior developers\"],\n  \"requirements\": [\"5+ years experience\", \"Team leadership skills\"],\n  \"status\": \"active\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/careers/{{career_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "careers", "{{career_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Career (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"closed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/careers/{{career_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "careers", "{{career_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Career",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/careers/{{career_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "careers", "{{career_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "FAQs",
+      "item": [
+        {
+          "name": "Get All FAQs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/faq?page=1&per_page=10&ordering=-createdAt&search=&category=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "faq"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-createdAt"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "category",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single FAQ",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/faq/{{faq_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "faq", "{{faq_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create FAQ",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What services do you offer?\",\n  \"answer\": \"We offer web development, mobile apps, and consulting services.\",\n  \"category\": \"Services\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/faq",
+              "host": ["{{base_url}}"],
+              "path": ["api", "faq"]
+            }
+          }
+        },
+        {
+          "name": "Update FAQ (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What services do you offer? (Updated)\",\n  \"answer\": \"We offer comprehensive web development, mobile apps, and consulting services.\",\n  \"category\": \"Services\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/faq/{{faq_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "faq", "{{faq_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update FAQ (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category\": \"General\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/faq/{{faq_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "faq", "{{faq_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete FAQ",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/faq/{{faq_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "faq", "{{faq_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Industries",
+      "item": [
+        {
+          "name": "Get All Industries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/industries?page=1&per_page=10&ordering=-createdAt&search=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "industries"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-createdAt"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single Industry",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/industries/{{industry_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "industries", "{{industry_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Industry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Technology\",\n  \"description\": \"Software and technology solutions\",\n  \"icon\": \"tech-icon.svg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/industries",
+              "host": ["{{base_url}}"],
+              "path": ["api", "industries"]
+            }
+          }
+        },
+        {
+          "name": "Update Industry (Full)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Technology & Innovation\",\n  \"description\": \"Advanced software and technology solutions\",\n  \"icon\": \"tech-innovation-icon.svg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/industries/{{industry_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "industries", "{{industry_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Industry (Partial)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated industry description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/industries/{{industry_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "industries", "{{industry_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Industry",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/industries/{{industry_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "industries", "{{industry_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user?page=1&per_page=10&ordering=-createdAt&search=&role=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-createdAt"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "role",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Single User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/{{user_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

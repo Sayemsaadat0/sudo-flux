@@ -4,33 +4,61 @@ import { Industry } from "@/models/Industry";
 
 // ======================
 // GET /api/industries
+// - Get all industries (with ordering, pagination, search, and filtering)
 // ======================
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
     const ordering = searchParams.get("ordering") || "-createdAt";
+    
+    // Pagination parameters
+    const page = parseInt(searchParams.get("page") || "1");
+    const per_page = parseInt(searchParams.get("per_page") || "10");
+    const limit = Math.min(per_page, 100); // Max 100 items per page
+    const skip = (page - 1) * limit;
+
+    // Search parameter
+    const search = searchParams.get("search") || "";
 
     const sortField = ordering.startsWith("-") ? ordering.substring(1) : ordering;
     const sortDirection = ordering.startsWith("-") ? -1 : 1;
 
-    if (_id) {
-      const result = await Industry.findById(_id);
-      if (result) {
-        return NextResponse.json(
-          { success: true, message: "Single Industry Retrieved", result },
-          { status: 200 }
-        );
-      }
-      return NextResponse.json(
-        { success: false, message: "Industry not found" },
-        { status: 404 }
-      );
+    // Build query object for search
+    const query: any = {};
+
+    // Add search functionality (searches across name and description)
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } }
+      ];
     }
 
-    const results = await Industry.find().sort({ [sortField]: sortDirection });
+    // Get total count for pagination
+    const total_count = await Industry.countDocuments(query);
+    const total_pages = Math.ceil(total_count / limit);
+
+    // Get paginated results with search
+    const results = await Industry.find(query)
+      .sort({ [sortField]: sortDirection })
+      .skip(skip)
+      .limit(limit);
+
     return NextResponse.json(
-      { success: true, message: "All Industries Retrieved", results },
+      { 
+        success: true, 
+        message: "Industries Retrieved", 
+        results,
+        pagination: {
+          current_page: page,
+          total_pages,
+          per_page: limit,
+          total_count
+        },
+        filters: {
+          search
+        }
+      },
       { status: 200 }
     );
   } catch (error) {

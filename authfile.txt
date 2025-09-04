@@ -1,0 +1,593 @@
+# Authentication Notes (routes, files, code)
+
+This note collects all auth-related endpoints, files, environment variables, and their code, with absolute paths.
+
+## Summary
+- Routes (Next.js App Router API):
+  - POST /api/auth/login → src/app/api/auth/login/route.ts
+  - POST /api/auth/register → src/app/api/auth/register/route.ts
+  - POST /api/auth/forgot-password → src/app/api/auth/forgot-password/route.ts
+  - POST /api/auth/reset-password → src/app/api/auth/reset-password/route.ts
+  - POST /api/auth/change-password → src/app/api/auth/change-password/route.ts
+- Supporting files:
+  - User model → src/models/User.ts
+  - DB connection → src/DB/db.ts
+  - Auth helpers (NextAuth credentials flow setup) → src/lib/auth/*
+- Environment variables (expected/used):
+  - DB_USER_NAME, DB_PASSWORD, DB_NAME
+  - JWT_SECRET or JWT_SICRECT_KEY (for signing/verifying JWT in API routes)
+  - NEXTAUTH_URL, JWT_SICRECT_KEY (used in authOptions)
+  - NEXT_PUBLIC_API_BASE_URL (used by authCredentialsLogin for external login API)
+  - API_URL (used by refreshAccessToken for token refresh)
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\app\\api\\auth\\login\\route.ts
+```ts
+import { NextResponse } from "next/server";
+import "@/DB/db";
+import { User } from "@/models/User";
+import jwt from "jsonwebtoken";
+
+// POST /api/auth/login
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { email, password } = body;
+
+    if (!email || !password) {
+      return NextResponse.json(
+        { success: false, message: "Email and Password are required" },
+        { status: 400 }
+      );
+    }
+
+    // Explicitly select password since it's select: false
+    const user = await User.findOne({ email }).select("+password") as {
+      _id: string | { toString(): string },
+      role: string,
+      email: string,
+      comparePassword?: (password: string) => Promise<boolean>
+    } | null;
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const isMatch = await user.comparePassword?.(password);
+    if (!isMatch) {
+      return NextResponse.json(
+        { success: false, message: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const secret = process.env.JWT_SECRET || process.env.JWT_SICRECT_KEY; // align with existing usage
+    if (!secret) {
+      return NextResponse.json(
+        { success: false, message: "JWT secret not configured" },
+        { status: 500 }
+      );
+    }
+
+    const token = jwt.sign(
+      { sub: user._id.toString(), role: user.role, email: user.email },
+      secret,
+      { expiresIn: "7d" }
+    );
+
+    return NextResponse.json(
+      { success: true, message: "Logged in successfully", token, user },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Login error", error);
+    return NextResponse.json({ success: false, message: "Failed to login" }, { status: 500 });
+  }
+}
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\app\\api\\auth\\register\\route.ts
+```ts
+import { NextResponse } from "next/server";
+import "@/DB/db";
+import { User } from "@/models/User";
+
+// POST /api/auth/register
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { name, email, password, role } = body;
+
+    if (!name || !email || !password || !role) {
+      return NextResponse.json(
+        { success: false, message: "Name, Email, Password, and Role are required" },
+        { status: 400 }
+      );
+    }
+
+    // Create user (pre-save hook hashes password)
+    const user = await User.create({ name, email, password, role });
+
+    return NextResponse.json(
+      { success: true, message: "User registered successfully", user },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { success: false, message: "Email already exists" },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json({ success: false, message: "Failed to register" }, { status: 500 });
+  }
+}
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\app\\api\\auth\\forgot-password\\route.ts
+```ts
+import { NextResponse } from "next/server";
+import "@/DB/db";
+import { User } from "@/models/User";
+import crypto from "crypto";
+
+// POST /api/auth/forgot-password
+// body: { email }
+export async function POST(request: Request) {
+  try {
+    const { email } = await request.json();
+    if (!email) {
+      return NextResponse.json(
+        { success: false, message: "Email is required" },
+        { status: 400 }
+      );
+    }
+
+    const user = await User.findOne({ email }).select("_id email");
+    if (!user) {
+      // Don't reveal user existence
+      return NextResponse.json(
+        { success: true, message: "If the email exists, a reset link will be sent" },
+        { status: 200 }
+      );
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    const expires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = expires as any;
+    await user.save({ validateBeforeSave: false });
+
+    // In real app: email the link below to user
+    // Example reset URL (frontend page or API endpoint):
+    // `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "If the email exists, a reset link will be sent",
+        // For development/testing only, return the raw token. Remove in prod.
+        devResetToken: resetToken,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Forgot password error", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to process request" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\app\\api\\auth\\reset-password\\route.ts
+```ts
+import { NextResponse } from "next/server";
+import "@/DB/db";
+import { User } from "@/models/User";
+import crypto from "crypto";
+
+// POST /api/auth/reset-password
+// body: { token, password }
+export async function POST(request: Request) {
+  try {
+    const { token, password } = await request.json();
+    if (!token || !password) {
+      return NextResponse.json(
+        { success: false, message: "Token and new password are required" },
+        { status: 400 }
+      );
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: new Date() },
+    }).select("+password");
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Token is invalid or has expired" },
+        { status: 400 }
+      );
+    }
+
+    user.password = password; // will be hashed by pre-save hook
+    user.resetPasswordToken = undefined as any;
+    user.resetPasswordExpires = undefined as any;
+    await user.save();
+
+    return NextResponse.json(
+      { success: true, message: "Password reset successful" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Reset password error", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to reset password" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\app\\api\\auth\\change-password\\route.ts
+```ts
+import { NextResponse } from "next/server";
+import "@/DB/db";
+import { User } from "@/models/User";
+
+// POST /api/auth/change-password
+// headers: Authorization: Bearer <token>
+// body: { currentPassword, newPassword }
+// Note: In production, verify JWT properly in a middleware. Here we keep it simple.
+import jwt from "jsonwebtoken";
+
+export async function POST(request: Request) {
+  try {
+    const authHeader = request.headers.get("authorization") || request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.split(" ")[1];
+    const secret = process.env.JWT_SECRET || process.env.JWT_SICRECT_KEY;
+    if (!secret) {
+      return NextResponse.json(
+        { success: false, message: "JWT secret not configured" },
+        { status: 500 }
+      );
+    }
+
+    let payload: any;
+    try {
+      payload = jwt.verify(token, secret);
+    } catch {
+      return NextResponse.json(
+        { success: false, message: "Invalid or expired token" },
+        { status: 401 }
+      );
+    }
+
+    const { currentPassword, newPassword } = await request.json();
+    if (!currentPassword || !newPassword) {
+      return NextResponse.json(
+        { success: false, message: "Current and new password are required" },
+        { status: 400 }
+      );
+    }
+
+    const user = await User.findById(payload.sub).select("+password");
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    const isMatch = await user.comparePassword?.(currentPassword);
+    if (!isMatch) {
+      return NextResponse.json(
+        { success: false, message: "Current password is incorrect" },
+        { status: 400 }
+      );
+    }
+
+    user.password = newPassword; // will be hashed on save
+    await user.save();
+
+    return NextResponse.json(
+      { success: true, message: "Password changed successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Change password error", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to change password" },
+      { status: 500 }
+    );
+  }
+}
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\models\\User.ts
+```ts
+import mongoose, { Schema, Document, Model } from "mongoose";
+import bcrypt from "bcryptjs";
+
+export interface IUser extends Document {
+  name: string;
+  email: string;
+  role: string;
+  password: string;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  // instance methods
+  comparePassword?(candidate: string): Promise<boolean>;
+  toJSON(): any;
+}
+
+export const UserSchema = new Schema<IUser>(
+  {
+    name: { type: String, required: true, trim: true },
+    role: { type: String, required: true, trim: true },
+    password: { type: String, required: true, trim: true, select: false },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
+  },
+  { timestamps: true }
+);
+
+// Hash password before save if modified
+UserSchema.pre("save", async function (next) {
+  const user = this as IUser;
+  if (!user.isModified("password")) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+    next();
+  } catch (err) {
+    next(err as any);
+  }
+});
+
+// Helper to compare password
+UserSchema.methods.comparePassword = async function (candidate: string) {
+  return bcrypt.compare(candidate, this.password);
+};
+
+// Hide sensitive fields in JSON
+UserSchema.methods.toJSON = function () {
+  const obj = this.toObject({ versionKey: false });
+  delete obj.password;
+  delete obj.resetPasswordToken;
+  delete obj.resetPasswordExpires;
+  return obj;
+};
+
+// Avoid model overwrite issues in dev with Next.js hot reload
+export const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\DB\\db.ts
+```ts
+import { connect } from "mongoose";
+// const MONGO_URI = mongodb+srv://<username>:<password>@cluster0.njebycd.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+// const MONGO_URI = process.env.MONGODB_URL;
+const MONGO_URI = `mongodb+srv://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}@cluster0.njebycd.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`;
+
+if (!MONGO_URI) {
+    throw new Error("MONGODB_URL environment variable is not defined.");
+}
+
+connect(MONGO_URI)
+    .then(() => console.log("MongoDB Connected"))
+    .catch((error: any) => console.log(error));
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\lib\\auth\\authOptions.ts (NextAuth Credentials config)
+```ts
+import CredentialsProvider from 'next-auth/providers/credentials';
+import authCredentialsLogin from './authCredentialsLogin';
+import refreshAccessToken from './refreshAccessToken';
+// // import { NextAuthOptions,  } from 'next-auth';
+// import CredentialsProvider from 'next-auth/providers/credentials';
+// import authCredentialsLogin from './authCredentialsLogin';
+// import refreshAccessToken from './refreshAccessToken';
+
+export const authOptions = {
+  providers: [
+    CredentialsProvider({
+      name: 'Omnic Cliper',
+      credentials: {
+        username: { label: 'Username', type: 'text' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials: any) {
+        // _req
+        try {
+          const body = {
+            username: credentials.username,
+            password: credentials.password,
+          };
+          const authUser = await authCredentialsLogin(body);
+          // console.log(authUser)
+          return authUser;
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      },
+    }),
+  ],
+  site: process.env.NEXTAUTH_URL,
+  secret: process.env.JWT_SICRECT_KEY,
+  // pages: {
+  //     signIn: '/login',
+  //     signOut: '/api/auth/signout',
+  //     error: '/login', // Error code passed in query string as ?error=
+  //     verifyRequest: '/api/auth/verify-request', // (used for check email message)
+  //     newUser: '/api/auth/new-user', // New users will be directed here on first sign in (leave the property out if not of interest)
+  // },
+  callbacks: {
+    async signIn(data: any) {
+      // const { user, account, _credentials, _profile } = data;
+      const { user, account } = data;
+
+      if (account.provider === 'credentials') {
+        return user;
+      }
+      return false;
+    },
+    async jwt({ token, user, account }: any) {
+      if (user && account.provider === 'credentials') {
+        // token = user;
+        return {
+          // accessToken: user.access_token,
+          // refreshToken: user.refresh_token,
+          accessToken: user.access,
+          refreshToken: user.refresh,
+          user: user.user,
+        };
+      }
+      return await refreshAccessToken(token);
+    },
+
+    async session({ session, token }: any) {
+      // session = token;
+      session.user = token.user;
+      session.accessToken = token.accessToken;
+      session.error = token.error;
+      return session;
+    },
+  },
+};
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\lib\\auth\\authCredentialsLogin.ts
+```ts
+import axios from 'axios';
+
+type LoginType = {
+  username: string;
+  password: string;
+};
+
+// api call
+const authCredentialsLogin = async (data: LoginType) => {
+  try {
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login/`, data);
+
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+export default authCredentialsLogin;
+```
+
+---
+
+## File: d:\\sudo\\sudo-flux\\src\\lib\\auth\\refreshAccessToken.ts
+```ts
+import axios from 'axios';
+// interface Token {
+//   accessToken: string;
+//   refreshToken: string;
+//   error?: string;
+// }
+
+/**
+ * Takes a token and returns a new token with updated
+ * `accessToken` and `accessTokenExpires`. If an error occurs,
+ * returns the old token and an error property
+ */
+const refreshAccessToken = async (token: any): Promise<any> => {
+  try {
+    const url = `${process.env.API_URL}/auth/token/refresh/`;
+    const response = await axios.post(url, { refresh: token.refreshToken });
+    const refreshedTokens = await response.data;
+
+    if (response.status !== 200) {
+      throw refreshedTokens;
+    }
+
+    return {
+      ...token,
+      accessToken: refreshedTokens.access,
+      // accessTokenExpires: Date.now() + 1 * 1000,
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+    };
+  } catch (error: any) {
+    console.error(error.message);
+    // console.log(111);
+
+    return {
+      ...token,
+      error: 'RefreshAccessTokenError',
+    };
+  }
+};
+
+export default refreshAccessToken;
+```
+
+---
+
+## Environment: d:\\sudo\\sudo-flux\\.env.local
+```dotenv
+DB_USER_NAME=express_db
+DB_NAME=express_db
+DB_PASSWORD=ldUU1v3lnLK7oJfh
+```
+
+Notes:
+- You likely also need to set: `JWT_SECRET` (or `JWT_SICRECT_KEY`), `NEXTAUTH_URL`, `NEXT_PUBLIC_API_BASE_URL`, and `API_URL` for all flows to work end-to-end.
+- `.env.example` is currently empty; consider adding required vars there for onboarding.
+
+---
+
+## Extras
+- DB connection is automatically imported in API routes via `import "@/DB/db";`.
+- The credentials-based NextAuth config exists but is not wired to a NextAuth handler route in this repo. If you intend to use NextAuth, add an auth route like `src/app/api/auth/[...nextauth]/route.ts` that exports NextAuth with `authOptions`.

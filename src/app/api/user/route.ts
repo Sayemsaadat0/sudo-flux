@@ -4,12 +4,22 @@ import { User } from "@/models/User";
 
 // ======================
 // GET API
+// - Get all users (with ordering, pagination, search, and filtering)
 // ======================
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
     const ordering = searchParams.get("ordering") || "-createdAt"; // Default: latest first
+    
+    // Pagination parameters
+    const page = parseInt(searchParams.get("page") || "1");
+    const per_page = parseInt(searchParams.get("per_page") || "10");
+    const limit = Math.min(per_page, 100); // Max 100 items per page
+    const skip = (page - 1) * limit;
+
+    // Search and filter parameters
+    const search = searchParams.get("search") || "";
+    const role = searchParams.get("role") || "";
 
     // Handle sorting
     const sortField = ordering.startsWith("-")
@@ -17,26 +27,48 @@ export async function GET(request: Request) {
       : ordering;
     const sortDirection = ordering.startsWith("-") ? -1 : 1;
 
-    // Fetch single user by ID
-    if (_id) {
-      const result = await User.findById(_id);
-      if (result) {
-        return NextResponse.json(
-          { success: true, message: "Single User Retrieved", result },
-          { status: 200 }
-        );
-      } else {
-        return NextResponse.json(
-          { success: false, message: "User not found" },
-          { status: 404 }
-        );
-      }
+    // Build query object for search and filtering
+    const query: any = {};
+
+    // Add search functionality (searches across name and email)
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } }
+      ];
     }
 
-    // Otherwise fetch all users
-    const results = await User.find().sort({ [sortField]: sortDirection });
+    // Add filters
+    if (role) {
+      query.role = { $regex: role, $options: "i" };
+    }
+
+    // Get total count for pagination
+    const total_count = await User.countDocuments(query);
+    const total_pages = Math.ceil(total_count / limit);
+
+    // Get paginated results with search and filters
+    const results = await User.find(query)
+      .sort({ [sortField]: sortDirection })
+      .skip(skip)
+      .limit(limit);
+
     return NextResponse.json(
-      { success: true, message: "All Users Retrieved", results },
+      { 
+        success: true, 
+        message: "Users Retrieved", 
+        results,
+        pagination: {
+          current_page: page,
+          total_pages,
+          per_page: limit,
+          total_count
+        },
+        filters: {
+          search,
+          role
+        }
+      },
       { status: 200 }
     );
   } catch (error) {

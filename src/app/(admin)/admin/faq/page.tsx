@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Plus, Edit, Trash2, Eye, MoreHorizontal, Calendar, User } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, Eye, MoreHorizontal, Calendar } from 'lucide-react'
 
 // Mock data for FAQ
 const mockFAQs = [

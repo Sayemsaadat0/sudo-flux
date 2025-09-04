@@ -4,35 +4,82 @@ import { Blog } from "@/models/Blog";
 
 // ======================
 // GET /api/blogs
-// - Get all blogs (with ordering)
-// - Get single blog by _id
+// - Get all blogs (with ordering, pagination, search, and filtering)
 // ======================
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
     const ordering = searchParams.get("ordering") || "-createdAt"; // Default: latest first
+    
+    // Pagination parameters
+    const page = parseInt(searchParams.get("page") || "1");
+    const per_page = parseInt(searchParams.get("per_page") || "10");
+    const limit = Math.min(per_page, 100); // Max 100 items per page
+    const skip = (page - 1) * limit;
+
+    // Search and filter parameters
+    const search = searchParams.get("search") || "";
+    const author = searchParams.get("author") || "";
+    const tags = searchParams.get("tags") || "";
+    const published = searchParams.get("published") || "";
 
     const sortField = ordering.startsWith("-") ? ordering.substring(1) : ordering;
     const sortDirection = ordering.startsWith("-") ? -1 : 1;
 
-    if (_id) {
-      const result = await Blog.findById(_id);
-      if (result) {
-        return NextResponse.json(
-          { success: true, message: "Single Blog Retrieved", result },
-          { status: 200 }
-        );
-      }
-      return NextResponse.json(
-        { success: false, message: "Blog not found" },
-        { status: 404 }
-      );
+    // Build query object for search and filtering
+    const query: any = {};
+
+    // Add search functionality (searches across title, content, author, tags)
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
+        { author: { $regex: search, $options: "i" } },
+        { tags: { $regex: search, $options: "i" } },
+        { metaTitle: { $regex: search, $options: "i" } },
+        { metaDescription: { $regex: search, $options: "i" } }
+      ];
     }
 
-    const results = await Blog.find().sort({ [sortField]: sortDirection });
+    // Add filters
+    if (author) {
+      query.author = { $regex: author, $options: "i" };
+    }
+    if (tags) {
+      query.tags = { $regex: tags, $options: "i" };
+    }
+    if (published !== "") {
+      query.published = published === "true" ? true : published === "false" ? false : published;
+    }
+
+    // Get total count for pagination
+    const total_count = await Blog.countDocuments(query);
+    const total_pages = Math.ceil(total_count / limit);
+
+    // Get paginated results with search and filters
+    const results = await Blog.find(query)
+      .sort({ [sortField]: sortDirection })
+      .skip(skip)
+      .limit(limit);
+
     return NextResponse.json(
-      { success: true, message: "All Blogs Retrieved", results },
+      { 
+        success: true, 
+        message: "Blogs Retrieved", 
+        results,
+        pagination: {
+          current_page: page,
+          total_pages,
+          per_page: limit,
+          total_count
+        },
+        filters: {
+          search,
+          author,
+          tags,
+          published
+        }
+      },
       { status: 200 }
     );
   } catch (error) {
@@ -60,8 +107,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // slug is auto-generated from title in the model hooks
-    const newBlog = await Blog.create({ title, content, author, tags, published, metaTitle, metaDescription });
+    // Create new blog instance and save to trigger pre-save hooks
+    const newBlog = new Blog({ title, content, author, tags, published, metaTitle, metaDescription });
+    await newBlog.save();
     return NextResponse.json(
       { success: true, message: "Blog created successfully", blog: newBlog },
       { status: 201 }
