@@ -83,7 +83,7 @@ export default function BlogsManagementPage() {
                         {post.banner_image ? (
                           <div className="w-16 h-16 relative rounded overflow-hidden">
                             <Image
-                              src={`${baseUrl}/${post.banner_image}`}
+                              src={typeof post.banner_image === 'string' && post.banner_image.startsWith('http') ? post.banner_image : `${baseUrl}${post.banner_image}`}
                               alt={post.title}
                               fill
                               className="object-cover"

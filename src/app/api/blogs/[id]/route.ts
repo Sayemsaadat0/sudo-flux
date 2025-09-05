@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Blog } from "@/models/Blog";
-import { writeFile } from "fs/promises";
-import { join } from "path";
-import { existsSync, mkdirSync } from "fs";
+import { put } from '@vercel/blob';
 
 // ======================
 // GET /api/blogs/{id}
@@ -152,22 +150,15 @@ export async function PATCH(
       const timestamp = Date.now();
       const randomString = Math.random().toString(36).substring(2, 15);
       const fileExtension = bannerImageFile.name.split(".").pop();
-      const fileName = `${timestamp}_${randomString}.${fileExtension}`;
+      const fileName = `blogs/${timestamp}_${randomString}.${fileExtension}`;
 
-      // Ensure uploads directory exists
-      const uploadsDir = join(process.cwd(), "public", "uploads", "blogs");
-      if (!existsSync(uploadsDir)) {
-        mkdirSync(uploadsDir, { recursive: true });
-      }
+      // Upload to Vercel Blob Storage
+      const blob = await put(fileName, bannerImageFile, {
+        access: 'public',
+      });
 
-      // Save file
-      const bytes = await bannerImageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const path = join(uploadsDir, fileName);
-      await writeFile(path, buffer);
-
-      // Set the relative image URL
-      updateData.banner_image = `/uploads/blogs/${fileName}`;
+      // Set the blob URL
+      updateData.banner_image = blob.url;
     }
     
     const updated = await Blog.findByIdAndUpdate(id, { $set: updateData }, {
