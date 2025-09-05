@@ -12,10 +12,8 @@ export default function BlogsManagementPage() {
 
   const baseUrl = getBaseUrl()
 
-  console.log(baseUrl)
 
   const { data, isLoading } = useGetBlogList()
-  console.log(data)
   return (
     <div className="p-4">
       <div className="mx-auto">
