@@ -8,7 +8,8 @@ export interface IBlog extends Document {
   published: boolean;
   metaTitle?: string;
   metaDescription?: string;
-  slug: string;
+  slug?: string;
+  banner_image?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,7 +23,8 @@ const BlogSchema = new Schema<IBlog>(
     published: { type: Boolean, default: true },
     metaTitle: { type: String, trim: true },
     metaDescription: { type: String, trim: true },
-    slug: { type: String, required: true, trim: true },
+    slug: { type: String, trim: true },
+    banner_image: { type: String, trim: true },
   },
   { timestamps: true }
 );
@@ -32,7 +34,8 @@ const toSlug = (s: string) => s.trim().toLowerCase().replace(/\s+/g, "-");
 
 // Ensure slug is set on create/save
 BlogSchema.pre("save", function (next) {
-  if (this.isModified("title") || !this.slug) {
+  // Always generate slug if not provided or if title is modified
+  if (!this.slug || this.slug.trim() === "" || this.isModified("title")) {
     this.slug = toSlug(this.title);
   }
   next();

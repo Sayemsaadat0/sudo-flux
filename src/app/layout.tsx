@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Unbounded, Manrope } from "next/font/google";
 import "./globals.css";
 import PerformanceWrapper from "@/components/animations/PerformanceWrapper";
+import TanStackQueryProvider from "@/components/provider/TanstacQueryProvider";
 
 const unbounded = Unbounded({
   variable: "--font-unbounded",
@@ -33,8 +34,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${unbounded.variable} ${manrope.variable}`}>
       <body className="antialiased">
+
         <PerformanceWrapper>
-          {children}
+          <TanStackQueryProvider>{children}</TanStackQueryProvider>
         </PerformanceWrapper>
       </body>
     </html>
