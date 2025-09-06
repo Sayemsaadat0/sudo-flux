@@ -32,9 +32,8 @@ const FaqForm: React.FC<FaqFormProps> = ({ instance }) => {
     initialValues: {
       question: instance?.question || '',
       answer: instance?.answer || '',
-      category: instance?.category || '',
-      status: instance?.status || 'active',
-      priority: instance?.priority || 1,
+      category: instance?.category || 'general',
+      publish: instance?.publish ?? true,
     },
     validationSchema: FaqAddEditFormValidation,
     onSubmit: async (data: any) => {
@@ -46,8 +45,7 @@ const FaqForm: React.FC<FaqFormProps> = ({ instance }) => {
         formData.append('question', data.question);
         formData.append('answer', data.answer);
         formData.append('category', data.category);
-        formData.append('status', data.status);
-        formData.append('priority', data.priority.toString());
+        formData.append('publish', data.publish.toString());
 
         if (instance) {
           // Update existing FAQ
@@ -134,51 +132,37 @@ const FaqForm: React.FC<FaqFormProps> = ({ instance }) => {
             />
           </div>
 
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-            <TextInput
-              className="w-full"
-              id="category"
-              name="category"
-              placeholder="e.g., General, Technical, Billing"
-              value={values.category}
-              onChange={handleChange}
-              type="text"
-              error={Boolean(errors.category) && touched.category ? String(errors.category) : false}
-            />
-          </div>
-
-          {/* Status and Priority */}
+          {/* Category and Publish */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
               <select
-                name="status"
-                value={values.status}
+                name="category"
+                value={values.category}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sudo-purple-3 focus:border-transparent"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="general">General</option>
+                <option value="about-us">About Us</option>
+                <option value="career">Career</option>
               </select>
-              {Boolean(errors.status) && touched.status && (
-                <p className="text-red-500 text-xs mt-1">{String(errors.status)}</p>
+              {Boolean(errors.category) && touched.category && (
+                <p className="text-red-500 text-xs mt-1">{String(errors.category)}</p>
               )}
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-              <TextInput
-                className="w-full"
-                id="priority"
-                name="priority"
-                type="number"
-                placeholder="1-100"
-                value={values.priority}
+            <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+              <input
+                type="checkbox"
+                id="publish"
+                name="publish"
+                checked={values.publish}
                 onChange={handleChange}
-                error={Boolean(errors.priority) && touched.priority ? String(errors.priority) : false}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
+              <label htmlFor="publish" className="text-sm font-medium text-gray-700 cursor-pointer">
+                Publish FAQ
+              </label>
             </div>
           </div>
 

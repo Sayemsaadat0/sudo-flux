@@ -1,5 +1,5 @@
 'use client';
-import {Trash2, Eye, Calendar, Mail, Phone, User } from 'lucide-react';
+import {Trash2, Eye, Calendar, Mail, User } from 'lucide-react';
 import ContactForm from './_components/ContactForm'
 import { ContactResponseType, useGetContactList, useDeleteContact } from '@/hooks/contacts.hooks'
 import { toast } from 'sonner';
@@ -20,31 +20,6 @@ export default function ContactManagementPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'new':
-        return 'bg-blue-100 text-blue-600';
-      case 'in_progress':
-        return 'bg-yellow-100 text-yellow-600';
-      case 'resolved':
-        return 'bg-green-100 text-green-600';
-      default:
-        return 'bg-gray-100 text-gray-600';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'new':
-        return 'New';
-      case 'in_progress':
-        return 'In Progress';
-      case 'resolved':
-        return 'Resolved';
-      default:
-        return status;
-    }
-  };
 
   return (
     <div className="p-4">
@@ -84,10 +59,9 @@ export default function ContactManagementPage() {
                   <tr>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">#</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Name</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Contact Info</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Email</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Subject</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Message</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Status</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Description</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Created At</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Actions</th>
                   </tr>
@@ -117,47 +91,28 @@ export default function ContactManagementPage() {
                         </div>
                       </td>
 
-                      {/* Contact Info */}
+                      {/* Email */}
                       <td className="py-3 px-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-1">
-                            <Mail size={12} className="text-sudo-neutral-3" />
-                            <span className="text-sudo-neutral-5 text-xs">
-                              {contact.email}
-                            </span>
-                          </div>
-                          {contact.phone && (
-                            <div className="flex items-center gap-1">
-                              <Phone size={12} className="text-sudo-neutral-3" />
-                              <span className="text-sudo-neutral-5 text-xs">
-                                {contact.phone}
-                              </span>
-                            </div>
-                          )}
+                        <div className="flex items-center gap-1">
+                          <Mail size={12} className="text-sudo-neutral-3" />
+                          <span className="text-sudo-neutral-5 text-sm">
+                            {contact.email}
+                          </span>
                         </div>
                       </td>
 
                       {/* Subject */}
                       <td className="py-3 px-4">
                         <div className="text-sudo-neutral-5 text-sm max-w-xs truncate">
-                          {contact.subject || '-'}
+                          {contact.subject}
                         </div>
                       </td>
 
-                      {/* Message */}
+                      {/* Description */}
                       <td className="py-3 px-4">
                         <div className="text-sudo-neutral-4 text-sm max-w-xs truncate">
-                          {contact.message}
+                          {contact.description}
                         </div>
-                      </td>
-
-                      {/* Status */}
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${getStatusColor(contact.status)}`}
-                        >
-                          {getStatusText(contact.status)}
-                        </span>
                       </td>
 
                       {/* Created At */}

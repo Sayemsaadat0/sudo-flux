@@ -20,10 +20,8 @@ interface ContactInstance {
   _id?: string;
   name: string;
   email: string;
-  phone?: string;
-  subject?: string;
-  message: string;
-  status: "new" | "in_progress" | "resolved";
+  subject: string;
+  description: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -49,10 +47,8 @@ const ContactForm = ({ instance }: ContactFormProps) => {
     initialValues: {
       name: instance?.name || "",
       email: instance?.email || "",
-      phone: instance?.phone || "",
       subject: instance?.subject || "",
-      message: instance?.message || "",
-      status: instance?.status || "new",
+      description: instance?.description || "",
     },
 
     validationSchema: ContactAddEditFormValidation,
@@ -64,10 +60,8 @@ const ContactForm = ({ instance }: ContactFormProps) => {
         // Add all text fields
         formData.append('name', data.name);
         formData.append('email', data.email);
-        if (data.phone) formData.append('phone', data.phone);
-        if (data.subject) formData.append('subject', data.subject);
-        formData.append('message', data.message);
-        formData.append('status', data.status);
+        formData.append('subject', data.subject);
+        formData.append('description', data.description);
 
         if (instance) {
           // Update existing contact
@@ -155,68 +149,40 @@ const ContactForm = ({ instance }: ContactFormProps) => {
             </div>
           </div>
 
-          {/* Phone and Subject */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-              <TextInput
-                className="w-full"
-                id="phone"
-                name="phone"
-                placeholder="Enter phone number..."
-                value={values.phone}
-                onChange={handleChange}
-                type="tel"
-                error={Boolean(errors.phone) && touched.phone ? String(errors.phone) : false}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-              <TextInput
-                className="w-full"
-                id="subject"
-                name="subject"
-                placeholder="Enter subject..."
-                value={values.subject}
-                onChange={handleChange}
-                type="text"
-                error={Boolean(errors.subject) && touched.subject ? String(errors.subject) : false}
-              />
-            </div>
-          </div>
-
-          {/* Message */}
+          {/* Subject */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Message <span className="text-red-500">*</span>
+              Subject <span className="text-red-500">*</span>
             </label>
-            <TextAreaInput
-              id="message"
-              name="message"
-              placeholder="Enter your message..."
-              className="min-h-32"
+            <TextInput
+              className="w-full"
+              id="subject"
+              name="subject"
+              placeholder="Enter subject..."
+              value={values.subject}
               onChange={handleChange}
-              value={values.message}
-              error={Boolean(errors.message) && touched.message ? String(errors.message) : false}
+              type="text"
+              error={Boolean(errors.subject) && touched.subject ? String(errors.subject) : false}
               required
-              rows={6}
             />
           </div>
 
-          {/* Status */}
+          {/* Description/Message */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-            <select
-              id="status"
-              name="status"
-              value={values.status}
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description/Message <span className="text-red-500">*</span>
+            </label>
+            <TextAreaInput
+              id="description"
+              name="description"
+              placeholder="Enter your message..."
+              className="min-h-32"
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="new">New</option>
-              <option value="in_progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-            </select>
+              value={values.description}
+              error={Boolean(errors.description) && touched.description ? String(errors.description) : false}
+              required
+              rows={6}
+            />
           </div>
 
           {/* Action Buttons */}

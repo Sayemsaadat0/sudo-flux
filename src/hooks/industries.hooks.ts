@@ -8,9 +8,9 @@ import { useQuery } from "@tanstack/react-query";
 
 export interface IndustryResponseType {
   _id?: string;
-  name: string;
-  description?: string;
-  icon?: string;
+  title: string;
+  description: string;
+  publish: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

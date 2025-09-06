@@ -9,9 +9,8 @@ export interface FaqResponseType {
   _id: string;
   question: string;
   answer: string;
-  category: string;
-  status: "active" | "inactive";
-  priority: number;
+  category: "general" | "about-us" | "career";
+  publish: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -21,7 +20,7 @@ export interface FaqQueryParamsType {
   limit?: number;
   search?: string;
   category?: string;
-  status?: string;
+  publish?: string;
 }
 
 // ======================
@@ -41,7 +40,7 @@ export const useGetFaqList = (params: FaqQueryParamsType = {}) => {
       if (params.limit) searchParams.append("limit", params.limit.toString());
       if (params.search) searchParams.append("search", params.search);
       if (params.category) searchParams.append("category", params.category);
-      if (params.status) searchParams.append("status", params.status);
+      if (params.publish) searchParams.append("publish", params.publish);
 
       const queryString = searchParams.toString();
       const url = queryString ? `/api/faq?${queryString}` : "/api/faq";

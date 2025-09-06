@@ -1,14 +1,11 @@
 'use client';
-import {Trash2, Eye, Calendar, Building2 } from 'lucide-react';
+import {Trash2, Eye, Calendar } from 'lucide-react';
 import IndustryForm from './_components/IndustryForm'
 import { IndustryResponseType, useGetIndustryList, useDeleteIndustry } from '@/hooks/industries.hooks'
-import { getBaseUrl } from '@/utils/getBaseUrl';
-import Image from 'next/image';
 import { toast } from 'sonner';
 
 export default function IndustryManagementPage() {
 
-  const baseUrl = getBaseUrl()
   const { data, isLoading } = useGetIndustryList()
   const deleteIndustryMutation = useDeleteIndustry('')
 
@@ -60,9 +57,9 @@ export default function IndustryManagementPage() {
                 <thead className="bg-sudo-white-1 border-b border-sudo-white-2">
                   <tr>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">#</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Icon</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Title</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Description</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Status</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Created At</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Actions</th>
                   </tr>
@@ -82,36 +79,29 @@ export default function IndustryManagementPage() {
                         </span>
                       </td>
 
-                      {/* Icon */}
-                      <td className="py-3 px-4">
-                        {industry.icon ? (
-                          <div className="w-12 h-12 relative rounded overflow-hidden">
-                            <Image
-                              src={typeof industry.icon === 'string' && industry.icon.startsWith('http') ? industry.icon : `${baseUrl}${industry.icon}`}
-                              alt={industry.name}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-12 h-12 bg-sudo-white-2 rounded flex items-center justify-center">
-                            <Building2 size={20} className="text-sudo-neutral-3" />
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Name */}
+                      {/* Title */}
                       <td className="py-3 px-4">
                         <div className="font-medium text-sudo-neutral-5 text-sm">
-                          {industry.name}
+                          {industry.title}
                         </div>
                       </td>
 
                       {/* Description */}
                       <td className="py-3 px-4">
                         <div className="text-sudo-neutral-4 text-sm max-w-xs truncate">
-                          {industry.description || '-'}
+                          {industry.description}
                         </div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          industry.publish 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {industry.publish ? 'Published' : 'Draft'}
+                        </span>
                       </td>
 
                       {/* Created At */}

@@ -4,7 +4,6 @@ import React from "react";
 import { useFormik } from "formik";
 import TextInput from "@/components/core/input/TextInput";
 import Button from "@/components/ui/button";
-import ImgUploadField from "@/components/core/ImgUploadField";
 import { toast } from "sonner";
 import TextAreaInput from "@/components/core/input/TextAreaInput";
 import {
@@ -19,9 +18,9 @@ import { IndustryAddEditFormValidation } from "@/lib/validate/industry.validate"
 
 interface IndustryInstance {
   _id?: string;
-  name: string;
-  description?: string;
-  icon?: string | File | null;
+  title: string;
+  description: string;
+  publish: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -41,14 +40,13 @@ const IndustryForm = ({ instance }: IndustryFormProps) => {
     touched,
     errors,
     handleSubmit,
-    setFieldValue,
     isSubmitting,
     resetForm,
   } = useFormik({
     initialValues: {
-      name: instance?.name || "",
+      title: instance?.title || "",
       description: instance?.description || "",
-      icon: instance?.icon || null,
+      publish: instance?.publish ?? true,
     },
 
     validationSchema: IndustryAddEditFormValidation,
@@ -58,13 +56,9 @@ const IndustryForm = ({ instance }: IndustryFormProps) => {
         const formData = new FormData();
         
         // Add all text fields
-        formData.append('name', data.name);
-        if (data.description) formData.append('description', data.description);
-        
-        // Add icon if it's a File object
-        if (data.icon && data.icon instanceof File) {
-          formData.append('icon', data.icon);
-        }
+        formData.append('title', data.title);
+        formData.append('description', data.description);
+        formData.append('publish', data.publish.toString());
 
         if (instance) {
           // Update existing industry
@@ -116,37 +110,29 @@ const IndustryForm = ({ instance }: IndustryFormProps) => {
 
         {/* Form Content */}
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          {/* Icon */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Industry Icon</label>
-            <ImgUploadField
-              error={Boolean(errors.icon) && touched.icon ? String(errors.icon) : false}
-              setValue={(x: any) => setFieldValue('icon', x)}
-              value={values.icon}
-            />
-          </div>
-
-          {/* Name */}
+          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Industry Name <span className="text-red-500">*</span>
+              Title <span className="text-red-500">*</span>
             </label>
             <TextInput
               className="w-full"
-              id="name"
-              name="name"
-              placeholder="Enter industry name..."
-              value={values.name}
+              id="title"
+              name="title"
+              placeholder="Enter industry title..."
+              value={values.title}
               onChange={handleChange}
               type="text"
-              error={Boolean(errors.name) && touched.name ? String(errors.name) : false}
+              error={Boolean(errors.title) && touched.title ? String(errors.title) : false}
               required
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description <span className="text-red-500">*</span>
+            </label>
             <TextAreaInput
               id="description"
               name="description"
@@ -156,7 +142,23 @@ const IndustryForm = ({ instance }: IndustryFormProps) => {
               value={values.description}
               error={Boolean(errors.description) && touched.description ? String(errors.description) : false}
               rows={4}
+              required
             />
+          </div>
+
+          {/* Publish */}
+          <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+            <input
+              type="checkbox"
+              id="publish"
+              name="publish"
+              checked={values.publish}
+              onChange={handleChange}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="publish" className="text-sm font-medium text-gray-700 cursor-pointer">
+              Publish Industry
+            </label>
           </div>
 
           {/* Action Buttons */}
