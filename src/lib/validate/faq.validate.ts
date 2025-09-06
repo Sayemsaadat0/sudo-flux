@@ -17,15 +17,8 @@ export const FaqAddEditFormValidation = yup.object({
   category: yup
     .string()
     .required("Category is required")
-    .min(2, "Category must be at least 2 characters")
-    .max(100, "Category must not exceed 100 characters"),
-  status: yup
-    .string()
-    .required("Status is required")
-    .oneOf(["active", "inactive"], "Status must be either active or inactive"),
-  priority: yup
-    .number()
-    .required("Priority is required")
-    .min(1, "Priority must be at least 1")
-    .max(100, "Priority must not exceed 100"),
+    .oneOf(["general", "about-us", "career"], "Category must be one of: general, about-us, career"),
+  publish: yup
+    .boolean()
+    .required("Publish status is required"),
 });

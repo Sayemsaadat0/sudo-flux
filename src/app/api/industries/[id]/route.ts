@@ -89,80 +89,30 @@ export async function PATCH(
     const formData = await request.formData();
 
     // Extract form fields
-    const name = formData.get("name") as string;
+    const title = formData.get("title") as string;
     const description = formData.get("description") as string;
-    const iconFile = formData.get("icon") as File | null;
+    const publish = formData.get("publish") as string;
 
-    if (!name) {
+    if (!title) {
       return NextResponse.json(
-        { success: false, message: "Name is required" },
+        { success: false, message: "Title is required" },
         { status: 400 }
       );
     }
 
-    // Get existing industry
-    const existingIndustry = await Industry.findById(id);
-    if (!existingIndustry) {
+    if (!description) {
       return NextResponse.json(
-        { success: false, message: "Industry not found" },
-        { status: 404 }
+        { success: false, message: "Description is required" },
+        { status: 400 }
       );
-    }
-
-    let iconUrl = existingIndustry.icon;
-
-    // Handle icon upload if provided
-    if (iconFile && iconFile.size > 0) {
-      // Validate file type
-      const allowedTypes = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/gif",
-        "image/webp",
-        "image/svg+xml",
-      ];
-      if (!allowedTypes.includes(iconFile.type)) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: "Invalid file type. Only images are allowed.",
-          },
-          { status: 400 }
-        );
-      }
-
-      // Validate file size (5MB limit)
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (iconFile.size > maxSize) {
-        return NextResponse.json(
-          { success: false, message: "File too large. Maximum size is 5MB." },
-          { status: 400 }
-        );
-      }
-
-      // Generate unique filename
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(2, 15);
-      const fileExtension = iconFile.name.split(".").pop();
-      const fileName = `industries/${timestamp}_${randomString}.${fileExtension}`;
-
-      // Upload to Vercel Blob Storage
-      const { put } = await import('@vercel/blob');
-      const blob = await put(fileName, iconFile, {
-        access: 'public',
-      });
-
-      // Set the blob URL
-      iconUrl = blob.url;
     }
 
     // Update industry
     const updated = await Industry.findByIdAndUpdate(id, { 
       $set: { 
-        name, 
+        title, 
         description, 
-        icon: iconUrl 
+        publish: publish === 'true'
       } 
     }, {
       new: true,
@@ -177,7 +127,7 @@ export async function PATCH(
     console.error("Error updating Industry", error);
     if (error.code === 11000) {
       return NextResponse.json(
-        { success: false, message: "Industry name already exists" },
+        { success: false, message: "Industry title already exists" },
         { status: 400 }
       );
     }

@@ -10,10 +10,8 @@ export interface ContactResponseType {
   _id?: string;
   name: string;
   email: string;
-  phone?: string;
-  subject?: string;
-  message: string;
-  status: "new" | "in_progress" | "resolved";
+  subject: string;
+  description: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -23,7 +21,6 @@ interface ContactQueryParamsType {
   per_page?: number;
   ordering?: string;   // 👈 allow override
   search?: string;
-  status?: string;
   [key: string]: any; // allow future extra params
 }
 

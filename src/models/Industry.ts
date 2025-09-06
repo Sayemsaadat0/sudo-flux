@@ -1,18 +1,18 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IIndustry extends Document {
-  name: string;
-  description?: string;
-  icon?: string; // URL or name of icon
+  title: string;
+  description: string;
+  publish: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
 const IndustrySchema = new Schema<IIndustry>(
   {
-    name: { type: String, required: true, trim: true, unique: true },
-    description: { type: String, trim: true },
-    icon: { type: String, trim: true },
+    title: { type: String, required: true, trim: true, unique: true },
+    description: { type: String, required: true, trim: true },
+    publish: { type: Boolean, required: true, default: true },
   },
   { timestamps: true }
 );
