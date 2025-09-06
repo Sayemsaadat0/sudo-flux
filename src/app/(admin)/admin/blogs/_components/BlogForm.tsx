@@ -11,8 +11,6 @@ import TextAreaInput from "@/components/core/input/TextAreaInput";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -71,31 +69,37 @@ const BlogForm = ({ instance }: BlogFormProps) => {
     validationSchema: BlogAddEditFormValidation,
     onSubmit: async (data: any) => {
       try {
-        // Prepare form data for mutation
-        const blogData = {
-          title: data.title,
-          content: data.content,
-          author: data.author,
-          tags: data.tags ? data.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag) : [],
-          published: data.published,
-          metaTitle: data.metaTitle,
-          metaDescription: data.metaDescription,
-          slug: data.slug,
-          banner_image: data.banner_image,
-        };
+        // Create FormData object for multipart/form-data
+        const formData = new FormData();
+
+        // Add all text fields
+        formData.append('title', data.title);
+        formData.append('content', data.content);
+        if (data.author) formData.append('author', data.author);
+
+        // Process tags - convert comma-separated string to array
+        const tagsArray = data.tags ? data.tags.split(',').map((tag: string) => tag.trim()).filter((tag: string) => tag) : [];
+        if (tagsArray.length > 0) {
+          formData.append('tags', JSON.stringify(tagsArray));
+        }
+
+        formData.append('published', data.published.toString());
+        if (data.metaTitle) formData.append('metaTitle', data.metaTitle);
+        if (data.metaDescription) formData.append('metaDescription', data.metaDescription);
+        if (data.slug) formData.append('slug', data.slug);
+
+        // Add banner image if it's a File object
+        if (data.banner_image && data.banner_image instanceof File) {
+          formData.append('banner_image', data.banner_image);
+        }
 
         if (instance) {
           // Update existing blog
-          await updateBlogMutation(blogData)
-          // await updateBlogMutation.mutateAsync({
-          //   id: instance._id,
-          //   formData: blogData
-          // });
+          await updateBlogMutation(formData);
           toast.success('Blog updated successfully!');
         } else {
           // Create new blog
-          await mutateAsync(blogData)
-          // await createBlogMutation.mutateAsync(blogData);
+          await mutateAsync(formData);
           toast.success('Blog created successfully!');
           resetForm();
         }
@@ -133,164 +137,164 @@ const BlogForm = ({ instance }: BlogFormProps) => {
           <Edit size={16} className="text-green-500" />
         </DialogTrigger>
       )}
-      <DialogContent className="lg:min-w-6xl bg-white max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{instance ? 'Edit Blog Post' : 'Create New Blog Post'}</DialogTitle>
-          <DialogDescription>
-            {instance
-              ? 'Update the details below to edit this blog post.'
-              : 'Fill in the details below to create a new blog post.'
-            }
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="min-w-[90%] md:min-w-2xl lg:min-w-3xl bg-white max-h-[90vh] overflow-y-auto border-0 shadow-lg p-0">
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex flex-col-reverse xl:flex-row gap-5">
-            <div className="w-full xl:w-3/4">
-              <div className="space-y-[30px]">
-                <div className="bg-white rounded-[16px] space-y-5 p-6">
-                  <p className="">Primary Information</p>
-                  <div className="flex flex-col gap-y-5">
-                    {/* Title */}
-                    <div className="w-full">
-                      <TextInput
-                        className="w-full"
-                        id="title"
-                        name="title"
-                        label="Blog Title (Use SEO Friendly)"
-                        value={values.title}
-                        onChange={handleTitleChange}
-                        type="text"
-                        error={Boolean(errors.title) && touched.title ? String(errors.title) : false}
-                        required
-                      />
-                    </div>
-
-                    {/* Slug */}
-                    <div className="w-full hidden">
-                      <TextInput
-                        className="w-full "
-                        id="slug"
-                        name="slug"
-                        label="Slug"
-                        value={values.slug}
-                        onChange={handleChange}
-                        type="text"
-                        // placeholder="Auto-generated from title"
-                        error={Boolean(errors.slug) && touched.slug ? String(errors.slug) : false}
-                      />
-                    </div>
-
-                    {/* Author */}
-                    <div className="w-full">
-                      <TextInput
-                        className="w-full"
-                        id="author"
-                        name="author"
-                        label="Author"
-                        value={values.author}
-                        onChange={handleChange}
-                        type="text"
-                        // placeholder="Enter author name"
-                        error={Boolean(errors.author) && touched.author ? String(errors.author) : false}
-                      />
-                    </div>
-
-                    {/* Tags */}
-                    <div className="w-full">
-                      <TextInput
-                        className="w-full"
-                        id="tags"
-                        name="tags"
-                        label="Blog Tags (Use SEO Friendly)"
-                        value={values.tags}
-                        onChange={handleChange}
-                        // placeholder="tag1, tag2, tag3"
-                        type="text"
-                        error={Boolean(errors.tags) && touched.tags ? String(errors.tags) : false}
-                      />
-                    </div>
-
-                    {/* Content */}
-                    <div>
-                      <TextAreaInput
-                        id="content"
-                        name="content"
-                        label="Blog Content"
-                        className="min-h-40"
-                        onChange={handleChange}
-                        value={values.content}
-                        error={Boolean(errors.content) && touched.content ? String(errors.content) : false}
-                        required
-                        rows={10}
-                      />
-                    </div>
-
-                    {/* Meta Title */}
-                    <div className="w-full">
-                      <TextInput
-                        className="w-full"
-                        id="metaTitle"
-                        name="metaTitle"
-                        label="Meta Title (SEO)"
-                        value={values.metaTitle}
-                        onChange={handleChange}
-                        type="text"
-                        // placeholder="SEO meta title"
-                        error={Boolean(errors.metaTitle) && touched.metaTitle ? String(errors.metaTitle) : false}
-                      />
-                    </div>
-
-                    {/* Meta Description */}
-                    <div>
-                      <TextAreaInput
-                        id="metaDescription"
-                        name="metaDescription"
-                        label="Meta Description (SEO)"
-                        className="min-h-20"
-                        onChange={handleChange}
-                        value={values.metaDescription}
-                        error={Boolean(errors.metaDescription) && touched.metaDescription ? String(errors.metaDescription) : false}
-                        rows={3}
-                        placeholder="SEO meta description"
-                      />
-                    </div>
-
-                    {/* Published Checkbox */}
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="published"
-                        name="published"
-                        checked={values.published}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <label htmlFor="published" className="text-sm font-medium">
-                        Publish immediately
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-white/20 flex items-center justify-center">
+              <span className="text-sm">{instance ? '✏️' : '✨'}</span>
             </div>
+            <div>
+              <DialogTitle className="text-lg font-semibold">
+                {instance ? 'Edit Blog Post' : 'Create New Blog Post'}
+              </DialogTitle>
+            </div>
+          </div>
+        </div>
 
-            <div className="w-full xl:w-1/4">
-              <div className="bg-white p-6 rounded-[16px]">
-                <p className="text-w-title-2-Medium-28 mb-5">Upload Image</p>
-                <ImgUploadField
-                  error={Boolean(errors.banner_image) && touched.banner_image ? String(errors.banner_image) : false}
-                  setValue={(x: any) => setFieldValue('banner_image', x)}
-                  value={values.banner_image}
-                />
-              </div>
+        {/* Form Content */}
+        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          {/* Featured Image */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Featured Image</label>
+            <ImgUploadField
+              error={Boolean(errors.banner_image) && touched.banner_image ? String(errors.banner_image) : false}
+              setValue={(x: any) => setFieldValue('banner_image', x)}
+              value={values.banner_image}
+            />
+          </div>
+
+          {/* Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Blog Title <span className="text-red-500">*</span>
+            </label>
+            <TextInput
+              className="w-full"
+              id="title"
+              name="title"
+              placeholder="Enter blog title..."
+              value={values.title}
+              onChange={handleTitleChange}
+              type="text"
+              error={Boolean(errors.title) && touched.title ? String(errors.title) : false}
+              required
+            />
+          </div>
+
+          {/* Slug - Hidden */}
+          <div className="hidden">
+            <TextInput
+              className="w-full"
+              id="slug"
+              name="slug"
+              label="Slug"
+              value={values.slug}
+              onChange={handleChange}
+              type="text"
+              error={Boolean(errors.slug) && touched.slug ? String(errors.slug) : false}
+            />
+          </div>
+
+          {/* Author and Tags */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Author</label>
+              <TextInput
+                className="w-full"
+                id="author"
+                name="author"
+                placeholder="Author name"
+                value={values.author}
+                onChange={handleChange}
+                type="text"
+                error={Boolean(errors.author) && touched.author ? String(errors.author) : false}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+              <TextInput
+                className="w-full"
+                id="tags"
+                name="tags"
+                placeholder="tag1, tag2, tag3"
+                value={values.tags}
+                onChange={handleChange}
+                type="text"
+                error={Boolean(errors.tags) && touched.tags ? String(errors.tags) : false}
+              />
             </div>
           </div>
 
-          <div className="flex gap-6 mt-6">
+          {/* Content */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Blog Content <span className="text-red-500">*</span>
+            </label>
+            <TextAreaInput
+              id="content"
+              name="content"
+              placeholder="Write your blog content here..."
+              className="min-h-32"
+              onChange={handleChange}
+              value={values.content}
+              error={Boolean(errors.content) && touched.content ? String(errors.content) : false}
+              required
+              rows={6}
+            />
+          </div>
+
+          {/* SEO Fields */}
+          <div className="flex flex-col gap-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
+              <TextInput
+                className="w-full"
+                id="metaTitle"
+                name="metaTitle"
+                placeholder="SEO title..."
+                value={values.metaTitle}
+                onChange={handleChange}
+                type="text"
+                error={Boolean(errors.metaTitle) && touched.metaTitle ? String(errors.metaTitle) : false}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+              <TextAreaInput
+                id="metaDescription"
+                name="metaDescription"
+                placeholder="SEO description..."
+                className="min-h-16"
+                onChange={handleChange}
+                value={values.metaDescription}
+                error={Boolean(errors.metaDescription) && touched.metaDescription ? String(errors.metaDescription) : false}
+                rows={2}
+              />
+            </div>
+          </div>
+
+          {/* Publish Settings */}
+          <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg">
+            <input
+              type="checkbox"
+              id="published"
+              name="published"
+              checked={values.published}
+              onChange={handleChange}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="published" className="text-sm font-medium text-gray-700 cursor-pointer">
+              Publish immediately
+            </label>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4 border-t border-gray-200">
             <Button
               variant="outlineBtn"
-              className="hover:text-white"
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-200 font-medium rounded-lg text-sm"
               type="button"
               label="Cancel"
               onClick={() => setIsDialogOpen(false)}
@@ -298,6 +302,7 @@ const BlogForm = ({ instance }: BlogFormProps) => {
             <Button
               disabled={isSubmitting}
               variant="primarybtn"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm"
               type="submit"
               label={
                 isSubmitting

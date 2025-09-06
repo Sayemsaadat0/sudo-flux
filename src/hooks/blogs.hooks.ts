@@ -21,43 +21,54 @@ export interface BlogResponseType {
   updatedAt?: string;
 }
 
-export const useGetBlogList = () => {
+
+
+
+interface BlogQueryParamsType {
+  page?: number;
+  per_page?: number;
+  ordering?: string;   // 👈 allow override
+  search?: string;
+  author?: string;
+  tag?: string;
+  published?: boolean;
+  [key: string]: any; // allow future extra params
+}
+
+export const useGetBlogList = (params: BlogQueryParamsType = {}) => {
+  // set default ordering
+  const finalParams: BlogQueryParamsType = {
+    ordering: "-createdAt", 
+    ...params, // allow overrides
+  };
+
   return useQuery({
-    queryKey: ["blogList"],
-    queryFn: () =>
-      axiousResuest({
-        url: `/api/blogs/`,
+    queryKey: ["blogList", finalParams],
+    queryFn: () => {
+      const searchParams = new URLSearchParams();
+
+      Object.entries(finalParams).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          searchParams.append(key, String(value));
+        }
+      });
+
+      const queryString = searchParams.toString();
+      const url = `/api/blogs/${queryString ? `?${queryString}` : ""}`;
+
+      return axiousResuest({
+        url,
         method: "get",
-      }),
+      });
+    },
   });
 };
 
 export const useAddBlog = () => {
   const queryClient = useQueryClient();
-  // const { data: session }: any = useSession();
   const {user} = useAuthStore()
   return useMutation({
-    mutationFn: async (body: BlogResponseType) => {
-      // Create FormData object for multipart/form-data
-      const formData = new FormData();
-      
-      // Add all text fields
-      formData.append('title', body.title);
-      formData.append('content', body.content);
-      if (body.author) formData.append('author', body.author);
-      if (body.tags && body.tags.length > 0) {
-        formData.append('tags', JSON.stringify(body.tags));
-      }
-      formData.append('published', body.published.toString());
-      if (body.metaTitle) formData.append('metaTitle', body.metaTitle);
-      if (body.metaDescription) formData.append('metaDescription', body.metaDescription);
-      if (body.slug) formData.append('slug', body.slug);
-      
-      // Add banner image if it's a File object
-      if (body.banner_image && body.banner_image instanceof File) {
-        formData.append('banner_image', body.banner_image);
-      }
-      
+    mutationFn: async (formData: FormData) => {
       return await axiousResuest({
         url: `/api/blogs/`,
         method: "post",
@@ -77,27 +88,7 @@ export const useUpdateBlog = (id: string) => {
   const queryClient = useQueryClient();
   const {user} = useAuthStore()
   return useMutation({
-    mutationFn: async (body: BlogResponseType) => {
-      // Create FormData object for multipart/form-data
-      const formData = new FormData();
-      
-      // Add all text fields
-      formData.append('title', body.title);
-      formData.append('content', body.content);
-      if (body.author) formData.append('author', body.author);
-      if (body.tags && body.tags.length > 0) {
-        formData.append('tags', JSON.stringify(body.tags));
-      }
-      formData.append('published', body.published.toString());
-      if (body.metaTitle) formData.append('metaTitle', body.metaTitle);
-      if (body.metaDescription) formData.append('metaDescription', body.metaDescription);
-      if (body.slug) formData.append('slug', body.slug);
-      
-      // Add banner image if it's a File object
-      if (body.banner_image && body.banner_image instanceof File) {
-        formData.append('banner_image', body.banner_image);
-      }
-      
+    mutationFn: async (formData: FormData) => {
       return await axiousResuest({
         url: `/api/blogs/${id}`,
         method: "patch",
