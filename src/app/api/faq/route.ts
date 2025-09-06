@@ -80,21 +80,34 @@ export async function GET(request: Request) {
 
 // ======================
 // POST /api/faq
-// - Create FAQ
+// - Create FAQ with FormData
 // ======================
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { question, answer, category } = body;
+    const formData = await request.formData();
 
-    if (!question || !answer) {
+    // Extract form fields
+    const question = formData.get("question") as string;
+    const answer = formData.get("answer") as string;
+    const category = formData.get("category") as string;
+    const status = formData.get("status") as string;
+    const priority = parseInt(formData.get("priority") as string);
+
+    if (!question || !answer || !category) {
       return NextResponse.json(
-        { success: false, message: "Question and Answer are required" },
+        { success: false, message: "Question, Answer and Category are required" },
         { status: 400 }
       );
     }
 
-    const newFaq = await Faq.create({ question, answer, category });
+    const newFaq = await Faq.create({ 
+      question, 
+      answer, 
+      category, 
+      status: status || "active",
+      priority: priority || 1
+    });
+    
     return NextResponse.json(
       { success: true, message: "FAQ created successfully", faq: newFaq },
       { status: 201 }
@@ -160,51 +173,6 @@ export async function PUT(request: Request) {
   }
 }
 
-// ======================
-// PATCH /api/faq?_id=...
-// ======================
-export async function PATCH(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for update" },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const updated = await Faq.findByIdAndUpdate(_id, { $set: body }, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "FAQ not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "FAQ patched successfully", faq: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error patching FAQ", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to patch FAQ" },
-      { status: 500 }
-    );
-  }
-}
 
 // ======================
 // DELETE /api/faq?_id=...

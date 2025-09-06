@@ -1,4 +1,5 @@
 import React from 'react';
+// Updated to include onBlur prop
 
 interface TextAreaInputProps {
   id?: string;
@@ -6,6 +7,7 @@ interface TextAreaInputProps {
   label?: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   className?: string;
   error?: string | boolean;
@@ -20,6 +22,7 @@ const TextAreaInput: React.FC<TextAreaInputProps> = ({
   label,
   value,
   onChange,
+  onBlur,
   placeholder,
   className = '',
   error,
@@ -40,6 +43,7 @@ const TextAreaInput: React.FC<TextAreaInputProps> = ({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={onBlur}
         placeholder={placeholder}
         required={required}
         disabled={disabled}

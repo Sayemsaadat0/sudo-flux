@@ -86,8 +86,15 @@ export async function GET(request: Request) {
 // ======================
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, email, phone, subject, message, status } = body;
+    const formData = await request.formData();
+
+    // Extract form fields
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const subject = formData.get("subject") as string;
+    const message = formData.get("message") as string;
+    const status = formData.get("status") as string;
 
     if (!name || !email || !message) {
       return NextResponse.json(
@@ -96,7 +103,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const newContact = await Contact.create({ name, email, phone, subject, message, status });
+    const newContact = await Contact.create({ 
+      name, 
+      email, 
+      phone, 
+      subject, 
+      message, 
+      status: status || "new" 
+    });
+    
     return NextResponse.json(
       { success: true, message: "Contact created successfully", contact: newContact },
       { status: 201 }
@@ -162,51 +177,6 @@ export async function PUT(request: Request) {
   }
 }
 
-// ======================
-// PATCH /api/contact?_id=...
-// ======================
-export async function PATCH(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for update" },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const updated = await Contact.findByIdAndUpdate(_id, { $set: body }, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "Contact not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Contact patched successfully", contact: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error patching Contact", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to patch Contact" },
-      { status: 500 }
-    );
-  }
-}
 
 // ======================
 // DELETE /api/contact?_id=...

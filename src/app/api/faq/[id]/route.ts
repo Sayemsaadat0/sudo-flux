@@ -78,7 +78,7 @@ export async function PUT(
 
 // ======================
 // PATCH /api/faq/{id}
-// - Partial update
+// - Partial update with FormData
 // ======================
 export async function PATCH(
   request: Request,
@@ -86,9 +86,31 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
-    
-    const updated = await Faq.findByIdAndUpdate(id, { $set: body }, {
+    const formData = await request.formData();
+
+    // Extract form fields
+    const question = formData.get("question") as string;
+    const answer = formData.get("answer") as string;
+    const category = formData.get("category") as string;
+    const status = formData.get("status") as string;
+    const priority = parseInt(formData.get("priority") as string);
+
+    if (!question || !answer || !category) {
+      return NextResponse.json(
+        { success: false, message: "Question, Answer and Category are required" },
+        { status: 400 }
+      );
+    }
+
+    const updated = await Faq.findByIdAndUpdate(id, { 
+      $set: { 
+        question, 
+        answer, 
+        category, 
+        status: status || "active",
+        priority: priority || 1
+      } 
+    }, {
       new: true,
       runValidators: true,
     });
@@ -101,11 +123,11 @@ export async function PATCH(
     }
 
     return NextResponse.json(
-      { success: true, message: "FAQ patched successfully", faq: updated },
+      { success: true, message: "FAQ updated successfully", faq: updated },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error patching FAQ", error);
+    console.error("Error updating FAQ", error);
     if (error.code === 11000) {
       return NextResponse.json(
         { success: false, message: "Duplicate key error" },
@@ -113,7 +135,7 @@ export async function PATCH(
       );
     }
     return NextResponse.json(
-      { success: false, message: "Failed to patch FAQ" },
+      { success: false, message: "Failed to update FAQ" },
       { status: 500 }
     );
   }

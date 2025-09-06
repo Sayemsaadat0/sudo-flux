@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { cn } from '@/lib/utils'
+import { ChevronDownIcon } from 'lucide-react'
 
 interface SidebarItem {
   name: string
@@ -29,15 +30,6 @@ const sidebarItems: SidebarItem[] = [
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-    )
-  },
-  {
-    name: 'Testimonials',
-    href: '/admin/testimonials',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
     )
   },
@@ -80,15 +72,6 @@ const sidebarItems: SidebarItem[] = [
       { name: 'All Services', href: '/admin/services' },
       { name: 'Category', href: '/admin/services/category' }
     ]
-  },
-  {
-    name: 'Projects',
-    href: '/admin/projects',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
-    )
   },
   {
     name: 'Visitors',
@@ -179,7 +162,7 @@ export function AdminSidebar({ isCollapsed, setIsCollapsed }: { isCollapsed: boo
                   <AccordionItem value={item.name} className="border-none">
                     <AccordionTrigger 
                       className={cn(
-                        "flex items-center w-full p-3 rounded-xl transition-all duration-200",
+                        "flex items-center   w-full p-3 rounded-xl transition-all duration-200",
                         "",
                         "hover:bg-gradient-to-r hover:from-sudo-purple-1 hover:to-sudo-blue-1",
                         "hover:text-sudo-purple-7 focus:outline-none",
@@ -189,7 +172,7 @@ export function AdminSidebar({ isCollapsed, setIsCollapsed }: { isCollapsed: boo
                         isCollapsed ? 'justify-center' : 'justify-between'
                       )}
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center w-full">
                         <span className={cn(
                           "flex-shrink-0 transition-colors duration-200",
                           "group-hover:text-sudo-purple-6"
@@ -197,7 +180,7 @@ export function AdminSidebar({ isCollapsed, setIsCollapsed }: { isCollapsed: boo
                           {item.icon}
                         </span>
                         {!isCollapsed && (
-                          <span className="ml-3">{item.name}</span>
+                          <span className="ml-3 flex items-center justify-between  w-full">{item.name} <ChevronDownIcon className="size-4" /></span>
                         )}
                       </div>
                     </AccordionTrigger>
