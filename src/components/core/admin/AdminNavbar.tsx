@@ -2,7 +2,10 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { useAuthStore } from '@/store/authStore'
+import { toast } from 'sonner'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -13,6 +16,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 export function AdminNavbar() {
+  const router = useRouter()
+  const { user, removeUser } = useAuthStore()
+
+  const handleLogout = () => {
+    removeUser()
+    toast.success('Logged out successfully')
+    router.push('/login')
+  }
 
   return (
     <nav className={cn(
@@ -71,10 +82,10 @@ export function AdminNavbar() {
                   </div>
                   <div className="hidden md:flex flex-col items-start">
                     <span className="text-sudo-regular-16 font-medium text-sudo-neutral-5">
-                      John Doe
+                      {user?.name || 'Admin User'}
                     </span>
                     <span className="text-xs text-sudo-neutral-3">
-                      Administrator
+                      {user?.role || 'Administrator'}
                     </span>
                   </div>
                   <svg className="hidden md:block w-4 h-4 text-sudo-neutral-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -101,10 +112,10 @@ export function AdminNavbar() {
                     />
                     <div className="flex flex-col">
                       <p className="text-sudo-regular-16 font-medium text-sudo-neutral-5">
-                        John Doe
+                        {user?.name || 'Admin User'}
                       </p>
                       <p className="text-xs text-sudo-neutral-3">
-                        john.doe@sudoflux.com
+                        {user?.email || 'admin@sudoflux.com'}
                       </p>
                     </div>
                   </div>
@@ -136,17 +147,20 @@ export function AdminNavbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="my-2" />
-                <DropdownMenuItem asChild className={cn(
-                  "p-3 rounded-lg cursor-pointer",
-                  "hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100",
-                  "transition-all duration-200"
-                )}>
-                  <Link href="/auth/login" className="flex items-center space-x-3">
+                <DropdownMenuItem 
+                  onClick={handleLogout}
+                  className={cn(
+                    "p-3 rounded-lg cursor-pointer",
+                    "hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100",
+                    "transition-all duration-200"
+                  )}
+                >
+                  <div className="flex items-center space-x-3">
                     <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     <span className="text-sudo-regular-16 text-red-600 font-medium">Sign out</span>
-                  </Link>
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

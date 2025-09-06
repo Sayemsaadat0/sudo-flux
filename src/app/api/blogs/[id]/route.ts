@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Blog } from "@/models/Blog";
+import { put } from '@vercel/blob';
 
 // ======================
 // GET /api/blogs/{id}
@@ -14,12 +15,12 @@ export async function GET(
     const { id } = await params;
 
     const result = await Blog.findById(id);
-    if (result) {
-      return NextResponse.json(
-        { success: true, message: "Single Blog Retrieved", result },
-        { status: 200 }
-      );
-    }
+                if (result) {
+              return NextResponse.json(
+                { success: true, message: "Single Blog Retrieved", result: result },
+                { status: 200 }
+              );
+            }
     return NextResponse.json(
       { success: false, message: "Blog not found" },
       { status: 404 }
@@ -86,9 +87,81 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const formData = await request.formData();
+
+    // Extract form fields
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    const author = formData.get("author") as string;
+    const tagsString = formData.get("tags") as string;
+    const published = formData.get("published") === "true";
+    const metaTitle = formData.get("metaTitle") as string;
+    const metaDescription = formData.get("metaDescription") as string;
+    const slug = formData.get("slug") as string;
+    const bannerImageFile = formData.get("banner_image") as File | null;
+
+    // Build update object
+    const updateData: any = {
+      title,
+      content,
+      author,
+      published,
+      metaTitle,
+      metaDescription,
+      slug,
+    };
+
+    // Parse tags if provided
+    if (tagsString) {
+      updateData.tags = JSON.parse(tagsString);
+    }
+
+    // Handle banner image upload if provided
+    if (bannerImageFile && bannerImageFile.size > 0) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+      ];
+      if (!allowedTypes.includes(bannerImageFile.type)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Invalid file type. Only images are allowed.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (bannerImageFile.size > maxSize) {
+        return NextResponse.json(
+          { success: false, message: "File too large. Maximum size is 5MB." },
+          { status: 400 }
+        );
+      }
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileExtension = bannerImageFile.name.split(".").pop();
+      const fileName = `blogs/${timestamp}_${randomString}.${fileExtension}`;
+
+      // Upload to Vercel Blob Storage
+      const blob = await put(fileName, bannerImageFile, {
+        access: 'public',
+      });
+
+      // Set the blob URL
+      updateData.banner_image = blob.url;
+    }
     
-    const updated = await Blog.findByIdAndUpdate(id, { $set: body }, {
+    const updated = await Blog.findByIdAndUpdate(id, { $set: updateData }, {
       new: true,
       runValidators: true,
     });

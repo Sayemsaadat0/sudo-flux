@@ -184,12 +184,13 @@ const ContactFormSection = () => {
                     Phone Number
                   </label>
                   <input 
-                    type="tel" 
+                    type="text" 
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="+1 (555) 123-4567"
                     className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6"
+                    required
                   />
                 </div>
               </div>

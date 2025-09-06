@@ -72,11 +72,16 @@ export async function GET(request: Request) {
 
 // ======================
 // POST /api/industries
+// - Create industry
 // ======================
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, description, icon } = body;
+    const formData = await request.formData();
+
+    // Extract form fields
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const iconFile = formData.get("icon") as File | null;
 
     if (!name) {
       return NextResponse.json(
@@ -85,7 +90,64 @@ export async function POST(request: Request) {
       );
     }
 
-    const newIndustry = await Industry.create({ name, description, icon });
+    let iconUrl = "";
+
+    // Handle icon upload if provided
+    if (iconFile && iconFile.size > 0) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+      ];
+      if (!allowedTypes.includes(iconFile.type)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Invalid file type. Only images are allowed.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (iconFile.size > maxSize) {
+        return NextResponse.json(
+          { success: false, message: "File too large. Maximum size is 5MB." },
+          { status: 400 }
+        );
+      }
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileExtension = iconFile.name.split(".").pop();
+      const fileName = `industries/${timestamp}_${randomString}.${fileExtension}`;
+
+      // Upload to Vercel Blob Storage
+      const { put } = await import('@vercel/blob');
+      const blob = await put(fileName, iconFile, {
+        access: 'public',
+      });
+
+      // Set the blob URL
+      iconUrl = blob.url;
+    }
+
+    // Create new industry instance
+    const industryData = {
+      name,
+      description,
+      icon: iconUrl,
+    };
+
+    const newIndustry = new Industry(industryData);
+    await newIndustry.save();
+
     return NextResponse.json(
       { success: true, message: "Industry created successfully", industry: newIndustry },
       { status: 201 }
@@ -151,51 +213,6 @@ export async function PUT(request: Request) {
   }
 }
 
-// ======================
-// PATCH /api/industries?_id=...
-// ======================
-export async function PATCH(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for update" },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const updated = await Industry.findByIdAndUpdate(_id, { $set: body }, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "Industry not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Industry patched successfully", industry: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error patching Industry", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to patch Industry" },
-      { status: 500 }
-    );
-  }
-}
 
 // ======================
 // DELETE /api/industries?_id=...

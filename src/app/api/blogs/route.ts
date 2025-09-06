@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Blog } from "@/models/Blog";
+import { put } from '@vercel/blob';
 
 // ======================
 // GET /api/blogs
@@ -10,7 +11,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const ordering = searchParams.get("ordering") || "-createdAt"; // Default: latest first
-    
+
     // Pagination parameters
     const page = parseInt(searchParams.get("page") || "1");
     const per_page = parseInt(searchParams.get("per_page") || "10");
@@ -23,7 +24,9 @@ export async function GET(request: Request) {
     const tags = searchParams.get("tags") || "";
     const published = searchParams.get("published") || "";
 
-    const sortField = ordering.startsWith("-") ? ordering.substring(1) : ordering;
+    const sortField = ordering.startsWith("-")
+      ? ordering.substring(1)
+      : ordering;
     const sortDirection = ordering.startsWith("-") ? -1 : 1;
 
     // Build query object for search and filtering
@@ -37,7 +40,7 @@ export async function GET(request: Request) {
         { author: { $regex: search, $options: "i" } },
         { tags: { $regex: search, $options: "i" } },
         { metaTitle: { $regex: search, $options: "i" } },
-        { metaDescription: { $regex: search, $options: "i" } }
+        { metaDescription: { $regex: search, $options: "i" } },
       ];
     }
 
@@ -49,7 +52,8 @@ export async function GET(request: Request) {
       query.tags = { $regex: tags, $options: "i" };
     }
     if (published !== "") {
-      query.published = published === "true" ? true : published === "false" ? false : published;
+      query.published =
+        published === "true" ? true : published === "false" ? false : published;
     }
 
     // Get total count for pagination
@@ -62,23 +66,26 @@ export async function GET(request: Request) {
       .skip(skip)
       .limit(limit);
 
+    // Return results as-is (with relative URLs)
+    const resultsWithUrls = results.map(blog => blog.toObject());
+
     return NextResponse.json(
-      { 
-        success: true, 
-        message: "Blogs Retrieved", 
-        results,
+      {
+        success: true,
+        message: "Blogs Retrieved",
+        results: resultsWithUrls,
         pagination: {
           current_page: page,
           total_pages,
           per_page: limit,
-          total_count
+          total_count,
         },
         filters: {
           search,
           author,
           tags,
-          published
-        }
+          published,
+        },
       },
       { status: 200 }
     );
@@ -97,8 +104,18 @@ export async function GET(request: Request) {
 // ======================
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { title, content, author, tags, published, metaTitle, metaDescription } = body;
+    const formData = await request.formData();
+
+    // Extract form fields
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    const author = formData.get("author") as string;
+    const tagsString = formData.get("tags") as string;
+    const published = formData.get("published") === "true";
+    const metaTitle = formData.get("metaTitle") as string;
+    const metaDescription = formData.get("metaDescription") as string;
+    const slug = formData.get("slug") as string;
+    const bannerImageFile = formData.get("banner_image") as File | null;
 
     if (!title || !content) {
       return NextResponse.json(
@@ -107,9 +124,72 @@ export async function POST(request: Request) {
       );
     }
 
+    let bannerImageUrl = "";
+
+    // Handle banner image upload if provided
+    if (bannerImageFile && bannerImageFile.size > 0) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+      ];
+      if (!allowedTypes.includes(bannerImageFile.type)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Invalid file type. Only images are allowed.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (bannerImageFile.size > maxSize) {
+        return NextResponse.json(
+          { success: false, message: "File too large. Maximum size is 5MB." },
+          { status: 400 }
+        );
+      }
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileExtension = bannerImageFile.name.split(".").pop();
+      const fileName = `blogs/${timestamp}_${randomString}.${fileExtension}`;
+
+      // Upload to Vercel Blob Storage
+      const blob = await put(fileName, bannerImageFile, {
+        access: 'public',
+      });
+
+      // Set the blob URL
+      bannerImageUrl = blob.url;
+    }
+
+    // Parse tags
+    const tags = tagsString ? JSON.parse(tagsString) : [];
+
     // Create new blog instance and save to trigger pre-save hooks
-    const newBlog = new Blog({ title, content, author, tags, published, metaTitle, metaDescription });
+    const blogData = {
+      title,
+      content,
+      author,
+      tags,
+      published,
+      metaTitle,
+      metaDescription,
+      slug,
+      banner_image: bannerImageUrl,
+    };
+
+    const newBlog = new Blog(blogData);
     await newBlog.save();
+
     return NextResponse.json(
       { success: true, message: "Blog created successfully", blog: newBlog },
       { status: 201 }
@@ -129,131 +209,4 @@ export async function POST(request: Request) {
   }
 }
 
-// ======================
-// PUT /api/blogs?_id=...
-// - Full replace-like update (but implemented as set all provided fields)
-// ======================
-export async function PUT(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for update" },
-        { status: 400 }
-      );
-    }
 
-    const body = await request.json();
-    const updated = await Blog.findByIdAndUpdate(_id, body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "Blog not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Blog updated successfully", blog: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error updating Blog", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to update Blog" },
-      { status: 500 }
-    );
-  }
-}
-
-// ======================
-// PATCH /api/blogs?_id=...
-// - Partial update
-// ======================
-export async function PATCH(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for update" },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const updated = await Blog.findByIdAndUpdate(_id, { $set: body }, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "Blog not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Blog patched successfully", blog: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error patching Blog", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to patch Blog" },
-      { status: 500 }
-    );
-  }
-}
-
-// ======================
-// DELETE /api/blogs?_id=...
-// ======================
-export async function DELETE(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for deletion" },
-        { status: 400 }
-      );
-    }
-
-    const deleted = await Blog.findByIdAndDelete(_id);
-    if (!deleted) {
-      return NextResponse.json(
-        { success: false, message: "Blog not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Blog deleted successfully" },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Error deleting Blog", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to delete Blog" },
-      { status: 500 }
-    );
-  }
-}
