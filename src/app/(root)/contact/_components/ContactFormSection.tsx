@@ -1,30 +1,62 @@
 'use client'
-import React, { useState } from 'react';
+import React from 'react';
 import { Github, Twitter, Linkedin, Instagram, Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
 import Button from '@/components/ui/button';
 import LineAnimation from '@/components/animations/LineAnimation';
+import { useFormik } from 'formik';
+import { toast } from 'sonner';
+import { useSubmitPublicContact } from '@/hooks/publicContact.hooks';
+import * as Yup from 'yup';
+
+// Validation schema for the contact form
+const ContactFormValidation = Yup.object({
+  name: Yup.string()
+    .required('Name is required')
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name must be less than 100 characters'),
+  email: Yup.string()
+    .required('Email is required')
+    .email('Invalid email address')
+    .max(100, 'Email must be less than 100 characters'),
+  subject: Yup.string()
+    .required('Subject is required')
+    .min(5, 'Subject must be at least 5 characters')
+    .max(200, 'Subject must be less than 200 characters'),
+  description: Yup.string()
+    .required('Message is required')
+    .min(10, 'Message must be at least 10 characters')
+    .max(1000, 'Message must be less than 1000 characters'),
+});
 
 const ContactFormSection = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    phone: '',
-    subject: '',
-    message: '',
+  const { mutateAsync: submitContact, isPending } = useSubmitPublicContact();
+
+  const {
+    handleChange,
+    values,
+    touched,
+    errors,
+    handleSubmit,
+    resetForm,
+  } = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      subject: '',
+      description: '',
+    },
+    validationSchema: ContactFormValidation,
+    onSubmit: async (data) => {
+      try {
+        await submitContact(data);
+        toast.success('Message sent successfully! We\'ll get back to you soon.');
+        resetForm();
+      } catch (error: any) {
+        console.error('Error submitting contact:', error);
+        toast.error(error?.response?.data?.message || 'Failed to send message. Please try again.');
+      }
+    },
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
 
   return (
     <section className="bg-sudo-neutral-6 text-sudo-white-1 py-20 sm:py-24 lg:py-32 relative overflow-hidden">
@@ -137,114 +169,105 @@ const ContactFormSection = () => {
             </div>
             
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                    First Name
-                  </label>
-                  <input 
-                    type="text" 
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="John"
-                    className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                    Last Name
-                  </label>
-                  <input 
-                    type="text" 
-                    placeholder="Doe"
-                    className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                    Email Address
-                  </label>
-                  <input 
-                    type="email" 
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="john@example.com"
-                    className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                    Phone Number
-                  </label>
-                  <input 
-                    type="text" 
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+1 (555) 123-4567"
-                    className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6"
-                    required
-                  />
-                </div>
-              </div>
-
+              {/* Name Field */}
               <div>
                 <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                  Company Name
+                  Full Name <span className="text-red-400">*</span>
                 </label>
                 <input 
                   type="text" 
-                  name="company"
-                  value={formData.company}
+                  name="name"
+                  value={values.name}
                   onChange={handleChange}
-                  placeholder="Your Company"
-                  className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6"
+                  placeholder="John Doe"
+                  className={`w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border rounded-xl focus:outline-none focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6 ${
+                    errors.name && touched.name 
+                      ? 'border-red-400 focus:border-red-400' 
+                      : 'border-sudo-neutral-4/30 focus:border-sudo-purple-3'
+                  }`}
+                  required
                 />
+                {errors.name && touched.name && (
+                  <p className="text-red-400 text-xs mt-1">{errors.name}</p>
+                )}
               </div>
-
+              
+              {/* Email Field */}
               <div>
                 <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                  Subject
+                  Email Address <span className="text-red-400">*</span>
+                </label>
+                <input 
+                  type="email" 
+                  name="email"
+                  value={values.email}
+                  onChange={handleChange}
+                  placeholder="john@example.com"
+                  className={`w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border rounded-xl focus:outline-none focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6 ${
+                    errors.email && touched.email 
+                      ? 'border-red-400 focus:border-red-400' 
+                      : 'border-sudo-neutral-4/30 focus:border-sudo-purple-3'
+                  }`}
+                  required
+                />
+                {errors.email && touched.email && (
+                  <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+                )}
+              </div>
+
+              {/* Subject Field */}
+              <div>
+                <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
+                  Subject <span className="text-red-400">*</span>
                 </label>
                 <input 
                   type="text" 
                   name="subject"
-                  value={formData.subject}
+                  value={values.subject}
                   onChange={handleChange}
                   placeholder="Project Inquiry"
-                  className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6"
+                  className={`w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border rounded-xl focus:outline-none focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6 ${
+                    errors.subject && touched.subject 
+                      ? 'border-red-400 focus:border-red-400' 
+                      : 'border-sudo-neutral-4/30 focus:border-sudo-purple-3'
+                  }`}
                   required
                 />
+                {errors.subject && touched.subject && (
+                  <p className="text-red-400 text-xs mt-1">{errors.subject}</p>
+                )}
               </div>
               
+              {/* Message Field */}
               <div>
                 <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                  Message
+                  Message <span className="text-red-400">*</span>
                 </label>
                 <textarea 
-                  name="message"
-                  value={formData.message}
+                  name="description"
+                  value={values.description}
                   onChange={handleChange}
                   placeholder="Tell us about your project..."
                   rows={4}
-                  className="w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border border-sudo-neutral-4/30 rounded-xl focus:outline-none focus:border-sudo-purple-3 focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6 resize-none"
+                  className={`w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border rounded-xl focus:outline-none focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 placeholder-sudo-white-6 resize-none ${
+                    errors.description && touched.description 
+                      ? 'border-red-400 focus:border-red-400' 
+                      : 'border-sudo-neutral-4/30 focus:border-sudo-purple-3'
+                  }`}
                   required
                 />
+                {errors.description && touched.description && (
+                  <p className="text-red-400 text-xs mt-1">{errors.description}</p>
+                )}
               </div>
               
               <Button 
                 type='submit'
+                disabled={isPending}
                 icon={<Send size={16} />} 
                 icon_style="border border-sudo-purple-3 text-sudo-purple-3 bg-sudo-neutral-5/50" 
-                className="text-sudo-white-1 w-full hover:bg-sudo-purple-5/20 hover:border-sudo-purple-3/50" 
-                label="Send Message"
+                className="text-sudo-white-1 w-full hover:bg-sudo-purple-5/20 hover:border-sudo-purple-3/50 disabled:opacity-50 disabled:cursor-not-allowed" 
+                label={isPending ? "Sending..." : "Send Message"}
                 size="lg"
               />
             </form>
