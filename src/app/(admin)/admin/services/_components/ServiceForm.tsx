@@ -223,7 +223,7 @@ const ServiceForm = ({ instance }: ServiceFormProps) => {
             )}
           </div>
 
-          {/* Description */}
+          {/* Description*/}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Service Description <span className="text-red-500">*</span>
