@@ -6,7 +6,7 @@ import TextInput from "@/components/core/input/TextInput";
 import TextAreaInput from "@/components/core/input/TextAreaInput";
 import Button from "@/components/ui/button";
 import { toast } from "sonner";
-import { ServiceAddEditFormValidation } from "@/lib/validate/service.validate";
+// import { ServiceAddEditFormValidation } from "@/lib/validate/service.validate";
 import {
   Dialog,
   DialogContent,
@@ -62,7 +62,7 @@ const ServiceForm = ({ instance }: ServiceFormProps) => {
       category: instance?.category?._id || "",
     },
 
-    validationSchema: ServiceAddEditFormValidation,
+    // validationSchema: ServiceAddEditFormValidation,
     onSubmit: async (data: any) => {
       try {
         // Filter out empty benefits
@@ -223,7 +223,7 @@ const ServiceForm = ({ instance }: ServiceFormProps) => {
             )}
           </div>
 
-          {/* Description */}
+          {/* Description*/}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Service Description <span className="text-red-500">*</span>
