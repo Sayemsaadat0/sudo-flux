@@ -27,14 +27,13 @@ export async function GET(request: Request) {
     // Build query object for search and filtering
     const query: any = {};
 
-    // Add search functionality (searches across name, email, phone, subject, message)
+    // Add search functionality (searches across name, email, subject, description)
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { email: { $regex: search, $options: "i" } },
-        { phone: { $regex: search, $options: "i" } },
         { subject: { $regex: search, $options: "i" } },
-        { message: { $regex: search, $options: "i" } }
+        { description: { $regex: search, $options: "i" } }
       ];
     }
 
@@ -86,19 +85,14 @@ export async function GET(request: Request) {
 // ======================
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
+    const body = await request.json();
 
     // Extract form fields
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const phone = formData.get("phone") as string;
-    const subject = formData.get("subject") as string;
-    const message = formData.get("message") as string;
-    const status = formData.get("status") as string;
+    const { name, email, subject, description } = body;
 
-    if (!name || !email || !message) {
+    if (!name || !email || !description) {
       return NextResponse.json(
-        { success: false, message: "Name, Email and Message are required" },
+        { success: false, message: "Name, Email and Description are required" },
         { status: 400 }
       );
     }
@@ -106,10 +100,8 @@ export async function POST(request: Request) {
     const newContact = await Contact.create({ 
       name, 
       email, 
-      phone, 
       subject, 
-      message, 
-      status: status || "new" 
+      description
     });
     
     return NextResponse.json(
