@@ -1,11 +1,7 @@
 
-
 import AboutUsContainer from "./_components/AboutUsContainer"
+
 const About = () => {
-  return (
-    <div >
-      <AboutUsContainer />
-    </div>
-  )
+  return <AboutUsContainer />
 }
 export default About

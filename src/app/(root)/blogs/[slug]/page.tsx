@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import BlogDetails from '../_components/BlogDetails';
+import BlogPostClient from './_components/BlogPostClient';
 
 // Sample blog data - in a real app, this would come from a CMS or database
 const blogPosts = [
@@ -322,7 +322,7 @@ const BlogPostPage = async ({ params }: BlogPostPageProps) => {
     notFound();
   }
 
-  return <BlogDetails post={post} />;
+  return <BlogPostClient post={post} />;
 };
 
 export default BlogPostPage;

@@ -1,5 +1,9 @@
+'use client'
+
 import BlogCard from "@/components/core/cards/BlogCard"
 import LineAnimation from "@/components/animations/LineAnimation"
+import { useVisitorTracking } from "@/hooks/useVisitorTracking"
+import { useSectionTracking } from "@/hooks/useSectionTracking"
 
 // Sample blog data
 const blogPosts = [
@@ -94,11 +98,14 @@ const blogPosts = [
 ];
 
 const Blogs = () => {
+  const { sessionId } = useVisitorTracking()
+  const { createSectionRef } = useSectionTracking('blogs-page', sessionId)
+
   return (
     <div className="min-h-screen bg-sudo-white-1 py-20 sm:py-24 lg:py-32">
       <div className="sudo-container">
         {/* Header Section */}
-        <div className="text-center space-y-5 mb-10 ">
+        <div ref={createSectionRef('blogs-header-section')} className="text-center space-y-5 mb-10 ">
           {/* Subtitle with Line Animation */}
           <div className="flex justify-center ">
             <div className="space-y-5 gap-3">
@@ -129,7 +136,7 @@ const Blogs = () => {
         </div>
 
         {/* Blog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+        <div ref={createSectionRef('blogs-grid-section')} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
           {blogPosts.map((post) => (
             <BlogCard
               key={post.id}
@@ -146,7 +153,7 @@ const Blogs = () => {
         </div>
 
         {/* Load More Button */}
-        <div className="text-center mt-16 sm:mt-20">
+        <div ref={createSectionRef('blogs-load-more-section')} className="text-center mt-16 sm:mt-20">
           <button className="inline-flex items-center gap-2 bg-sudo-blue-6 text-white px-8 py-4 rounded-full font-semibold hover:bg-sudo-blue-7 transition-colors duration-300 shadow-lg hover:shadow-xl">
             <span>Load More Articles</span>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

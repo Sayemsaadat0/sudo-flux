@@ -11,27 +11,51 @@ import CtaSection from "./CtaSection"
 import ContactSection from "./ContactSection"
 import IndustryWeServe from "./IndustryWeServe"
 import WhyChooseUs from "./WhyChooseUs"
+import { useSectionTracking } from "@/hooks/useSectionTracking"
+import { useVisitorTracking } from "@/hooks/useVisitorTracking"
 // import FloatingCardsSection from "./FloatingCardSection"
 // import ContactSection from "./ContactSection"
 
 const HomePageContainer = () => {
+    const { sessionId } = useVisitorTracking()
+    const { createSectionRef } = useSectionTracking('home-page', sessionId)
+
+
     useSmoothScroll()
     return (
         // sudo-container
         <div className=" space-y-10 md:space-y-16 pt-20 md:pt-28 lg:pt-36 ">
-            <HeroSection />
-            <div>
-                <IndustryWeServe />
-                <WhyChooseUs />
-                <AboutSection />
-                <TestimonialsSection />
+            <div ref={createSectionRef('hero-section')}>
+                <HeroSection />
             </div>
             <div>
-                <ContactSection />
-                <FaqSection />
-                <BlogSection />
+                <div ref={createSectionRef('home-inustry-we-serve')}>
+                    <IndustryWeServe />
+                </div>
+                <div>
+                    <WhyChooseUs />
+                </div>
+                <div ref={createSectionRef('home-about-section')}>
+                    <AboutSection />
+                </div>
+                <div ref={createSectionRef('home-testimonials-section')}>
+                    <TestimonialsSection />
+                </div>
+            </div>
+            <div>
+                <div ref={createSectionRef('home-contact-section')}>
+                    <ContactSection />
+                </div>
+                <div ref={createSectionRef('home-faq-section')}>
+                    <FaqSection />
+                </div>
+                <div ref={createSectionRef('home-blog-section')}>
+                    <BlogSection />
+                </div>
                 {/* <ServiceSection /> */}
-                <CtaSection />
+                <div ref={createSectionRef('home-cta-section')}>
+                    <CtaSection />
+                </div>
             </div>
 
             {/* <FloatingCardsSection/> */}

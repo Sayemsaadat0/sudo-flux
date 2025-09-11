@@ -34,7 +34,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${unbounded.variable} ${manrope.variable}`}>
       <body className="antialiased">
-
         <PerformanceWrapper>
           <TanStackQueryProvider>{children}</TanStackQueryProvider>
         </PerformanceWrapper>

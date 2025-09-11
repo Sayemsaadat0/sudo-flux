@@ -23,8 +23,8 @@ const ConsultationFormValidation = Yup.object({
     .min(10, 'Phone number must be at least 10 characters'),
   company: Yup.string().optional(),
   projectType: Yup.string().required('Project type is required'),
-  budget: Yup.string().required('Budget range is required'),
-  timeline: Yup.string().required('Timeline is required'),
+  budget: Yup.string().optional(),
+  timeline: Yup.string().optional(),
   description: Yup.string()
     .required('Project description is required')
     .min(20, 'Description must be at least 20 characters')
@@ -66,27 +66,39 @@ const ConsultationFormSection = () => {
   });
 
   return (
-    <section className="bg-sudo-neutral-6 text-sudo-white-1 py-20 sm:py-24 lg:py-32 relative overflow-hidden">
-      {/* Background Elements */}
+    <section className="bg-gradient-to-br from-sudo-neutral-6 via-sudo-neutral-5 to-sudo-neutral-6 text-sudo-white-1 py-20 sm:py-24 lg:py-32 relative overflow-hidden">
+      {/* Enhanced Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-sudo-purple-3/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-sudo-blue-3/5 rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-sudo-purple-3/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-sudo-blue-3/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-sudo-purple-3/5 to-sudo-blue-3/5 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* Floating Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-4 h-4 bg-sudo-purple-3 rounded-full animate-bounce"></div>
+        <div className="absolute top-40 right-20 w-3 h-3 bg-sudo-blue-3 rounded-full animate-bounce" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute bottom-32 left-20 w-2 h-2 bg-sudo-purple-3 rounded-full animate-bounce" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-20 right-10 w-3 h-3 bg-sudo-blue-3 rounded-full animate-bounce" style={{ animationDelay: '1.5s' }}></div>
       </div>
 
       <div className="sudo-container relative z-10">
         {/* Header Section */}
         <div className="flex flex-col items-center justify-center mb-16">
           <div className="flex flex-col justify-center items-center mx-auto w-fit mb-6">
-            <h4 className="uppercase font-bold text-sudo-purple-3">Free Consultation</h4>
+            <h4 className="uppercase font-bold text-sudo-purple-3 text-lg">Start Your Project Today</h4>
             <div className="w-2/4">
               <LineAnimation />
             </div>
           </div>
           <h2 className="text-sudo-title-28 lg:text-sudo-title-48 md:leading-[60px] font-heading md:w-2/3 mx-auto text-center mb-6">
-            Get Your Free Project Consultation
+            Get Your Free Project
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-sudo-purple-3 to-sudo-blue-3">
+              Consultation Now
+            </span>
           </h2>
           <p className="text-sudo-paragraph-20 text-sudo-white-6 text-center max-w-3xl">
-            Tell us about your project and we&apos;ll provide you with a detailed consultation and proposal within 24 hours.
+            Ready to bring your vision to life? Fill out the form below and we&apos;ll provide you with a detailed consultation and proposal within 24 hours.
           </p>
         </div>
 
@@ -95,10 +107,10 @@ const ConsultationFormSection = () => {
           <div className="space-y-8">
             <div className="space-y-6">
               <h3 className="text-sudo-header-28 font-bold text-sudo-white-1">
-                Let&apos;s Discuss Your Project
+                Why Choose Our Consultation?
               </h3>
               <p className="text-sudo-paragraph-20 text-sudo-white-6 leading-relaxed">
-                Our expert team will analyze your requirements and provide you with a comprehensive consultation including project scope, timeline, and budget estimation.
+                Our expert team will analyze your requirements and provide you with a comprehensive consultation including project scope, timeline, and budget estimation. Get professional insights to make informed decisions.
               </p>
             </div>
 
@@ -110,7 +122,7 @@ const ConsultationFormSection = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-sudo-white-1">Free 30-Min Consultation</h4>
-                  <p className="text-sudo-white-6">Detailed project discussion and planning</p>
+                  <p className="text-sudo-white-6">Detailed project discussion and strategic planning</p>
                 </div>
               </div>
               
@@ -119,8 +131,8 @@ const ConsultationFormSection = () => {
                   <DollarSign size={20} className="text-sudo-white-1" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sudo-white-1">Budget Estimation</h4>
-                  <p className="text-sudo-white-6">Transparent pricing and cost breakdown</p>
+                  <h4 className="font-semibold text-sudo-white-1">Transparent Pricing</h4>
+                  <p className="text-sudo-white-6">Detailed cost breakdown with no hidden fees</p>
                 </div>
               </div>
 
@@ -129,8 +141,8 @@ const ConsultationFormSection = () => {
                   <Clock3 size={20} className="text-sudo-white-1" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sudo-white-1">Timeline Planning</h4>
-                  <p className="text-sudo-white-6">Realistic project milestones and delivery</p>
+                  <h4 className="font-semibold text-sudo-white-1">Realistic Timeline</h4>
+                  <p className="text-sudo-white-6">Accurate project milestones and delivery schedule</p>
                 </div>
               </div>
 
@@ -140,7 +152,7 @@ const ConsultationFormSection = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-sudo-white-1">24-Hour Response</h4>
-                  <p className="text-sudo-white-6">Quick turnaround on all inquiries</p>
+                  <p className="text-sudo-white-6">Quick turnaround on all consultation requests</p>
                 </div>
               </div>
             </div>
@@ -168,10 +180,10 @@ const ConsultationFormSection = () => {
           <div className="bg-sudo-neutral-5/30 backdrop-blur-sm border border-sudo-neutral-4/20 rounded-3xl p-8 space-y-6">
             <div className="space-y-2">
               <h3 className="text-sudo-header-28 font-bold text-sudo-white-1">
-                Request Free Consultation
+                Get Started Today
               </h3>
               <p className="text-sudo-white-6 text-sm">
-                Fill out the form below and we&apos;ll get back to you within 24 hours with a detailed consultation.
+                Fill out the form below and we&apos;ll get back to you within 24 hours with a detailed consultation and project proposal.
               </p>
             </div>
             
@@ -290,63 +302,10 @@ const ConsultationFormSection = () => {
                 )}
               </div>
 
-              {/* Budget and Timeline */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                    Budget Range <span className="text-red-400">*</span>
-                  </label>
-                  <select
-                    name="budget"
-                    value={values.budget}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border rounded-xl focus:outline-none focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 ${
-                      errors.budget && touched.budget 
-                        ? 'border-red-400 focus:border-red-400' 
-                        : 'border-sudo-neutral-4/30 focus:border-sudo-purple-3'
-                    }`}
-                    required
-                  >
-                    <option value="">Select Budget</option>
-                    <option value="under-5k">Under $5,000</option>
-                    <option value="5k-10k">$5,000 - $10,000</option>
-                    <option value="10k-25k">$10,000 - $25,000</option>
-                    <option value="25k-50k">$25,000 - $50,000</option>
-                    <option value="50k-100k">$50,000 - $100,000</option>
-                    <option value="over-100k">Over $100,000</option>
-                  </select>
-                  {errors.budget && touched.budget && (
-                    <p className="text-red-400 text-xs mt-1">{errors.budget}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-sudo-white-5 mb-2 tracking-wide uppercase">
-                    Timeline <span className="text-red-400">*</span>
-                  </label>
-                  <select
-                    name="timeline"
-                    value={values.timeline}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-sudo-neutral-5/50 backdrop-blur-sm border rounded-xl focus:outline-none focus:bg-sudo-neutral-5/70 transition-all duration-300 text-sudo-white-1 ${
-                      errors.timeline && touched.timeline 
-                        ? 'border-red-400 focus:border-red-400' 
-                        : 'border-sudo-neutral-4/30 focus:border-sudo-purple-3'
-                    }`}
-                    required
-                  >
-                    <option value="">Select Timeline</option>
-                    <option value="asap">ASAP</option>
-                    <option value="1-month">Within 1 Month</option>
-                    <option value="2-3-months">2-3 Months</option>
-                    <option value="3-6-months">3-6 Months</option>
-                    <option value="6-months-plus">6+ Months</option>
-                    <option value="flexible">Flexible</option>
-                  </select>
-                  {errors.timeline && touched.timeline && (
-                    <p className="text-red-400 text-xs mt-1">{errors.timeline}</p>
-                  )}
-                </div>
-              </div>
+              {/* Budget and Timeline - Hidden Fields */}
+              {/* These fields are hidden from the form but kept in the validation schema for backend compatibility */}
+              <input type="hidden" name="budget" value={values.budget} />
+              <input type="hidden" name="timeline" value={values.timeline} />
               
               {/* Project Description */}
               <div>

@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const ordering = searchParams.get("ordering") || "-createdAt"; // Default: latest first
-    
+
     // Pagination parameters
     const page = parseInt(searchParams.get("page") || "1");
     const per_page = parseInt(searchParams.get("per_page") || "10");
@@ -24,21 +24,21 @@ export async function GET(request: Request) {
     const type = searchParams.get("type") || "";
     const status = searchParams.get("status") || "";
 
-    const sortField = ordering.startsWith("-") ? ordering.substring(1) : ordering;
+    const sortField = ordering.startsWith("-")
+      ? ordering.substring(1)
+      : ordering;
     const sortDirection = ordering.startsWith("-") ? -1 : 1;
 
     // Build query object for search and filtering
     const query: any = {};
 
-    // Add search functionality (searches across title, description, department, location, responsibilities, requirements)
+    // Add search functionality (searches across title, description, department, location)
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: "i" } },
         { description: { $regex: search, $options: "i" } },
         { department: { $regex: search, $options: "i" } },
         { location: { $regex: search, $options: "i" } },
-        { responsibilities: { $regex: search, $options: "i" } },
-        { requirements: { $regex: search, $options: "i" } }
       ];
     }
 
@@ -50,10 +50,10 @@ export async function GET(request: Request) {
       query.location = { $regex: location, $options: "i" };
     }
     if (type) {
-      query.type = { $regex: type, $options: "i" };
+      query.type = type;
     }
-    if (status) {
-      query.status = { $regex: status, $options: "i" };
+    if (status !== "") {
+      query.status = status;
     }
 
     // Get total count for pagination
@@ -66,24 +66,27 @@ export async function GET(request: Request) {
       .skip(skip)
       .limit(limit);
 
+    // Return results as-is
+    const resultsWithUrls = results.map(career => career.toObject());
+
     return NextResponse.json(
-      { 
-        success: true, 
-        message: "Careers Retrieved", 
-        results,
+      {
+        success: true,
+        message: "Careers Retrieved",
+        results: resultsWithUrls,
         pagination: {
           current_page: page,
           total_pages,
           per_page: limit,
-          total_count
+          total_count,
         },
         filters: {
           search,
           department,
           location,
           type,
-          status
-        }
+          status,
+        },
       },
       { status: 200 }
     );
@@ -98,12 +101,23 @@ export async function GET(request: Request) {
 
 // ======================
 // POST /api/careers
-// - Create Career
+// - Create career
 // ======================
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, department, location, type, description, responsibilities, requirements, status } = body;
+
+    // Extract form fields
+    const {
+      title,
+      department,
+      location,
+      type,
+      description,
+      responsibilities,
+      requirements,
+      status
+    } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -112,16 +126,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const newCareer = await Career.create({
+    // Create new career instance
+    const careerData = {
       title,
       department,
       location,
-      type,
+      type: type || "full_time",
       description,
-      responsibilities,
-      requirements,
-      status,
-    });
+      responsibilities: responsibilities || [],
+      requirements: requirements || [],
+      status: status || "open",
+    };
+
+    const newCareer = new Career(careerData);
+    await newCareer.save();
 
     return NextResponse.json(
       { success: true, message: "Career created successfully", career: newCareer },
@@ -137,133 +155,6 @@ export async function POST(request: Request) {
     }
     return NextResponse.json(
       { success: false, message: "Failed to create Career" },
-      { status: 500 }
-    );
-  }
-}
-
-// ======================
-// PUT /api/careers?_id=...
-// ======================
-export async function PUT(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for update" },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const updated = await Career.findByIdAndUpdate(_id, body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "Career not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Career updated successfully", career: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error updating Career", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to update Career" },
-      { status: 500 }
-    );
-  }
-}
-
-// ======================
-// PATCH /api/careers?_id=...
-// ======================
-export async function PATCH(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for update" },
-        { status: 400 }
-      );
-    }
-
-    const body = await request.json();
-    const updated = await Career.findByIdAndUpdate(_id, { $set: body }, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "Career not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Career patched successfully", career: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error patching Career", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to patch Career" },
-      { status: 500 }
-    );
-  }
-}
-
-// ======================
-// DELETE /api/careers?_id=...
-// ======================
-export async function DELETE(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const _id = searchParams.get("_id");
-    if (!_id) {
-      return NextResponse.json(
-        { success: false, message: "_id is required for deletion" },
-        { status: 400 }
-      );
-    }
-
-    const deleted = await Career.findByIdAndDelete(_id);
-    if (!deleted) {
-      return NextResponse.json(
-        { success: false, message: "Career not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Career deleted successfully" },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Error deleting Career", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to delete Career" },
       { status: 500 }
     );
   }
