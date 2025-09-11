@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Search, Eye, Trash2, Calendar, User, Clock, MapPin, Trash } from 'lucide-react'
 import { useGetVisitors, useDeleteVisitor, useDeleteAllVisitors } from '@/hooks/visitors.hooks'
 import { Session } from '@/models/Visitor'
@@ -41,10 +42,11 @@ const formatDate = (date: string | Date) => {
 }
 
 interface VisitorsTableProps {
-  onView: (session: Session) => void
+  onView?: (session: Session) => void
 }
 
 export default function VisitorsTable({ onView }: VisitorsTableProps) {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedDevice, setSelectedDevice] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
@@ -71,6 +73,15 @@ export default function VisitorsTable({ onView }: VisitorsTableProps) {
       } catch (error) {
         console.error('Failed to delete all visitors:', error)
       }
+    }
+  }
+
+  const handleViewDetails = (visitor: Session) => {
+    if (onView) {
+      onView(visitor)
+    } else {
+      // Navigate to the detailed view page using MongoDB _id
+      router.push(`/admin/visitors/${(visitor as any)._id}`)
     }
   }
 
@@ -242,7 +253,7 @@ export default function VisitorsTable({ onView }: VisitorsTableProps) {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-1">
                         <button 
-                          onClick={() => onView(visitor)}
+                          onClick={() => handleViewDetails(visitor)}
                           className="p-1.5 text-sudo-blue-6 hover:bg-sudo-blue-1 rounded transition-colors"
                           title="View Details"
                         >

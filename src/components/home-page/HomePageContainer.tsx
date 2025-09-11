@@ -12,16 +12,13 @@ import ContactSection from "./ContactSection"
 import IndustryWeServe from "./IndustryWeServe"
 import WhyChooseUs from "./WhyChooseUs"
 import { useSectionTracking } from "@/hooks/useSectionTracking"
-import { useEffect } from "react"
+import { useVisitorTracking } from "@/hooks/useVisitorTracking"
 // import FloatingCardsSection from "./FloatingCardSection"
 // import ContactSection from "./ContactSection"
 
 const HomePageContainer = () => {
-    const { createSectionRef, createSession } = useSectionTracking('home-page')
-    // Create session when user enters hero section
-    useEffect(() => {
-        createSession('hero-section')
-    }, [createSession])
+    const { sessionId } = useVisitorTracking()
+    const { createSectionRef } = useSectionTracking('home-page', sessionId)
 
 
     useSmoothScroll()

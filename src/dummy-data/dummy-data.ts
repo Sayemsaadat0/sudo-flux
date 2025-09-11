@@ -12,8 +12,8 @@ export const defaultNavMenuData = [
     url: "/service",
   },
   {
-    title: "Pricing",
-    url: "/pricing",
+    title: "Careers",
+    url: "/careers",
   },
   {
     title: "Blog",

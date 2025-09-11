@@ -8,6 +8,7 @@ import ImgUploadField from "@/components/core/ImgUploadField";
 import { toast } from "sonner";
 import { BlogAddEditFormValidation } from "@/lib/validate/blogs.validate";
 import TextAreaInput from "@/components/core/input/TextAreaInput";
+import RichTextEditor from "@/components/core/input/RichTextEditor";
 import {
   Dialog,
   DialogContent,
@@ -232,16 +233,12 @@ const BlogForm = ({ instance }: BlogFormProps) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Blog Content <span className="text-red-500">*</span>
             </label>
-            <TextAreaInput
-              id="content"
-              name="content"
-              placeholder="Write your blog content here..."
-              className="min-h-32"
-              onChange={handleChange}
+            <RichTextEditor
               value={values.content}
+              onChange={(value) => setFieldValue('content', value)}
+              placeholder="Write your blog content here..."
               error={Boolean(errors.content) && touched.content ? String(errors.content) : false}
               required
-              rows={6}
             />
           </div>
 

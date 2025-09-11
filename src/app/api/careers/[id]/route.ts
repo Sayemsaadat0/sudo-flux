@@ -3,7 +3,7 @@ import "@/DB/db"; // ensure DB connection
 import { Career } from "@/models/Career";
 
 // ======================
-// GET /api/careers/{id}
+// GET /api/careers/[id]
 // - Get single career by ID
 // ======================
 export async function GET(
@@ -13,16 +13,29 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const result = await Career.findById(id);
-    if (result) {
+    if (!id) {
       return NextResponse.json(
-        { success: true, message: "Single Career Retrieved", result },
-        { status: 200 }
+        { success: false, message: "Career ID is required" },
+        { status: 400 }
       );
     }
+
+    const career = await Career.findById(id);
+
+    if (!career) {
+      return NextResponse.json(
+        { success: false, message: "Career not found" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
-      { success: false, message: "Career not found" },
-      { status: 404 }
+      {
+        success: true,
+        message: "Career Retrieved",
+        career: career.toObject(),
+      },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error Getting Career", error);
@@ -34,31 +47,68 @@ export async function GET(
 }
 
 // ======================
-// PUT /api/careers/{id}
-// - Full update of career
+// PATCH /api/careers/[id]
+// - Update career by ID
 // ======================
-export async function PUT(
+export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
     const body = await request.json();
-    
-    const updated = await Career.findByIdAndUpdate(id, body, {
-      new: true,
-      runValidators: true,
-    });
 
-    if (!updated) {
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Career ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const {
+      title,
+      department,
+      location,
+      type,
+      description,
+      responsibilities,
+      requirements,
+      status
+    } = body;
+
+    // Check if career exists
+    const existingCareer = await Career.findById(id);
+    if (!existingCareer) {
       return NextResponse.json(
         { success: false, message: "Career not found" },
         { status: 404 }
       );
     }
 
+    // Prepare update data
+    const updateData: any = {};
+    if (title !== undefined) updateData.title = title;
+    if (department !== undefined) updateData.department = department;
+    if (location !== undefined) updateData.location = location;
+    if (type !== undefined) updateData.type = type;
+    if (description !== undefined) updateData.description = description;
+    if (responsibilities !== undefined) updateData.responsibilities = responsibilities;
+    if (requirements !== undefined) updateData.requirements = requirements;
+    if (status !== undefined) updateData.status = status;
+
+    // Update career
+    const updatedCareer = await Career.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
     return NextResponse.json(
-      { success: true, message: "Career updated successfully", career: updated },
+      {
+        success: true,
+        message: "Career updated successfully",
+        career: updatedCareer,
+      },
       { status: 200 }
     );
   } catch (error: any) {
@@ -77,50 +127,8 @@ export async function PUT(
 }
 
 // ======================
-// PATCH /api/careers/{id}
-// - Partial update
-// ======================
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const { id } = await params;
-    const body = await request.json();
-    
-    const updated = await Career.findByIdAndUpdate(id, { $set: body }, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updated) {
-      return NextResponse.json(
-        { success: false, message: "Career not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(
-      { success: true, message: "Career patched successfully", career: updated },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error("Error patching Career", error);
-    if (error.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate key error" },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { success: false, message: "Failed to patch Career" },
-      { status: 500 }
-    );
-  }
-}
-
-// ======================
-// DELETE /api/careers/{id}
+// DELETE /api/careers/[id]
+// - Delete career by ID
 // ======================
 export async function DELETE(
   request: Request,
@@ -128,17 +136,31 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    
-    const deleted = await Career.findByIdAndDelete(id);
-    if (!deleted) {
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Career ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if career exists
+    const existingCareer = await Career.findById(id);
+    if (!existingCareer) {
       return NextResponse.json(
         { success: false, message: "Career not found" },
         { status: 404 }
       );
     }
 
+    // Delete career
+    await Career.findByIdAndDelete(id);
+
     return NextResponse.json(
-      { success: true, message: "Career deleted successfully" },
+      {
+        success: true,
+        message: "Career deleted successfully",
+      },
       { status: 200 }
     );
   } catch (error) {

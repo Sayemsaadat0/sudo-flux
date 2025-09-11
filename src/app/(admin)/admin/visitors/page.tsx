@@ -1,25 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { Download } from 'lucide-react'
 import VisitorsTable from './_components/VisitorsTable'
-import VisitorDetailsModal from './_components/VisitorDetailsModal'
-import { Session } from '@/models/Visitor'
 
 export default function VisitorsPage() {
-  const [selectedVisitor, setSelectedVisitor] = useState<Session | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const handleView = (visitor: Session) => {
-    setSelectedVisitor(visitor)
-    setIsModalOpen(true)
-  }
-
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedVisitor(null)
-  }
 
   return (
     <div className="p-4">
@@ -43,16 +27,7 @@ export default function VisitorsPage() {
         </div>
 
         {/* Visitors Table */}
-        <VisitorsTable 
-          onView={handleView}
-        />
-
-        {/* Visitor Details Modal */}
-        <VisitorDetailsModal
-          visitor={selectedVisitor}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-        />
+        <VisitorsTable />
       </div>
     </div>
   )
