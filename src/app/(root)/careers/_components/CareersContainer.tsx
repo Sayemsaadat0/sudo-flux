@@ -12,19 +12,14 @@ const CareersContainer: React.FC = () => {
     status: 'open',
     per_page: 50 
   });
-  const careers = careersResponse?.data?.results || [];
+  const careers = careersResponse?.results || [];
   const { sessionId } = useVisitorTracking()
   const { createSectionRef } = useSectionTracking('careers-page', sessionId)
 
-  // Debug logging
-  console.log('Careers Response:', careersResponse);
-  console.log('Careers Data:', careers);
-  console.log('Is Loading:', isLoading);
-  console.log('Error:', error);
 
   if (isLoading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+        <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sudo-blue-6 mx-auto mb-4"></div>
           <p className="text-sudo-neutral-4">Loading careers...</p>
@@ -57,12 +52,12 @@ const CareersContainer: React.FC = () => {
 
   return (
     <main className="min-h-screen">
-      {/* Section 1: Hero */}
+      {/* Section 1: Hero - Dark */}
       <div ref={createSectionRef('careers-hero-section')}>
         <HeroSection />
       </div>
       
-      {/* Section 2: Careers List */}
+      {/* Section 2: Careers List - White */}
       <div ref={createSectionRef('careers-list-section')}>
         <CareersListSection careers={careers} />
       </div>

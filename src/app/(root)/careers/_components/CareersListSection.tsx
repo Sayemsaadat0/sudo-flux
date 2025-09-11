@@ -1,6 +1,6 @@
 'use client'
 import React from 'react';
-import { MapPin, Clock, Briefcase, ArrowRight } from 'lucide-react';
+import { MapPin, Clock, Briefcase, ArrowRight,  } from 'lucide-react';
 import Link from 'next/link';
 import { CareerResponseType } from '@/hooks/careers.hooks';
 
@@ -12,15 +12,15 @@ const CareersListSection: React.FC<CareersListSectionProps> = ({ careers }) => {
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'full_time':
-        return 'bg-green-100 text-green-600';
+        return 'bg-green-100 text-green-700 border-green-200';
       case 'part_time':
-        return 'bg-blue-100 text-blue-600';
+        return 'bg-blue-100 text-blue-700 border-blue-200';
       case 'contract':
-        return 'bg-purple-100 text-purple-600';
+        return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'internship':
-        return 'bg-orange-100 text-orange-600';
+        return 'bg-orange-100 text-orange-700 border-orange-200';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
