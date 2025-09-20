@@ -3,6 +3,9 @@ import "@/DB/db"; // ensure DB connection
 import { Blog } from "@/models/Blog";
 import { put } from '@vercel/blob';
 
+// Configure for static export
+export const dynamic = "force-static";
+
 // ======================
 // GET /api/blogs
 // - Get all blogs (with ordering, pagination, search, and filtering)
@@ -174,7 +177,6 @@ export async function POST(request: Request) {
     // Parse tags
     const tags = tagsString ? JSON.parse(tagsString) : [];
 
-    // Create new blog instance and save to trigger pre-save hooks
     const blogData = {
       title,
       content,

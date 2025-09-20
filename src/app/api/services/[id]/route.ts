@@ -4,6 +4,9 @@ import { Service } from "@/models/Service";
 import { Category } from "@/models/Category";
 import mongoose from "mongoose";
 
+// Configure for static export
+export const dynamic = "force-static";
+
 // ======================
 // GET /api/services/[id]
 // - Get single service by ID

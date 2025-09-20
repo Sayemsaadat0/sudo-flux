@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Industry } from "@/models/Industry";
 
+// Configure for static export
+export const dynamic = "force-static";
+
 // ======================
 // GET /api/industries
 // - Get all industries (with ordering, pagination, search, and filtering)

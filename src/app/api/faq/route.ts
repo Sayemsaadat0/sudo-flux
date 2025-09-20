@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Faq } from "@/models/Faq";
 
+// Configure for static export
+export const dynamic = "force-static";
+
 // ======================
 // GET /api/faq
 // - Get all FAQs (with ordering, pagination, search, and filtering)

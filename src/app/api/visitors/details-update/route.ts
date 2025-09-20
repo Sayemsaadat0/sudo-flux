@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import '@/DB/db'; // ensure DB connection
 import { Visitor } from '@/models/Visitor';
 
+// Configure for static export
+export const dynamic = "force-static";
+
 // POST endpoint - Update visitor session details
 export async function POST(request: NextRequest) {
   try {

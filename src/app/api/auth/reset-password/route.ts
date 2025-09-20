@@ -3,6 +3,9 @@ import "@/DB/db";
 import { User } from "@/models/User";
 import crypto from "crypto";
 
+// Configure for static export
+export const dynamic = "force-static";
+
 // POST /api/auth/reset-password
 // body: { token, password }
 export async function POST(request: Request) {

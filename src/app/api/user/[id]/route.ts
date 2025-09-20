@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { User } from "@/models/User";
 
+// Configure for static export
+export const dynamic = "force-static";
+
 // ======================
 // GET /api/user/{id}
 // - Get single user by ID

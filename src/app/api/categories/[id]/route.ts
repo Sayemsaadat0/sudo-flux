@@ -3,6 +3,7 @@ import "@/DB/db"; // ensure DB connection
 import { Category } from "@/models/Category";
 import mongoose from "mongoose";
 
+
 // ======================
 // GET /api/categories/[id]
 // - Get single category by ID
