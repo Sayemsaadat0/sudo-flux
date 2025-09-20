@@ -3,7 +3,7 @@ import '@/DB/db' // ensure DB connection
 import { Visitor } from '@/models/Visitor'
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // GET endpoint - Retrieve visitor by ID
 export async function GET(

@@ -4,102 +4,45 @@ import BlogCard from "@/components/core/cards/BlogCard"
 import LineAnimation from "@/components/animations/LineAnimation"
 import { useVisitorTracking } from "@/hooks/useVisitorTracking"
 import { useSectionTracking } from "@/hooks/useSectionTracking"
-
-// Sample blog data
-const blogPosts = [
-  {
-    id: 1,
-    thumbnailUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
-    title: "The Future of Web Development: AI-Powered Tools and Automation",
-    description: "Discover how artificial intelligence is revolutionizing web development, from automated code generation to intelligent debugging tools that are reshaping the industry landscape.",
-    link: "/blogs/future-web-development-ai",
-    category: "Technology",
-    date: "Dec 15, 2024",
-    readTime: "5 min read",
-    author: "Sarah Johnson"
-  },
-  {
-    id: 2,
-    thumbnailUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop",
-    title: "Designing for Accessibility: Creating Inclusive Digital Experiences",
-    description: "Learn the essential principles of accessible design and how to create digital products that work for everyone, regardless of their abilities or disabilities.",
-    link: "/blogs/designing-accessibility",
-    category: "Design",
-    date: "Dec 12, 2024",
-    readTime: "7 min read",
-    author: "Michael Chen"
-  },
-  {
-    id: 3,
-    thumbnailUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=400&fit=crop",
-    title: "Building Scalable Microservices Architecture: Best Practices",
-    description: "Explore the fundamentals of microservices architecture and learn proven strategies for building scalable, maintainable, and resilient applications.",
-    link: "/blogs/microservices-architecture",
-    category: "Development",
-    date: "Dec 10, 2024",
-    readTime: "8 min read",
-    author: "David Rodriguez"
-  },
-  {
-    id: 4,
-    thumbnailUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=400&fit=crop",
-    title: "Digital Marketing Strategies That Drive Real Business Growth",
-    description: "Uncover effective digital marketing strategies that go beyond vanity metrics to deliver measurable business results and sustainable growth.",
-    link: "/blogs/digital-marketing-strategies",
-    category: "Marketing",
-    date: "Dec 8, 2024",
-    readTime: "6 min read",
-    author: "Emily Watson"
-  },
-  {
-    id: 5,
-    thumbnailUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=400&fit=crop",
-    title: "Cybersecurity in 2024: Protecting Your Digital Assets",
-    description: "Stay ahead of evolving cyber threats with the latest security practices and technologies that protect your business and customer data.",
-    link: "/blogs/cybersecurity-2024",
-    category: "Security",
-    date: "Dec 5, 2024",
-    readTime: "9 min read",
-    author: "Alex Thompson"
-  },
-  {
-    id: 6,
-    thumbnailUrl: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=400&fit=crop",
-    title: "User Experience Design: Creating Products People Love",
-    description: "Master the art of UX design with proven methodologies and techniques that create intuitive, engaging, and user-centered digital products.",
-    link: "/blogs/ux-design-methodology",
-    category: "UX Design",
-    date: "Dec 3, 2024",
-    readTime: "6 min read",
-    author: "Lisa Park"
-  },
-  {
-    id: 7,
-    thumbnailUrl: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=400&fit=crop",
-    title: "Mobile App Development: Native vs Cross-Platform Solutions",
-    description: "Compare native and cross-platform mobile development approaches to choose the best solution for your next mobile application project.",
-    link: "/blogs/mobile-app-development",
-    category: "Mobile",
-    date: "Nov 30, 2024",
-    readTime: "7 min read",
-    author: "Robert Kim"
-  },
-  {
-    id: 8,
-    thumbnailUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=800&h=400&fit=crop",
-    title: "Cloud Computing Trends: What's Next in 2024",
-    description: "Explore the latest trends in cloud computing, from edge computing to serverless architectures, and how they're transforming business operations.",
-    link: "/blogs/cloud-computing-trends",
-    category: "Cloud",
-    date: "Nov 28, 2024",
-    readTime: "5 min read",
-    author: "Jennifer Lee"
-  }
-];
+import { useGetBlogList } from "@/hooks/blogs.hooks"
+import { formatDatestamp } from "@/lib/timeStamp"
+import { useState } from "react"
 
 const Blogs = () => {
   const { sessionId } = useVisitorTracking()
   const { createSectionRef } = useSectionTracking('blogs-page', sessionId)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [perPage] = useState(12)
+
+  // Fetch blogs from API
+  const { data: blogData, isLoading, error, isFetching } = useGetBlogList({
+    page: currentPage,
+    per_page: perPage,
+    published: true,
+    ordering: "-createdAt"
+  })
+
+  const blogs = blogData?.results || []
+  const totalPages = blogData?.totalPages || 1
+
+  // Map API data to card format
+  const mappedBlogs = blogs.map((blog : any) => ({
+    id: blog._id,
+    thumbnailUrl: blog.banner_image || "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
+    title: blog.title,
+    description: blog.metaDescription || blog.content?.slice(0, 140) + "...",
+    link: blog.slug ? `/blogs/${blog.slug}` : "#",
+    category: blog.tags?.[0] || "General",
+    date: blog.createdAt ? formatDatestamp(blog.createdAt) : "",
+    readTime: "5 min read", // You can calculate this based on content length
+    author: blog.author || "Admin"
+  }))
+
+  const handleLoadMore = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(prev => prev + 1)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-sudo-white-1 py-20 sm:py-24 lg:py-32">
@@ -137,30 +80,57 @@ const Blogs = () => {
 
         {/* Blog Grid */}
         <div ref={createSectionRef('blogs-grid-section')} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
-          {blogPosts.map((post) => (
-            <BlogCard
-              key={post.id}
-              thumbnailUrl={post.thumbnailUrl}
-              title={post.title}
-              description={post.description}
-              link={post.link}
-              category={post.category}
-              date={post.date}
-              readTime={post.readTime}
-              author={post.author}
-            />
-          ))}
+          {isLoading ? (
+            // Loading skeleton
+            Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="bg-sudo-white-2 rounded-2xl p-6 animate-pulse">
+                <div className="w-full h-48 bg-sudo-white-3 rounded-xl mb-4"></div>
+                <div className="h-4 bg-sudo-white-3 rounded mb-2"></div>
+                <div className="h-4 bg-sudo-white-3 rounded w-3/4 mb-4"></div>
+                <div className="h-3 bg-sudo-white-3 rounded w-1/2"></div>
+              </div>
+            ))
+          ) : error ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-red-500 mb-4">Failed to load blogs</p>
+              <p className="text-sudo-neutral-4">Please try again later</p>
+            </div>
+          ) : mappedBlogs.length > 0 ? (
+            mappedBlogs.map((post : any) => (
+              <BlogCard
+                key={post.id}
+                thumbnailUrl={post.thumbnailUrl}
+                title={post.title}
+                description={post.description}
+                link={post.link}
+                category={post.category}
+                date={post.date}
+                readTime={post.readTime}
+                author={post.author}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-sudo-neutral-4">No blogs available at the moment.</p>
+            </div>
+          )}
         </div>
 
         {/* Load More Button */}
-        <div ref={createSectionRef('blogs-load-more-section')} className="text-center mt-16 sm:mt-20">
-          <button className="inline-flex items-center gap-2 bg-sudo-blue-6 text-white px-8 py-4 rounded-full font-semibold hover:bg-sudo-blue-7 transition-colors duration-300 shadow-lg hover:shadow-xl">
-            <span>Load More Articles</span>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
+        {mappedBlogs.length > 0 && currentPage < totalPages && (
+          <div ref={createSectionRef('blogs-load-more-section')} className="text-center mt-16 sm:mt-20">
+            <button 
+              onClick={handleLoadMore}
+              disabled={isFetching}
+              className="inline-flex items-center gap-2 bg-sudo-blue-6 text-white px-8 py-4 rounded-full font-semibold hover:bg-sudo-blue-7 transition-colors duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span>{isFetching ? 'Loading...' : 'Load More Articles'}</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -3,7 +3,7 @@ import "@/DB/db"; // ensure DB connection
 import { Applicant } from "@/models/Applicant";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 import { Career } from "@/models/Career";
 import { put } from '@vercel/blob';
 

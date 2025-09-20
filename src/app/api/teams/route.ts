@@ -3,7 +3,7 @@ import "@/DB/db"; // ensure DB connection
 import { Team } from "@/models/Team";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // ======================
 // GET /api/teams

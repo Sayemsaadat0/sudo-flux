@@ -3,6 +3,8 @@
 import { Calendar, Clock, ArrowLeft, Tag, BookOpen, User } from 'lucide-react';
 import Link from 'next/link';
 import AnimatedImage from '@/components/animations/AnimatedImage';
+import { useGetBlogBySlug, useGetBlogList, BlogResponseType } from '@/hooks/blogs.hooks';
+import { formatDatestamp } from '@/lib/timeStamp';
 
 interface BlogPost {
   slug: string;
@@ -19,10 +21,68 @@ interface BlogPost {
 }
 
 interface BlogDetailsProps {
-  post: BlogPost;
+  post?: BlogPost; // Make optional for API usage
+  slug?: string; // Add slug prop for API fetching
 }
 
-const BlogDetails = ({ post }: BlogDetailsProps) => {
+const BlogDetails = ({ post: fallbackPost, slug }: BlogDetailsProps) => {
+  // Fetch blog data from API if slug is provided
+  const { data: blogData, isLoading, error } = useGetBlogBySlug(slug || '');
+  
+  // Fetch related articles
+  const { data: relatedBlogsData } = useGetBlogList({
+    per_page: 3,
+    published: true,
+    ordering: "-createdAt"
+  });
+  
+  // Use API data if available, otherwise fallback to props
+  const apiPost = blogData?.results?.[0];
+  const post = apiPost ? {
+    slug: apiPost.slug || '',
+    title: apiPost.title,
+    description: apiPost.metaDescription || '',
+    content: apiPost.content,
+    thumbnailUrl: apiPost.banner_image || '',
+    category: apiPost.tags?.[0] || 'General',
+    date: apiPost.createdAt ? formatDatestamp(apiPost.createdAt) : '',
+    readTime: '5 min read', // Calculate based on content length
+    author: apiPost.author || 'Admin',
+    authorAvatar: '',
+    tags: apiPost.tags || []
+  } : fallbackPost;
+
+  // Get related articles (exclude current post)
+  const relatedArticles = relatedBlogsData?.results?.filter((blog: BlogResponseType) => blog.slug !== slug)?.slice(0, 3) || [];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sudo-white-1 via-sudo-white-2 to-sudo-white-1 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sudo-blue-6 mx-auto mb-4"></div>
+          <p className="text-sudo-neutral-4">Loading blog post...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sudo-white-1 via-sudo-white-2 to-sudo-white-1 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Failed to load blog post</p>
+            <p className="text-sudo-neutral-4 mb-6">The blog post you&apos;re looking for doesn&apos;t exist or has been removed.</p>
+          <Link 
+            href="/blogs"
+            className="inline-flex items-center gap-2 bg-sudo-blue-6 text-white px-6 py-3 rounded-full font-semibold hover:bg-sudo-blue-7 transition-colors duration-300"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Blog
+          </Link>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-sudo-white-1 via-sudo-white-2 to-sudo-white-1">
       {/* Hero Section */}
@@ -120,7 +180,7 @@ const BlogDetails = ({ post }: BlogDetailsProps) => {
                   <h3 className="text-xl font-bold text-sudo-neutral-6">Article Tags</h3>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {post.tags.map((tag, index) => (
+                  {post.tags.map((tag : any, index :number) => (
                     <span 
                       key={index}
                       className="px-4 py-2 bg-sudo-white-2 text-sudo-neutral-6 text-sm font-medium rounded-full hover:bg-sudo-blue-6 hover:text-white transition-all duration-300 cursor-pointer border border-sudo-white-3"
@@ -143,24 +203,24 @@ const BlogDetails = ({ post }: BlogDetailsProps) => {
                    <h3 className="text-xl font-bold text-sudo-neutral-6">Related Articles</h3>
                  </div>
                  <div className="space-y-4">
-                   <div className="p-4 bg-sudo-white-2 rounded-xl hover:bg-sudo-white-3 transition-colors duration-300 cursor-pointer">
-                     <h4 className="font-semibold text-sudo-neutral-6 text-sm mb-2 line-clamp-2">
-                       The Future of Web Development: AI-Powered Tools
-                     </h4>
-                     <p className="text-xs text-sudo-neutral-4">5 min read</p>
-                   </div>
-                   <div className="p-4 bg-sudo-white-2 rounded-xl hover:bg-sudo-white-3 transition-colors duration-300 cursor-pointer">
-                     <h4 className="font-semibold text-sudo-neutral-6 text-sm mb-2 line-clamp-2">
-                       Building Scalable Microservices Architecture
-                     </h4>
-                     <p className="text-xs text-sudo-neutral-4">8 min read</p>
-                   </div>
-                   <div className="p-4 bg-sudo-white-2 rounded-xl hover:bg-sudo-white-3 transition-colors duration-300 cursor-pointer">
-                     <h4 className="font-semibold text-sudo-neutral-6 text-sm mb-2 line-clamp-2">
-                       Digital Marketing Strategies That Drive Growth
-                     </h4>
-                     <p className="text-xs text-sudo-neutral-4">6 min read</p>
-                   </div>
+                   {relatedArticles.length > 0 ? (
+                     relatedArticles.map((article : any, index : number) => (
+                       <Link 
+                         key={index}
+                         href={`/blogs/${article.slug}`}
+                         className="block p-4 bg-sudo-white-2 rounded-xl hover:bg-sudo-white-3 transition-colors duration-300 cursor-pointer"
+                       >
+                         <h4 className="font-semibold text-sudo-neutral-6 text-sm mb-2 line-clamp-2">
+                           {article.title}
+                         </h4>
+                         <p className="text-xs text-sudo-neutral-4">5 min read</p>
+                       </Link>
+                     ))
+                   ) : (
+                     <div className="p-4 bg-sudo-white-2 rounded-xl">
+                       <p className="text-xs text-sudo-neutral-4">No related articles available</p>
+                     </div>
+                   )}
                  </div>
                </div>
              </div>

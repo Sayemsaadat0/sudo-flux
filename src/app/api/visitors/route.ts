@@ -3,7 +3,7 @@ import '@/DB/db'; // ensure DB connection
 import { Visitor, Session } from '@/models/Visitor';
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // Utility function to generate 9-digit unique session ID
 function generateSessionId(): string {

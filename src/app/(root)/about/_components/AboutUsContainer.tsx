@@ -10,11 +10,14 @@ import TeamSection from "./TeamSection"
 import WhereWeAreBased from "./WhereWeAreBased"
 import { useVisitorTracking } from "@/hooks/useVisitorTracking"
 import { useSectionTracking } from "@/hooks/useSectionTracking"
+// import { useGetBlogList } from "@/hooks/blogs.hooks" // Unused for now
 
 const AboutUsContainer = () => {
     useSmoothScroll()
     const { sessionId } = useVisitorTracking()
     const { createSectionRef } = useSectionTracking('about-page', sessionId)
+    // Fetch blogs data for potential future use (currently unused but may be needed later)
+    // const { data: blogs } = useGetBlogList({ published: true })
 
     return (
         <div className="space-y-10 md:space-y-16 overflow-hidden rounded-b-4xl">

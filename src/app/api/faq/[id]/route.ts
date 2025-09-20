@@ -3,7 +3,7 @@ import "@/DB/db"; // ensure DB connection
 import { Faq } from "@/models/Faq";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // ======================
 // GET /api/faq/{id}
@@ -95,8 +95,7 @@ export async function PATCH(
     const question = formData.get("question") as string;
     const answer = formData.get("answer") as string;
     const category = formData.get("category") as string;
-    const status = formData.get("status") as string;
-    const priority = parseInt(formData.get("priority") as string);
+    const publish = formData.get("publish") as string;
 
     if (!question || !answer || !category) {
       return NextResponse.json(
@@ -106,13 +105,10 @@ export async function PATCH(
     }
 
     const updated = await Faq.findByIdAndUpdate(id, { 
-      $set: { 
-        question, 
-        answer, 
-        category, 
-        status: status || "active",
-        priority: priority || 1
-      } 
+      question, 
+      answer, 
+      category, 
+      publish: publish === "true"
     }, {
       new: true,
       runValidators: true,

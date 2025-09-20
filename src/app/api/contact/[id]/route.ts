@@ -3,7 +3,7 @@ import "@/DB/db"; // ensure DB connection
 import { Contact } from "@/models/Contact";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // ======================
 // GET /api/contact/{id}

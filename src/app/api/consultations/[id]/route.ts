@@ -4,7 +4,7 @@ import { Consultation } from "@/models/Consultation";
 import mongoose from "mongoose";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // ======================
 // GET /api/consultations/[id]

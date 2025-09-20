@@ -64,6 +64,19 @@ export const useGetBlogList = (params: BlogQueryParamsType = {}) => {
   });
 };
 
+export const useGetBlogBySlug = (slug: string) => {
+  return useQuery({
+    queryKey: ["blog", slug],
+    queryFn: () => {
+      return axiousResuest({
+        url: `/api/blogs?slug=${slug}&published=true`,
+        method: "get",
+      });
+    },
+    enabled: !!slug,
+  });
+};
+
 export const useAddBlog = () => {
   const queryClient = useQueryClient();
   const {user} = useAuthStore()

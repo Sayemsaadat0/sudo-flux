@@ -6,7 +6,7 @@ import { Contact } from "@/models/Contact";
 import { Faq } from "@/models/Faq";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // ======================
 // GET /api/crudLengthStats

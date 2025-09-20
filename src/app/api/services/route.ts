@@ -4,7 +4,7 @@ import { Service } from "@/models/Service";
 import { Category } from "@/models/Category";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // ======================
 // GET /api/services

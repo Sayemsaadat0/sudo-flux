@@ -10,7 +10,8 @@ interface VisitorTrackingProviderProps {
 export default function VisitorTrackingProvider({ children }: VisitorTrackingProviderProps) {
   const { 
     showConsentModal, 
-    updateSessionWithConsent 
+    updateSessionWithConsent,
+    isLocationFetching 
   } = useVisitorTracking()
 
   return (
@@ -22,6 +23,7 @@ export default function VisitorTrackingProvider({ children }: VisitorTrackingPro
         isOpen={showConsentModal}
         onAccept={() => updateSessionWithConsent(true)}
         onReject={() => updateSessionWithConsent(false)}
+        isLocationFetching={isLocationFetching}
       />
     </>
   )

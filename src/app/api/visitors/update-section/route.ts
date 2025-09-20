@@ -3,7 +3,7 @@ import '@/DB/db'; // ensure DB connection
 import { Visitor } from '@/models/Visitor';
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // POST endpoint - Update section tracking
 export async function POST(request: NextRequest) {

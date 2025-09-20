@@ -3,7 +3,7 @@ import "@/DB/db"; // ensure DB connection
 import { Faq } from "@/models/Faq";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // ======================
 // GET /api/faq
@@ -16,13 +16,15 @@ export async function GET(request: Request) {
     
     // Pagination parameters
     const page = parseInt(searchParams.get("page") || "1");
-    const per_page = parseInt(searchParams.get("per_page") || "10");
-    const limit = Math.min(per_page, 100); // Max 100 items per page
-    const skip = (page - 1) * limit;
+    // const per_page = parseInt(searchParams.get("per_page") || "10"); // Unused variable
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const finalLimit = Math.min(limit, 100); // Max 100 items per page
+    const skip = (page - 1) * finalLimit;
 
     // Search and filter parameters
     const search = searchParams.get("search") || "";
     const category = searchParams.get("category") || "";
+    const publish = searchParams.get("publish") || "";
 
     const sortField = ordering.startsWith("-") ? ordering.substring(1) : ordering;
     const sortDirection = ordering.startsWith("-") ? -1 : 1;
@@ -44,30 +46,39 @@ export async function GET(request: Request) {
       query.category = { $regex: category, $options: "i" };
     }
 
+    // Add publish filter
+    if (publish !== "") {
+      query.publish = publish === "true";
+    }
+
     // Get total count for pagination
     const total_count = await Faq.countDocuments(query);
-    const total_pages = Math.ceil(total_count / limit);
+    const total_pages = Math.ceil(total_count / finalLimit);
 
     // Get paginated results with search and filters
     const results = await Faq.find(query)
       .sort({ [sortField]: sortDirection })
       .skip(skip)
-      .limit(limit);
+      .limit(finalLimit);
 
     return NextResponse.json(
       { 
         success: true, 
         message: "FAQs Retrieved", 
-        results,
+        data: {
+          result: results,
+          total: total_count
+        },
         pagination: {
           current_page: page,
           total_pages,
-          per_page: limit,
+          per_page: finalLimit,
           total_count
         },
         filters: {
           search,
-          category
+          category,
+          publish
         }
       },
       { status: 200 }
@@ -93,8 +104,7 @@ export async function POST(request: Request) {
     const question = formData.get("question") as string;
     const answer = formData.get("answer") as string;
     const category = formData.get("category") as string;
-    const status = formData.get("status") as string;
-    const priority = parseInt(formData.get("priority") as string);
+    const publish = formData.get("publish") as string;
 
     if (!question || !answer || !category) {
       return NextResponse.json(
@@ -107,8 +117,7 @@ export async function POST(request: Request) {
       question, 
       answer, 
       category, 
-      status: status || "active",
-      priority: priority || 1
+      publish: publish === "true"
     });
     
     return NextResponse.json(

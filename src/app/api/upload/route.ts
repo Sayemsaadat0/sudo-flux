@@ -4,7 +4,7 @@ import { join } from "path";
 import { existsSync, mkdirSync } from "fs";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 export async function POST(request: NextRequest) {
   try {

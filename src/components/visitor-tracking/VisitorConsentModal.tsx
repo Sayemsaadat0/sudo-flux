@@ -7,9 +7,10 @@ interface VisitorConsentBoxProps {
   isOpen: boolean
   onAccept: () => void
   onReject: () => void
+  isLocationFetching?: boolean
 }
 
-export default function VisitorConsentBox({ isOpen, onAccept, onReject }: VisitorConsentBoxProps) {
+export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocationFetching = false }: VisitorConsentBoxProps) {
   const [isClosing, setIsClosing] = useState(false)
 
   const handleAccept = () => {
@@ -57,6 +58,13 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject }: Visito
           <p className="text-sudo-neutral-5 text-xs leading-relaxed mb-3">
             We use analytics to improve your experience. We may collect your location, device type, browser info, and page analytics.
           </p>
+          
+          {isLocationFetching && (
+            <div className="mb-4 p-2 bg-sudo-green-1 rounded text-xs text-sudo-green-6 flex items-center gap-2">
+              <div className="w-3 h-3 border-2 border-sudo-green-6 border-t-transparent rounded-full animate-spin"></div>
+              <span>Detecting your location...</span>
+            </div>
+          )}
           
           <div className="mb-4 p-2 bg-sudo-blue-1 rounded text-xs text-sudo-blue-6">
             <strong>Note:</strong> We never collect personal information. All data is anonymized.

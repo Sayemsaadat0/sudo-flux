@@ -2,34 +2,74 @@ import AccordionItem from "../animations/AccordionItem";
 import AnimatedImage from "../animations/AnimatedImage";
 import LineAnimation from "../animations/LineAnimation";
 
+// Props from server - Updated to match API response structure
+export interface FaqItem {
+  _id: string;
+  question: string;
+  answer: string;
+  category: "general" | "about-us" | "career";
+  publish: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
-// --- FAQ DATA (Stays the same) ---
-const supportFaqs = [
-  {
-    question: "What is your refund policy?",
-    answer: "We offer a 30-day money-back guarantee on all our products. If you're not satisfied for any reason, just contact our support team within 30 days of purchase for a full refund."
-  },
-  {
-    question: "How do I update my billing information?",
-    answer: "You can update your billing information directly from your account dashboard. Simply log in, navigate to the 'Billing' section, and follow the on-screen instructions to update your payment method."
-  },
-  {
-    question: "Can I use the product on multiple websites?",
-    answer: (
-      <>
-        <p>This depends on the license you purchase. Our <strong>Standard License</strong> is for a single website, while our <strong>Pro License</strong> allows for use on up to 5 websites.</p>
-        <p className="mt-2">For more than 5 sites, please <a href="/contact" className="text-blue-600 hover:underline">contact our sales team</a> for an enterprise solution.</p>
-      </>
-    )
-  },
-  {
-    question: "Where can I find my license key?",
-    answer: "Your license key is sent to you via email immediately after purchase. You can also find it at any time by logging into your account and visiting the 'My Licenses' page."
-  }
-];
+// API response structure
+export interface FaqApiResponse {
+  success: boolean;
+  data: {
+    result: FaqItem[];
+    total: number;
+  };
+  pagination?: {
+    current_page: number;
+    total_pages: number;
+    per_page: number;
+    total_count: number;
+  };
+}
+
+interface FaqSectionProps {
+  faqs: FaqApiResponse | FaqItem[]; // Support both API response and direct array
+}
 
 // --- THE PAGE COMPONENT WITH THE REVISED LAYOUT ---
-const FaqSection = () => {
+const FaqSection = ({ faqs }: FaqSectionProps) => {
+  // Helper function to extract FAQ items from either API response or direct array
+  const getFaqItems = (): FaqItem[] => {
+    // Check if it's an API response object
+    if (faqs && typeof faqs === 'object' && 'data' in faqs) {
+      const apiResponse = faqs as FaqApiResponse;
+      return apiResponse.data?.result || [];
+    }
+    // Otherwise, treat as direct array
+    return Array.isArray(faqs) ? faqs : [];
+  };
+
+  // Get FAQ items and filter only published ones
+  const faqItems = getFaqItems().filter(faq => faq.publish);
+
+  // Map FAQ data to AccordionItem format
+  const supportFaqs = faqItems.map((f) => ({
+    question: f.question,
+    answer: f.answer,
+  }));
+
+  // Handle empty state
+  if (supportFaqs.length === 0) {
+    return (
+      <section className="bg-sudo-white-1 py-12 sm:py-16 md:py-20 lg:py-24">
+        <div className="sudo-container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-sudo-neutral-6 font-heading mb-4">
+              FAQ
+            </h2>
+            <p className="text-sudo-neutral-4">No frequently asked questions available at the moment.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="bg-sudo-white-1 py-12 sm:py-16 md:py-20 lg:py-24">
       <div className="sudo-container mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,8 +109,8 @@ const FaqSection = () => {
             <div className="space-y-3 sm:space-y-4">
               <AccordionItem
                 faqs={supportFaqs}
-                className="border-blue-100" // Custom border color
-                questionClassName="font-bold font-heading hover:bg-blue-50 text-base sm:text-lg" // Custom question colors
+                className="border-blue-100"
+                questionClassName="font-bold font-heading hover:bg-blue-50 text-base sm:text-lg"
                 itemClassName="rounded-lg border border-gray-200 bg-white shadow-sm"
               />
             </div>

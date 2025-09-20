@@ -4,7 +4,7 @@ import { User } from "@/models/User";
 import jwt from "jsonwebtoken";
 
 // Configure for static export
-export const dynamic = "force-static";
+ 
 
 // POST /api/auth/login
 export async function POST(request: Request) {
