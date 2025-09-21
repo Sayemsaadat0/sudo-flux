@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import '@/DB/db' // ensure DB connection
 import { Visitor } from '@/models/Visitor'
 
+// Configure for static export
+ 
+
 // GET endpoint - Retrieve visitor by ID
 export async function GET(
   request: NextRequest,

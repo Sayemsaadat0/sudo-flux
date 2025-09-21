@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db";
 import { User } from "@/models/User";
 
+// Configure for static export
+ 
+
 // POST /api/auth/register
 export async function POST(request: Request) {
   try {

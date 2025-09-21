@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import '@/DB/db'; // ensure DB connection
 import { Visitor } from '@/models/Visitor';
 
+// Configure for static export
+ 
+
 // DELETE endpoint - Delete all visitor sessions
 export async function DELETE() {
   try {

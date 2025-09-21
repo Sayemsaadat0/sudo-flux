@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import '@/DB/db'; // ensure DB connection
 import { Visitor, Session } from '@/models/Visitor';
 
+// Configure for static export
+ 
+
 // Utility function to generate 9-digit unique session ID
 function generateSessionId(): string {
   return Math.floor(100000000 + Math.random() * 900000000).toString();

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Contact } from "@/models/Contact";
 
+// Configure for static export
+ 
+
 // ======================
 // GET /api/contact/{id}
 // - Get single contact by ID

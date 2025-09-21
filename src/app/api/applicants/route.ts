@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Applicant } from "@/models/Applicant";
+
+// Configure for static export
+ 
 import { Career } from "@/models/Career";
 import { put } from '@vercel/blob';
 

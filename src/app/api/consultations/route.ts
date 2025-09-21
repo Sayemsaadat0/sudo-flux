@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Consultation } from "@/models/Consultation";
 
+// Configure for static export
+ 
+
 // ======================
 // GET /api/consultations
 // - Get all consultations (with ordering, pagination, search, and filtering)

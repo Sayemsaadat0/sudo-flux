@@ -1,93 +1,88 @@
-
 import Button from "../ui/button";
-import AboutSectionCard from "../core/cards/BlogCard";
+import BlogCard from "../core/cards/BlogCard";
 import LineAnimation from "../animations/LineAnimation";
 import Link from "next/link";
-// import { div } from "framer-motion/client";
+import { formatDatestamp } from "@/lib/timeStamp";
+import { useGetBlogList } from "@/hooks/blogs.hooks";
 
 const BlogSection = () => {
+  // Use API hook to fetch blogs
+  const { data: blogData, isLoading, error } = useGetBlogList({
+    per_page: 6,
+    published: true,
+    ordering: "-createdAt"
+  });
 
-    const aboutData = [
-        {
-            title: "What Inspires Us",
-            description:
-                "We are fueled by curiosity, creativity, and a passion for meaningful progress. The world's complexities inspire us to think deeper, challenge the status quo, and find better ways to make things work. Whether it's solving a problem or enhancing an experience, we're constantly looking for ways to leave a positive mark — not just through technology, but through thoughtful, human-centered innovation.",
-            thumbnailUrl:
-                "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
-            category: "Inspiration",
-            date: "Dec 15, 2024",
-            readTime: "3 min read",
-            author: "Sudo Flux Team",
-            link: "#"
-        },
-        {
-            title: "What We Build",
-            description:
-                "We create solutions that merge form and function — blending elegant design with reliable performance. Our work spans digital experiences, tools, and systems built to serve real needs and scale with purpose. Every product we build is guided by clarity, empathy, and attention to detail, ensuring that it not only works but resonates with the people who use it.",
-            thumbnailUrl:
-                "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
-            category: "Development",
-            date: "Dec 12, 2024",
-            readTime: "4 min read",
-            author: "Sudo Flux Team",
-            link: "#"
-        },
-        {
-            title: "What Sets Us Apart",
-            description:
-                "Beyond our skills and tools, it's our mindset that makes the difference. We don't chase trends — we chase impact. We believe in asking the right questions, in listening closely, and in building with integrity. From how we collaborate to how we ship, everything we do is rooted in care, excellence, and a deep respect for the craft and the people behind it.",
-            thumbnailUrl:
-                "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
-            category: "Culture",
-            date: "Dec 10, 2024",
-            readTime: "5 min read",
-            author: "Sudo Flux Team",
-            link: "#"
-        },
-    ];
+  // Use API data
+  const blogs = blogData?.results || [];
+  // Map API data to card format
+  const mapped = blogs.map((b : any) => ({
+    title: b.title,
+    description: b.metaDescription || b.content?.slice(0, 140) + "...",
+    thumbnailUrl: b.banner_image || "https://images.unsplash.com/photo-1587440871875-191322ee64b0?q=80&w=1887&auto=format&fit=crop",
+    category: b.tags?.[0] || "General",
+    date: b.createdAt ? formatDatestamp(b.createdAt) : "",
+    readTime: "3 min read",
+    author: b.author || "",
+    link: b.slug ? `/blogs/${b.slug}` : "#",
+  }));
 
-
-    return (
-       <div className="">
-         <div className="sudo-container  space-y-10  py-20">
-            <div className="flex flex-col items-center justify-center">
-                <div className="flex flex-col justify-center items-center mx-auto w-fit">
-                    <h4 className="uppercase font-bold">Our Expertise, Your Success</h4>
-                    <div className="w-2/4">
-                        <LineAnimation />
-                    </div>
-                </div>
-                <h2 className="text-sudo-title-28 lg:text-sudo-title-48  md:leading-[60px] text-sudo-neutral-6 font-heading md:w-2/3 mx-auto text-center">Our Latest Blogs
-                </h2>
-
+  return (
+    <div>
+      <div className="sudo-container  space-y-10  py-20">
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col justify-center items-center mx-auto w-fit">
+            <h4 className="uppercase font-bold">Our Expertise, Your Success</h4>
+            <div className="w-2/4">
+              <LineAnimation />
             </div>
-            <div className="space-y-12 flex flex-col items-center justify-center">
-
-                <div className="grid gap-10 grid-cols-1 md:grid-cols-3 ">
-                    {aboutData.map((item, index) => (
-                        <AboutSectionCard
-                            key={index}
-                            title={item.title}
-                            description={item.description}
-                            thumbnailUrl={item.thumbnailUrl}
-                            category={item.category}
-                            date={item.date}
-                            readTime={item.readTime}
-                            author={item.author}
-                            link={item.link}
-                        />
-                    ))}
-                </div>
-
-                <Link href={'/about'} className="py-3">
-                    <Button label="Explore more" />
-                </Link>
-            </div>
-
-
+          </div>
+          <h2 className="text-sudo-title-28 lg:text-sudo-title-48  md:leading-[60px] text-sudo-neutral-6 font-heading md:w-2/3 mx-auto text-center">Our Latest Blogs
+          </h2>
         </div>
-       </div>
-    )
+
+        <div className="space-y-12 flex flex-col items-center justify-center">
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sudo-blue-6 mx-auto mb-4"></div>
+              <p className="text-sudo-neutral-4">Loading blogs...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-500 mb-4">Failed to load blogs</p>
+              <p className="text-sudo-neutral-4">Please try again later</p>
+            </div>
+          ) : mapped.length > 0 ? (
+            <>
+              <div className="grid gap-10 grid-cols-1 md:grid-cols-3 ">
+                {mapped.map((item : any, index : number) => (
+                  <BlogCard
+                    key={index}
+                    title={item.title}
+                    description={item.description}
+                    thumbnailUrl={item.thumbnailUrl}
+                    category={item.category}
+                    date={item.date}
+                    readTime={item.readTime}
+                    author={item.author}
+                    link={item.link}
+                  />
+                ))}
+              </div>
+
+              <Link href={'/blogs'} className="py-3">
+                <Button label="Explore more" />
+              </Link>
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-sudo-neutral-4">No blogs available at the moment.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 export default BlogSection
 

@@ -3,6 +3,9 @@ import "@/DB/db"; // ensure DB connection
 import { Consultation } from "@/models/Consultation";
 import mongoose from "mongoose";
 
+// Configure for static export
+ 
+
 // ======================
 // GET /api/consultations/[id]
 // - Get single consultation by ID

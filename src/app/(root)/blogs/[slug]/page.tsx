@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import BlogPostClient from './_components/BlogPostClient';
 
 // Sample blog data - in a real app, this would come from a CMS or database
@@ -316,13 +315,11 @@ interface BlogPostPageProps {
 
 const BlogPostPage = async ({ params }: BlogPostPageProps) => {
   const { slug } = await params;
+  
+  // Try to find post in static data as fallback
   const post = blogPosts.find(post => post.slug === slug);
 
-  if (!post) {
-    notFound();
-  }
-
-  return <BlogPostClient post={post} />;
+  return <BlogPostClient post={post} slug={slug} />;
 };
 
 export default BlogPostPage;

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { User } from "@/models/User";
 
+// Configure for static export
+ 
+
 // ======================
 // GET API
 // - Get all users (with ordering, pagination, search, and filtering)

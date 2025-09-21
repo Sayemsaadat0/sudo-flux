@@ -3,6 +3,9 @@ import "@/DB/db"; // ensure DB connection
 import { Service } from "@/models/Service";
 import { Category } from "@/models/Category";
 
+// Configure for static export
+ 
+
 // ======================
 // GET /api/services
 // - Get all services (with ordering, pagination, search, and filtering)

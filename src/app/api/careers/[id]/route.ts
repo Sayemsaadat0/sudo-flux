@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Career } from "@/models/Career";
 
+
 // ======================
 // GET /api/careers/[id]
 // - Get single career by ID

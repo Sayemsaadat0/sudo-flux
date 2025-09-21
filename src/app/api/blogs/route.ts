@@ -3,6 +3,9 @@ import "@/DB/db"; // ensure DB connection
 import { Blog } from "@/models/Blog";
 import { put } from '@vercel/blob';
 
+// Configure for static export
+ 
+
 // ======================
 // GET /api/blogs
 // - Get all blogs (with ordering, pagination, search, and filtering)
@@ -23,6 +26,7 @@ export async function GET(request: Request) {
     const author = searchParams.get("author") || "";
     const tags = searchParams.get("tags") || "";
     const published = searchParams.get("published") || "";
+    const slug = searchParams.get("slug") || "";
 
     const sortField = ordering.startsWith("-")
       ? ordering.substring(1)
@@ -54,6 +58,9 @@ export async function GET(request: Request) {
     if (published !== "") {
       query.published =
         published === "true" ? true : published === "false" ? false : published;
+    }
+    if (slug) {
+      query.slug = slug;
     }
 
     // Get total count for pagination
@@ -174,7 +181,6 @@ export async function POST(request: Request) {
     // Parse tags
     const tags = tagsString ? JSON.parse(tagsString) : [];
 
-    // Create new blog instance and save to trigger pre-save hooks
     const blogData = {
       title,
       content,

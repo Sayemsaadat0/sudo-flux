@@ -8,6 +8,9 @@ import { User } from "@/models/User";
 // Note: In production, verify JWT properly in a middleware. Here we keep it simple.
 import jwt from "jsonwebtoken";
 
+// Configure for static export
+ 
+
 export async function POST(request: Request) {
   try {
     const authHeader = request.headers.get("authorization") || request.headers.get("Authorization");

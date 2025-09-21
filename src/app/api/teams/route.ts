@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Team } from "@/models/Team";
 
+// Configure for static export
+ 
+
 // ======================
 // GET /api/teams
 // - Get all team members (with ordering, pagination, search, and filtering)

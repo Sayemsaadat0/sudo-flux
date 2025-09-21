@@ -5,6 +5,9 @@ import { Industry } from "@/models/Industry";
 import { Contact } from "@/models/Contact";
 import { Faq } from "@/models/Faq";
 
+// Configure for static export
+ 
+
 // ======================
 // GET /api/crudLengthStats
 // - Get count statistics for all CRUD entities

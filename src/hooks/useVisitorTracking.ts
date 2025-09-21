@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useCreateOrUpdateVisitor } from './visitors.hooks'
+import { useUserLocation } from './useUserLocation'
 import { SessionDetails, PageAnalytics } from '@/models/Visitor'
 
 // Utility function to get device type
@@ -46,25 +47,53 @@ const getBrowserType = (): string => {
   return 'Unknown Browser'
 }
 
-// Utility function to get location (mock for now - you can integrate with a real IP geolocation service)
-const getLocation = async (): Promise<string> => {
+// Utility function to get location from cached data or IP geolocation
+const getLocationFromCache = (): string => {
   try {
-    // You can replace this with a real IP geolocation service
-    // For now, we'll use a mock location
-    return "Unknown Location"
-  } catch {
-    return "Unknown Location"
+    const cachedLocation = localStorage.getItem('visitor-location-cache')
+    if (cachedLocation) {
+      const { location, timestamp } = JSON.parse(cachedLocation)
+      // Cache valid for 24 hours
+      const isExpired = Date.now() - timestamp > 24 * 60 * 60 * 1000
+      if (!isExpired) {
+        return location
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to read location cache:', error)
   }
+  return "pending"
 }
 
-// Utility function to get IP address (mock for now)
-const getIPAddress = async (): Promise<string> => {
+// Utility function to get IP address from cached data
+const getIPFromCache = (): string => {
   try {
-    // You can replace this with a real IP detection service
-    // For now, we'll use a mock IP
-    return "192.168.1.1"
-  } catch {
-    return "Unknown IP"
+    const cachedLocation = localStorage.getItem('visitor-location-cache')
+    if (cachedLocation) {
+      const { ip, timestamp } = JSON.parse(cachedLocation)
+      // Cache valid for 24 hours
+      const isExpired = Date.now() - timestamp > 24 * 60 * 60 * 1000
+      if (!isExpired) {
+        return ip
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to read IP cache:', error)
+  }
+  return "pending"
+}
+
+// Utility function to cache location data
+const cacheLocationData = (location: string, ip: string) => {
+  try {
+    const cacheData = {
+      location,
+      ip,
+      timestamp: Date.now()
+    }
+    localStorage.setItem('visitor-location-cache', JSON.stringify(cacheData))
+  } catch (error) {
+    console.warn('Failed to cache location data:', error)
   }
 }
 
@@ -78,8 +107,10 @@ export const useVisitorTracking = () => {
   const [isInitialized, setIsInitialized] = useState(false)
   const [currentPage, setCurrentPage] = useState('')
   const [pageStartTime, setPageStartTime] = useState<number>(Date.now())
+  const [isLocationFetching, setIsLocationFetching] = useState(false)
   
   const createOrUpdateVisitor = useCreateOrUpdateVisitor()
+  const { locationData, fetchLocation, loading: locationLoading } = useUserLocation()
 
   // Initialize visitor tracking
   const initializeTracking = useCallback(async () => {
@@ -134,23 +165,32 @@ export const useVisitorTracking = () => {
           localStorage.removeItem('visitor-session-id')
           localStorage.removeItem('visitor-consent')
           
-          // Create new session
-          const response = await createOrUpdateVisitor.mutateAsync({
-            session_details: {
-              ip_address: 'pending',
-              location: 'pending',
-              browser_type: getBrowserType(),
-              device_type: getDeviceType()
-            },
-            analytics: analytics
-          })
-          
-          if (response.success && response.data) {
-            const newSessionId = response.data.session_id
-            setSessionId(newSessionId)
-            localStorage.setItem('visitor-session-id', newSessionId)
-            setShowConsentModal(true)
+          // Create new session with cached location data if available
+          try {
+            const cachedIP = getIPFromCache()
+            const cachedLocation = getLocationFromCache()
+            
+            const response = await createOrUpdateVisitor.mutateAsync({
+              session_details: {
+                ip_address: cachedIP,
+                location: cachedLocation,
+                browser_type: getBrowserType(),
+                device_type: getDeviceType()
+              },
+              analytics: analytics
+            })
+            
+            if (response.success && response.data) {
+              const newSessionId = response.data.session_id
+              setSessionId(newSessionId)
+              localStorage.setItem('visitor-session-id', newSessionId)
+            }
+          } catch (createError) {
+            console.error('Failed to create new session:', createError)
           }
+          
+          // Always show consent modal when creating new session (regardless of API success/failure)
+          setShowConsentModal(true)
         }
       } else {
         // Create new session only if none exists
@@ -165,26 +205,34 @@ export const useVisitorTracking = () => {
         }]
 
         const initialSessionDetails: SessionDetails = {
-          ip_address: 'pending',
-          location: 'pending',
+          ip_address: getIPFromCache(),
+          location: getLocationFromCache(),
           browser_type: getBrowserType(),
           device_type: getDeviceType()
         }
 
-        const response = await createOrUpdateVisitor.mutateAsync({
-          session_details: initialSessionDetails,
-          analytics: initialAnalytics
-        })
+        try {
+          const response = await createOrUpdateVisitor.mutateAsync({
+            session_details: initialSessionDetails,
+            analytics: initialAnalytics
+          })
 
-        if (response.success && response.data) {
-          const newSessionId = response.data.session_id
-          setSessionId(newSessionId)
-          localStorage.setItem('visitor-session-id', newSessionId)
-          setShowConsentModal(true)
+          if (response.success && response.data) {
+            const newSessionId = response.data.session_id
+            setSessionId(newSessionId)
+            localStorage.setItem('visitor-session-id', newSessionId)
+          }
+        } catch (createError) {
+          console.error('Failed to create initial session:', createError)
         }
+        
+        // Always show consent modal for new users (regardless of API success/failure)
+        setShowConsentModal(true)
       }
     } catch (error) {
       console.error('Failed to initialize visitor tracking:', error)
+      // Even if initialization fails completely, show the consent modal
+      setShowConsentModal(true)
     } finally {
       setIsTracking(false)
     }
@@ -192,23 +240,82 @@ export const useVisitorTracking = () => {
 
   // Update session with user consent
   const updateSessionWithConsent = useCallback(async (consent: boolean) => {
-    if (!sessionId) return
+    // Always close the modal first, regardless of API success/failure
+    setShowConsentModal(false)
+    
+    // Store consent in localStorage immediately
+    localStorage.setItem('visitor-consent', consent ? 'accepted' : 'rejected')
+    
+    // If no session ID, we can't update the session but consent is still recorded
+    if (!sessionId) {
+      console.warn('No session ID available, consent recorded in localStorage only')
+      return
+    }
 
     try {
       let sessionDetails: SessionDetails
 
       if (consent) {
-        // Get real user details
-        const [ipAddress, location] = await Promise.all([
-          getIPAddress(),
-          getLocation()
-        ])
-
-        sessionDetails = {
-          ip_address: ipAddress,
-          location: location,
-          browser_type: getBrowserType(),
-          device_type: getDeviceType()
+        // Check if we have cached location data first
+        const cachedIP = getIPFromCache()
+        const cachedLocation = getLocationFromCache()
+        
+        if (cachedIP !== "pending" && cachedLocation !== "pending") {
+          // Use cached data
+          sessionDetails = {
+            ip_address: cachedIP,
+            location: cachedLocation,
+            browser_type: getBrowserType(),
+            device_type: getDeviceType()
+          }
+        } else {
+          // Fetch fresh location data
+          setIsLocationFetching(true)
+          try {
+            await fetchLocation()
+            
+            // Wait for location data to be available
+            const maxWaitTime = 10000 // 10 seconds
+            const startTime = Date.now()
+            
+            while (!locationData && (Date.now() - startTime) < maxWaitTime) {
+              await new Promise(resolve => setTimeout(resolve, 100))
+            }
+            
+            if (locationData) {
+              // Format location for visitor tracking
+              const locationString = `${locationData.city}, ${locationData.country}`
+              
+              // Cache the location data
+              cacheLocationData(locationString, locationData.ip)
+              
+              sessionDetails = {
+                ip_address: locationData.ip,
+                location: locationString,
+                browser_type: getBrowserType(),
+                device_type: getDeviceType()
+              }
+            } else {
+              // Fallback to cached or pending values
+              sessionDetails = {
+                ip_address: cachedIP !== "pending" ? cachedIP : "unknown",
+                location: cachedLocation !== "pending" ? cachedLocation : "unknown",
+                browser_type: getBrowserType(),
+                device_type: getDeviceType()
+              }
+            }
+          } catch (locationError) {
+            console.warn('Failed to fetch location data:', locationError)
+            // Use cached or fallback data
+            sessionDetails = {
+              ip_address: cachedIP !== "pending" ? cachedIP : "unknown",
+              location: cachedLocation !== "pending" ? cachedLocation : "unknown",
+              browser_type: getBrowserType(),
+              device_type: getDeviceType()
+            }
+          } finally {
+            setIsLocationFetching(false)
+          }
         }
       } else {
         // Use anonymized data
@@ -235,12 +342,12 @@ export const useVisitorTracking = () => {
       if (!response.ok) {
         throw new Error('Failed to update session details')
       }
-
-      setShowConsentModal(false)
     } catch (error) {
       console.error('Failed to update session with consent:', error)
+      // Note: Modal is already closed and consent is already stored in localStorage
+      // The user experience is not affected by API failures
     }
-  }, [sessionId])
+  }, [sessionId, locationData, fetchLocation])
 
   // Track page changes
   const trackPageChange = useCallback(async (newPage: string) => {
@@ -321,12 +428,14 @@ export const useVisitorTracking = () => {
       // User has existing session, set it and check consent
       setSessionId(existingSessionId)
       if (!hasConsent) {
+        // Always show consent modal for existing sessions without consent
         setShowConsentModal(true)
       }
       // Still initialize tracking to update the session
       initializeTracking()
     } else if (!hasConsent) {
-      // No session and no consent, create new session
+      // No session and no consent, show modal immediately and then initialize tracking
+      setShowConsentModal(true)
       initializeTracking()
     }
   }, [initializeTracking]) // Include initializeTracking dependency
@@ -352,6 +461,8 @@ export const useVisitorTracking = () => {
     sessionId,
     showConsentModal,
     isTracking,
+    isLocationFetching,
+    locationLoading,
     updateSessionWithConsent,
     trackSectionChange,
     initializeTracking

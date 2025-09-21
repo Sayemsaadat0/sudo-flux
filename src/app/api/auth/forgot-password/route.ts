@@ -3,6 +3,9 @@ import "@/DB/db";
 import { User } from "@/models/User";
 import crypto from "crypto";
 
+// Configure for static export
+ 
+
 // POST /api/auth/forgot-password
 // body: { email }
 export async function POST(request: Request) {
