@@ -54,3 +54,19 @@ export const measurePerformance = (name: string, fn: () => void) => {
     fn();
   }
 };
+
+// Visitor code generation utilities
+export const generateVisitorCode = (): string => {
+  // Generate a 12-digit unique visitor code
+  return Math.floor(100000000000 + Math.random() * 900000000000).toString();
+};
+
+export const formatVisitorCode = (code: string): string => {
+  // Format visitor code with dashes for better readability: 123-456-789-012
+  return code.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1-$2-$3-$4');
+};
+
+export const validateVisitorCode = (code: string): boolean => {
+  // Validate that the code is exactly 12 digits
+  return /^\d{12}$/.test(code);
+};

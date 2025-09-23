@@ -21,7 +21,7 @@ export type SessionDetails = {
 };
 
 export type Session = {
-  session_id: string;   // 9-digit unique session id
+  session_id: string;   // 12-digit unique session id
   session_details: SessionDetails;
   created_at?: Date;
   updated_at?: Date;
@@ -57,7 +57,7 @@ const SessionSchema = new Schema({
     type: String, 
     required: true, 
     unique: true,
-    length: 9 // 9-digit unique session id
+    length: 12 // 12-digit unique session id
   },
   session_details: { type: SessionDetailsSchema, required: true },
   analytics: [PageAnalyticsSchema]

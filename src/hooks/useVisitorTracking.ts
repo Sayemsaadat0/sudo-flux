@@ -240,15 +240,20 @@ export const useVisitorTracking = () => {
 
   // Update session with user consent
   const updateSessionWithConsent = useCallback(async (consent: boolean) => {
+    console.log('🔄 updateSessionWithConsent called with:', consent)
+    console.log('📋 Current sessionId:', sessionId)
+    
     // Always close the modal first, regardless of API success/failure
     setShowConsentModal(false)
     
     // Store consent in localStorage immediately
     localStorage.setItem('visitor-consent', consent ? 'accepted' : 'rejected')
+    console.log('✅ Modal closed and consent stored in localStorage')
     
     // If no session ID, we can't update the session but consent is still recorded
     if (!sessionId) {
-      console.warn('No session ID available, consent recorded in localStorage only')
+      console.warn('❌ No session ID available, consent recorded in localStorage only')
+      console.log('ℹ️ Note: API calls are now handled by VisitorConsentModal component')
       return
     }
 
@@ -256,78 +261,83 @@ export const useVisitorTracking = () => {
       let sessionDetails: SessionDetails
 
       if (consent) {
-        // Check if we have cached location data first
-        const cachedIP = getIPFromCache()
-        const cachedLocation = getLocationFromCache()
-        
-        if (cachedIP !== "pending" && cachedLocation !== "pending") {
-          // Use cached data
-          sessionDetails = {
-            ip_address: cachedIP,
-            location: cachedLocation,
-            browser_type: getBrowserType(),
-            device_type: getDeviceType()
+        // Always fetch fresh location data when user accepts
+        setIsLocationFetching(true)
+        try {
+          await fetchLocation()
+          
+          // Wait for location data to be available with timeout
+          const maxWaitTime = 15000 // 15 seconds
+          const startTime = Date.now()
+          
+          while (!locationData && (Date.now() - startTime) < maxWaitTime) {
+            await new Promise(resolve => setTimeout(resolve, 200))
           }
-        } else {
-          // Fetch fresh location data
-          setIsLocationFetching(true)
-          try {
-            await fetchLocation()
+          
+          if (locationData) {
+            // Format location for visitor tracking
+            const locationString = `${locationData.city}, ${locationData.country}`
             
-            // Wait for location data to be available
-            const maxWaitTime = 10000 // 10 seconds
-            const startTime = Date.now()
+            // Cache the location data for future use
+            cacheLocationData(locationString, locationData.ip)
             
-            while (!locationData && (Date.now() - startTime) < maxWaitTime) {
-              await new Promise(resolve => setTimeout(resolve, 100))
+            sessionDetails = {
+              ip_address: locationData.ip,
+              location: locationString,
+              browser_type: getBrowserType(),
+              device_type: getDeviceType()
             }
             
-            if (locationData) {
-              // Format location for visitor tracking
-              const locationString = `${locationData.city}, ${locationData.country}`
-              
-              // Cache the location data
-              cacheLocationData(locationString, locationData.ip)
-              
-              sessionDetails = {
-                ip_address: locationData.ip,
-                location: locationString,
-                browser_type: getBrowserType(),
-                device_type: getDeviceType()
-              }
-            } else {
-              // Fallback to cached or pending values
-              sessionDetails = {
-                ip_address: cachedIP !== "pending" ? cachedIP : "unknown",
-                location: cachedLocation !== "pending" ? cachedLocation : "unknown",
-                browser_type: getBrowserType(),
-                device_type: getDeviceType()
-              }
-            }
-          } catch (locationError) {
-            console.warn('Failed to fetch location data:', locationError)
-            // Use cached or fallback data
+            console.log('Location data successfully fetched and processed:', {
+              ip: locationData.ip,
+              location: locationString,
+              city: locationData.city,
+              country: locationData.country,
+              region: locationData.region,
+              timezone: locationData.timezone
+            })
+          } else {
+            // Fallback to cached data or default values
+            const cachedIP = getIPFromCache()
+            const cachedLocation = getLocationFromCache()
+            
             sessionDetails = {
               ip_address: cachedIP !== "pending" ? cachedIP : "unknown",
               location: cachedLocation !== "pending" ? cachedLocation : "unknown",
               browser_type: getBrowserType(),
               device_type: getDeviceType()
             }
-          } finally {
-            setIsLocationFetching(false)
+            
+            console.warn('Location data not available, using fallback values')
           }
+        } catch (locationError) {
+          console.warn('Failed to fetch location data:', locationError)
+          // Use cached or fallback data
+          const cachedIP = getIPFromCache()
+          const cachedLocation = getLocationFromCache()
+          
+          sessionDetails = {
+            ip_address: cachedIP !== "pending" ? cachedIP : "unknown",
+            location: cachedLocation !== "pending" ? cachedLocation : "unknown",
+            browser_type: getBrowserType(),
+            device_type: getDeviceType()
+          }
+        } finally {
+          setIsLocationFetching(false)
         }
       } else {
-        // Use anonymized data
+        // Use anonymized data when user rejects
         sessionDetails = {
           ip_address: 'anonymized',
           location: 'anonymized',
           browser_type: getBrowserType(),
           device_type: getDeviceType()
         }
+        
+        console.log('User rejected tracking, using anonymized data')
       }
 
-      // Update the session with real details using the details-update API
+      // Update the session with details using the details-update API
       const response = await fetch('/api/visitors/details-update', {
         method: 'POST',
         headers: {
@@ -342,6 +352,8 @@ export const useVisitorTracking = () => {
       if (!response.ok) {
         throw new Error('Failed to update session details')
       }
+      
+      console.log('Session details updated successfully:', sessionDetails)
     } catch (error) {
       console.error('Failed to update session with consent:', error)
       // Note: Modal is already closed and consent is already stored in localStorage

@@ -1,10 +1,10 @@
 'use client'
 
 import { Calendar, Globe, Monitor, Smartphone, Tablet, MapPin, Clock } from 'lucide-react'
-import { VisitorDetails } from '@/hooks/visitor.hooks'
+import { VisitorResponseType } from '@/hooks/visitor.hooks'
 
 interface VisitorDetailsCardProps {
-  visitor: VisitorDetails
+  visitor: VisitorResponseType
 }
 
 const VisitorDetailsCard = ({ visitor }: VisitorDetailsCardProps) => {
@@ -111,7 +111,7 @@ const VisitorDetailsCard = ({ visitor }: VisitorDetailsCardProps) => {
               <span className="text-sm font-medium text-gray-700">Session Started</span>
             </div>
             <p className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded">
-              {formatDate(visitor.created_at)}
+              {visitor.created_at ? formatDate(visitor.created_at) : 'N/A'}
             </p>
           </div>
 
@@ -122,7 +122,7 @@ const VisitorDetailsCard = ({ visitor }: VisitorDetailsCardProps) => {
               <span className="text-sm font-medium text-gray-700">Last Updated</span>
             </div>
             <p className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded">
-              {formatDate(visitor.updated_at)}
+              {visitor.updated_at ? formatDate(visitor.updated_at) : 'N/A'}
             </p>
           </div>
         </div>

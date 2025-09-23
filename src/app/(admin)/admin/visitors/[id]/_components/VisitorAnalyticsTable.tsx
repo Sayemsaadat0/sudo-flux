@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { ChevronDown, ChevronRight, Clock, Navigation, Eye } from 'lucide-react'
-import { VisitorDetails } from '@/hooks/visitor.hooks'
+import { VisitorResponseType } from '@/hooks/visitor.hooks'
 
 interface VisitorAnalyticsTableProps {
-  analytics: VisitorDetails['analytics']
+  analytics: VisitorResponseType['analytics']
 }
 
 const VisitorAnalyticsTable = ({ analytics }: VisitorAnalyticsTableProps) => {
@@ -35,8 +35,8 @@ const VisitorAnalyticsTable = ({ analytics }: VisitorAnalyticsTableProps) => {
     }
   }
 
-  const getTotalDuration = (sections: VisitorDetails['analytics'][0]['page_sections']) => {
-    return sections.reduce((total, section) => total + section.duration, 0)
+  const getTotalDuration = (sections: VisitorResponseType['analytics'][0]['page_sections']) => {
+    return sections.reduce((total : number, section : any) => total + section.duration, 0)
   }
 
   const getPageIcon = (pageName: string) => {
@@ -75,7 +75,7 @@ const VisitorAnalyticsTable = ({ analytics }: VisitorAnalyticsTableProps) => {
 
   return (
     <div className="space-y-4">
-      {analytics.map((page, pageIndex) => {
+      {analytics.map((page : any, pageIndex : any) => { 
         const isExpanded = expandedPages.has(pageIndex)
         const totalPageDuration = getTotalDuration(page.page_sections)
         
@@ -96,11 +96,11 @@ const VisitorAnalyticsTable = ({ analytics }: VisitorAnalyticsTableProps) => {
                   <span className="text-lg">{getPageIcon(page.page_name)}</span>
                   <div>
                     <h3 className="font-medium text-gray-900">
-                      {page.page_name.replace(/^\//, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      {page.page_name.replace(/^\//, '').replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                     </h3>
                     {page.previous_page && (
                       <p className="text-sm text-gray-500">
-                        From: {page.previous_page.replace(/^\//, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        From: {page.previous_page.replace(/^\//, '').replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                       </p>
                     )}
                   </div>
@@ -127,18 +127,18 @@ const VisitorAnalyticsTable = ({ analytics }: VisitorAnalyticsTableProps) => {
                   </h4>
                 </div>
                 <div className="divide-y divide-gray-100">
-                  {page.page_sections.map((section, sectionIndex) => (
+                  {page.page_sections.map((section : any, sectionIndex : any  ) => (
                     <div key={sectionIndex} className="px-4 py-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <span className="text-lg">{getSectionIcon(section.name)}</span>
                           <div>
                             <p className="font-medium text-gray-900">
-                              {section.name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              {section.name.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                             </p>
                             {section.previous_section && (
                               <p className="text-sm text-gray-500">
-                                From: {section.previous_section.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                From: {section.previous_section.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                               </p>
                             )}
                           </div>
