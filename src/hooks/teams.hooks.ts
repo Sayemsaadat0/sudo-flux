@@ -9,15 +9,10 @@ import { useQuery } from "@tanstack/react-query";
 export interface TeamResponseType {
   _id?: string;
   name: string;
+  image?: string;
   title: string;
-  image: string;
-  bio?: string;
-  socials: {
-    name: string;
-    url: string;
-  }[];
-  order: number;
-  isActive: boolean;
+  linkedin?: string;
+  status: "current" | "former";
   createdAt?: string;
   updatedAt?: string;
 }
@@ -25,18 +20,17 @@ export interface TeamResponseType {
 interface TeamQueryParamsType {
   page?: number;
   per_page?: number;
-  ordering?: string;   // 👈 allow override
+  ordering?: string;
   search?: string;
-  isActive?: boolean;
-  [key: string]: any; // allow future extra params
+  title?: string;
+  status?: string;
+  [key: string]: any;
 }
 
 export const useGetTeamList = (params: TeamQueryParamsType = {}) => {
-  // set default ordering
   const finalParams: TeamQueryParamsType = {
-    ordering: "order", 
-    isActive: true,
-    ...params, // allow overrides
+    ordering: "-createdAt", 
+    ...params,
   };
 
   return useQuery({
@@ -51,7 +45,7 @@ export const useGetTeamList = (params: TeamQueryParamsType = {}) => {
       });
 
       const queryString = searchParams.toString();
-      const url = `/api/teams${queryString ? `?${queryString}` : ""}`;
+      const url = `/api/teams/${queryString ? `?${queryString}` : ""}`;
 
       return axiousResuest({
         url,
@@ -61,9 +55,23 @@ export const useGetTeamList = (params: TeamQueryParamsType = {}) => {
   });
 };
 
+export const useGetTeam = (id: string) => {
+  return useQuery({
+    queryKey: ["team", id],
+    queryFn: () => {
+      return axiousResuest({
+        url: `/api/teams/${id}`,
+        method: "get",
+      });
+    },
+    enabled: !!id,
+  });
+};
+
 export const useAddTeam = () => {
   const queryClient = useQueryClient();
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
+  
   return useMutation({
     mutationFn: async (formData: FormData) => {
       return await axiousResuest({
@@ -83,12 +91,13 @@ export const useAddTeam = () => {
 
 export const useUpdateTeam = (id: string) => {
   const queryClient = useQueryClient();
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
+  
   return useMutation({
     mutationFn: async (formData: FormData) => {
       return await axiousResuest({
         url: `/api/teams/${id}`,
-        method: "put",
+        method: "patch",
         data: formData,
         headers: {
           Authorization: `Bearer ${user?.token}`,
@@ -101,19 +110,20 @@ export const useUpdateTeam = (id: string) => {
   });
 };
 
-export const useDeleteTeam = (id: string) => {
+export const useDeleteTeam = () => {
   const queryClient = useQueryClient();
-  const {user} = useAuthStore()
+  const { user } = useAuthStore();
+  
   return useMutation({
-    mutationFn: async (body: TeamResponseType) =>
-      await axiousResuest({
-        url: `/api/teams/${id}/`,
+    mutationFn: async (id: string) => {
+      return await axiousResuest({
+        url: `/api/teams/${id}`,
         method: "delete",
-        data: body,
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },
-      }),
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teamList"] });
     },

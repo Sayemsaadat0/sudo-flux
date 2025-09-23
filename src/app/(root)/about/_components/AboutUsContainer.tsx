@@ -2,7 +2,7 @@
 import useSmoothScroll from "@/hooks/useSmoothScroll"
 import AboutUsBanner from "./AboutUsBanner"
 import AboutStats from "./AboutStats"
-import TestimonialsSection from "@/components/home-page/TestimonialSection"
+// import TestimonialsSection from "@/components/home-page/TestimonialSection"
 import ContactSection from "@/components/home-page/ContactSection"
 import BlogSection from "@/components/home-page/BlogSection"
 import CtaSection from "@/components/home-page/CtaSection"
@@ -37,9 +37,9 @@ const AboutUsContainer = () => {
                 <div ref={createSectionRef('about-team-section')}>
                     <TeamSection />
                 </div>
-                <div ref={createSectionRef('about-testimonials-section')}>
+                {/* <div ref={createSectionRef('about-testimonials-section')}>
                     <TestimonialsSection />
-                </div>
+                </div> */}
                 <div ref={createSectionRef('about-contact-section')}>
                     <ContactSection />
                 </div>

@@ -1,5 +1,6 @@
 'use client'
 import { MapPin, Globe, Users, Clock } from "lucide-react";
+import Link from "next/link";
 import LineAnimation from "@/components/animations/LineAnimation";
 import LocationMap from "./LocationMap";
 
@@ -165,9 +166,11 @@ const WhereWeAreBased = () => {
                             No matter where you are in the world, we&apos;re here to help bring your vision to life. 
                             Let&apos;s connect and start building something amazing together.
                         </p>
-                        <button className="bg-gradient-to-r from-sudo-purple-5 to-sudo-blue-5 text-sudo-white-1 px-8 py-3 rounded-full font-semibold hover:from-sudo-purple-6 hover:to-sudo-blue-6 transition-all duration-300 transform hover:scale-105">
-                            Get In Touch
-                        </button>
+                        <Link href="/contact">
+                            <button className="bg-gradient-to-r from-sudo-purple-5 to-sudo-blue-5 text-sudo-white-1 px-8 py-3 rounded-full font-semibold hover:from-sudo-purple-6 hover:to-sudo-blue-6 transition-all duration-300 transform hover:scale-105">
+                                Get In Touch
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>

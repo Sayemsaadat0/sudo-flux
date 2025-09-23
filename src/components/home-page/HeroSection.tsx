@@ -25,14 +25,16 @@ const HeroSection = () => {
                         We help businesses scale and succeed in the digital landscape through innovative strategies, cutting-edge technology, and personalized consulting services.
                     </p>
                     <div className="flex  justify-center md:justify-start items-center gap-3 sm:gap-4 w-full">
-                        <Button
-                            icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />}
-                            icon_style="border  border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100"
-                            className="text-sudo-white-2 w-full sm:w-auto min-w-[100px] max-w-[w00px]"
-                            label="Free Consultation"
-                            size="md"
-                        />
-                        <Link className="w-full sm:w-auto" href={'/#'}>
+                        <Link className="w-full sm:w-auto" href={'/free-consultation'}>
+                            <Button
+                                icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />}
+                                icon_style="border  border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100"
+                                className="text-sudo-white-2 w-full sm:w-auto min-w-[100px] max-w-[w00px]"
+                                label="Free Consultation"
+                                size="md"
+                            />
+                        </Link>
+                        <Link className="w-full sm:w-auto" href={'/contact'}>
                             <Button
                                 icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />}
                                 variant={'outlineBtn'}

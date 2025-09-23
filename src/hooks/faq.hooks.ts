@@ -48,12 +48,11 @@ export const useGetFaqList = (params: FaqQueryParamsType = {}) => {
       return await axiousResuest({
         url,
         method: "get",
-        headers: {
+        headers: user?.token ? {
           Authorization: `Bearer ${user?.token}`,
-        },
+        } : {},
       });
     },
-    enabled: !!user?.token,
   });
 };
 
@@ -67,12 +66,12 @@ export const useGetFaq = (id: string) => {
       return await axiousResuest({
         url: `/api/faq/${id}`,
         method: "get",
-        headers: {
+        headers: user?.token ? {
           Authorization: `Bearer ${user?.token}`,
-        },
+        } : {},
       });
     },
-    enabled: !!user?.token && !!id,
+    enabled: !!id,
   });
 };
 

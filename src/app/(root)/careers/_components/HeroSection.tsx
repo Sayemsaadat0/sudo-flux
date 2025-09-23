@@ -121,11 +121,7 @@ const HeroSection = () => {
                 <div className="text-sudo-white-6 text-sm font-medium">Paid Days Off</div>
                 <div className="text-sudo-white-4 text-xs mt-1">Plus holidays</div>
               </div>
-              <div className="bg-sudo-neutral-5/30 backdrop-blur-sm border border-sudo-neutral-4/20 rounded-2xl p-6 text-center group hover:bg-sudo-neutral-5/50 transition-all duration-300">
-                <div className="text-4xl font-bold text-sudo-purple-3 mb-2 group-hover:scale-110 transition-transform duration-300">$5K</div>
-                <div className="text-sudo-white-6 text-sm font-medium">Learning Budget</div>
-                <div className="text-sudo-white-4 text-xs mt-1">Annual allowance</div>
-              </div>
+            
             </div>
 
             {/* Culture Highlights */}

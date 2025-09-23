@@ -6,7 +6,7 @@ import { Linkedin, Twitter, Github } from 'lucide-react';
 
 // Define the type for a single team member
 export interface TeamMember {
-    id: number;
+    id: string | number;
     name: string;
     title: string;
     image: string;

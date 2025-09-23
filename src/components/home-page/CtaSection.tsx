@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 const CtaSection = () => {
     return (
@@ -6,7 +7,7 @@ const CtaSection = () => {
             <div className="sudo-container ">
                 <div className="md:max-w-[70%] mx-auto  h-full space-y-20 flex flex-col justify-evenly items-center">
                     <p className="text-sudo-header-28  md:text-sudo-header-56 font-heading text-center">Let’s Build What You’ve Been Dreaming Of</p>
-                    <div className="group w-[350px] relative grid grid-rows-2   group-hover:bg-transparent h-[350px] bg-sudo-blue-4  text-sudo-neutral-1">
+                    <Link href={'/contact'} className="group w-[350px] relative grid grid-rows-2   group-hover:bg-transparent h-[350px] bg-sudo-blue-4  text-sudo-neutral-1">
 
                         <div className="absolute group-hover:bg-sudo-white-1 transition-all duration-700 group-hover:w-[350px] group-hover:h-[350px] w-full h-0  bg-none  -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2"></div>
                         <div className="row-span-1  flex justify-end p-5 group-hover:text-sudo-neutral-6 duration-700 transition-all">
@@ -20,7 +21,7 @@ const CtaSection = () => {
                             </div>
                             <p className="text-sudo-header-70  whitespace-nowrap text-center font-bold">Let’s Talk</p>
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
             </div>

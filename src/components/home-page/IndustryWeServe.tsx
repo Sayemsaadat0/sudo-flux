@@ -56,7 +56,7 @@ const IndustryWeServe: React.FC<IndustryWeServeProps> = ({ industries }) => {
             <p className='text-sm sm:text-base lg:text-sudo-paragraph-20 leading-relaxed'>
               We dig deeper than most, because we know your digital presence should reflect what sets you apart in your field.
             </p>
-            <Link href={'/quote'}>
+            <Link href={'/contact'}>
               <Button
                 icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />}
                 icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100"

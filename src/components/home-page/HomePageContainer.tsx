@@ -6,7 +6,7 @@ import AboutSection from "./AboutSection"
 // import ServiceSection from "./ServiceSection"
 import FaqSection from "./FaqSection"
 import BlogSection from "./BlogSection"
-import TestimonialsSection from "./TestimonialSection"
+// import TestimonialsSection from "./TestimonialSection"
 import CtaSection from "./CtaSection"
 import ContactSection from "./ContactSection"
 import IndustryWeServe from "./IndustryWeServe"
@@ -73,9 +73,9 @@ const HomePageContainer = ({ industries, faqs }: HomePageContainerProps) => {
                 <div ref={createSectionRef('home-about-section')}>
                     <AboutSection />
                 </div>
-                <div ref={createSectionRef('home-testimonials-section')}>
+                {/* <div ref={createSectionRef('home-testimonials-section')}>
                     <TestimonialsSection />
-                </div>
+                </div> */}
             </div>
             <div>
                 <div ref={createSectionRef('home-contact-section')}>

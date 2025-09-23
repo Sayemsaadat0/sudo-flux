@@ -73,12 +73,12 @@ export default function Footer() {
                                 Privacy Policy
                             </Link>
                             <span className='hidden md:block'>|</span>
-                            <Link href="/terms-of-service" className="hover:text-sudo-neutral-6 transition-colors duration-200">
-                                Terms of Service
+                            <Link href="/terms-conditions" className="hover:text-sudo-neutral-6 transition-colors duration-200">
+                                Terms & Conditions
                             </Link>
                             <span className='hidden md:block'>|</span>
-                            <Link href="/cookies" className="hover:text-sudo-neutral-6 transition-colors duration-200">
-                                Cookie Policy
+                            <Link href="/license" className="hover:text-sudo-neutral-6 transition-colors duration-200">
+                                License
                             </Link>
                         </div>
                     </div>

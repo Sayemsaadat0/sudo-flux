@@ -6,6 +6,7 @@ import Button from "@/components/ui/button"
 import LineAnimation from "../animations/LineAnimation";
 import ScrollRevealText from "../animations/ScrollRevealText";
 import AnimatedImage from "../animations/AnimatedImage";
+import Link from "next/link";
 
 export default function AboutSection() {
     // const featureCards = [
@@ -94,13 +95,15 @@ export default function AboutSection() {
                             <p className="text-sm sm:text-base lg:text-sudo-paragraph-20 leading-relaxed">
                                 We&apos;re not just another agency — we&apos;re your digital growth partner. Our team is made up of thinkers, builders, and problem-solvers who thrive on turning complex challenges into seamless digital solutions. With a deep understanding of design, strategy, and technology, we help brands evolve, connect with their audience, and lead their industries with confidence.
                             </p>
-                            <Button 
-                                icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />} 
-                                icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100" 
-                                className="text-sudo-white-2 w-fit" 
-                                label="More About Us"
-                                size="md"
-                            />
+                            <Link href={'/about'}>
+                                <Button
+                                    icon={<ArrowRight size={'16'} className="sm:w-[18px] sm:h-[18px]" />}
+                                    icon_style="border border-sudo-white-1 text-sudo-neutral-5 bg-sudo-white-2 opacity-100"
+                                    className="text-sudo-white-2 w-fit"
+                                    label="More About Us"
+                                    size="md"
+                                />
+                            </Link>
                             {/* <div className="grid grid-cols-1   rounded-md bg-sudo-white-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
                             {stats.map((stat) => (
                                 <div key={stat.id} className="flex space-y-3">
