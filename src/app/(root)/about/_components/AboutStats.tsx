@@ -51,10 +51,10 @@ const AboutStats = () => {
                     <div className="lg:sticky lg:top-24 w-full">
                         <AnimatedImage
                             className="rounded-xl shadow-lg w-full h-auto object-cover"
-                            src="https://placehold.co/400x400/1e1e1e/FFFFFF/png?text=Your\nImage\nHere"
+                            src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
                             width={700}
                             height={800}
-                            alt="FAQ illustration"
+                            alt="Modern software development workspace with multiple monitors and coding environment"
                             priority
                             placeholder="blur"
                             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkSPlfDwADswHkz8UV3wAAAABJRU5ErkJggg=="

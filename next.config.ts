@@ -1,29 +1,54 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Hosting configuration
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://your-domain.com' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '' : '',
+  
+  // Image optimization configuration
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "images.unsplash.com",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "placehold.co",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "flowbite.com",
+        pathname: "/**",
       },
       {
         protocol: "http",
         hostname: "localhost",
+        pathname: "/**",
       },
       {
         protocol: "https",
         hostname: "*.public.blob.vercel-storage.com",
+        pathname: "/**",
+      },
+      // Additional hosting domains for production
+      {
+        protocol: "https",
+        hostname: "your-domain.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.your-domain.com",
+        pathname: "/**",
       },
     ],
+    // Image optimization settings
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   // Enable CORS for all domains
   async headers() {

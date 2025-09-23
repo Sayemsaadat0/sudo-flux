@@ -79,11 +79,11 @@ const HeroSection = () => {
                     <div className="w-full mx-auto">
                         <AnimatedImage
                             className="sm:rounded-[10px] md:rounded-[20px]"
-                            src="https://placehold.co/600x300/1e1e1e/FFFFFF.png"
+                            src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80"
                             width={1572}
                             height={600}
                             layout="intrinsic"
-                            alt="header-img"
+                            alt="Software development team working on modern web applications"
                             priority
                             placeholder="blur"
                             blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkSPlfDwADswHkz8UV3wAAAABJRU5ErkJggg=="
@@ -94,11 +94,11 @@ const HeroSection = () => {
                 <div className="relative block sm:hidden ">
                     <Image
                         className="rounded-[20px] object-contain object-center"
-                        src="https://placehold.co/600x300/000000/FFFFFF.png"
+                        src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80"
                         width={630}
                         height={631}
                         objectFit="cover"
-                        alt="header-img"
+                        alt="Software development team working on modern web applications"
                     />
                 </div> */}
             </div>

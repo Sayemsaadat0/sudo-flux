@@ -144,7 +144,7 @@ export default function AboutSection() {
                         <div className="relative w-full max-w-[400px] sm:max-w-[500px] md:max-w-[600px] lg:max-w-[650px]">
                             <AnimatedImage
                                 className="rounded-lg sm:rounded-xl md:rounded-2xl bg-minion-neutral-5 object-cover w-full h-full"
-                                src="/images/Banner.png"
+                                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
                                 // src="https://placehold.co/400x400/FFFFFF/1e1e1e.png"
                                 width={650}
                                 height={650}
