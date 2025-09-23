@@ -16,7 +16,7 @@ export const testimonials = [
         author: {
             name: "Sophie Moore",
             role: "Entrepreneur",
-            image: "https://placehold.co/400x400/1e1e1e/FFFFFF.png", // Put this image inside /public/avatars/
+            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80", // Software developer profile
         },
         quoteColor: "text-purple-400",
     },
@@ -27,7 +27,7 @@ export const testimonials = [
         author: {
             name: "Marcus Finn",
             role: "CEO at Growthly",
-            image: "https://placehold.co/400x400/1e1e1e/FFFFFF.png",
+            image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
         },
         quoteColor: "text-blue-500",
     },
@@ -38,7 +38,7 @@ export const testimonials = [
         author: {
             name: "Clara Bennett",
             role: "Marketing Director",
-            image: "https://placehold.co/400x400/1e1e1e/FFFFFF.png",
+            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80",
         },
         quoteColor: "text-green-500",
     },

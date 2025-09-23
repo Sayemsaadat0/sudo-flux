@@ -78,10 +78,10 @@ const FaqSection = ({ faqs }: FaqSectionProps) => {
           <div className="xl:sticky xl:top-24 w-full order-2 xl:order-1">
             <AnimatedImage
               className="rounded-xl shadow-lg w-full h-full object-cover"
-              src="https://placehold.co/400x400/1e1e1e/FFFFFF/png?text=Your\nImage\nHere"
+              src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
               width={600}
               height={600}
-              alt="FAQ illustration"
+              alt="Software development team collaboration and coding workspace"
               priority
               placeholder="blur"
               blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkSPlfDwADswHkz8UV3wAAAABJRU5ErkJggg=="

@@ -1,12 +1,21 @@
 'use client'
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown, HelpCircle, Loader2 } from 'lucide-react';
 import LineAnimation from '@/components/animations/LineAnimation';
+import { useGetFaqList } from '@/hooks/faq.hooks';
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const faqs = [
+  // Fetch FAQs from API - get general category FAQs that are published
+  const { data: faqResponse, isLoading } = useGetFaqList({
+    category: 'general',
+    publish: 'true',
+    limit: 10
+  });
+
+  // Fallback FAQs in case API fails or no data
+  const fallbackFaqs = [
     {
       question: "What services do you offer?",
       answer: "We offer a comprehensive range of digital services including web development, mobile app development, UI/UX design, e-commerce solutions, digital marketing, and cloud infrastructure. Our team specializes in creating custom digital solutions tailored to your business needs."
@@ -41,6 +50,9 @@ const FAQSection = () => {
     }
   ];
 
+  // Use API data if available, otherwise use fallback
+  const faqs = faqResponse?.data?.result?.length > 0 ? faqResponse.data.result : fallbackFaqs;
+
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
@@ -66,8 +78,16 @@ const FAQSection = () => {
 
         {/* FAQ Grid */}
         <div className="max-w-4xl mx-auto">
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-sudo-blue-6 mx-auto mb-4" />
+                <p className="text-sudo-neutral-4">Loading FAQs...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {faqs.map((faq: any, index: number) => (
               <div 
                 key={index}
                 className="group bg-sudo-white-2 rounded-2xl border border-sudo-white-3 overflow-hidden hover:shadow-lg transition-all duration-300"
@@ -104,8 +124,9 @@ const FAQSection = () => {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Bottom CTA */}

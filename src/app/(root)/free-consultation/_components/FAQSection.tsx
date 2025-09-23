@@ -1,45 +1,57 @@
 'use client'
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown, HelpCircle, Loader2 } from 'lucide-react';
 import LineAnimation from '@/components/animations/LineAnimation';
+import { useGetFaqList } from '@/hooks/faq.hooks';
 
 const FAQSection = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const faqs = [
+  // Fetch FAQs from API - get general category FAQs that are published
+  const { data: faqResponse, isLoading } = useGetFaqList({
+    category: 'general',
+    publish: 'true',
+    limit: 10
+  });
+
+  // Fallback FAQs in case API fails or no data
+  const fallbackFaqs = [
     {
-      question: "What is included in the free consultation?",
-      answer: "Our free consultation includes a detailed project analysis, technology recommendations, budget estimation, timeline planning, and a comprehensive roadmap for your project. You'll also receive expert advice on best practices and potential challenges."
+      question: "What services do you offer?",
+      answer: "We offer a comprehensive range of digital services including web development, mobile app development, UI/UX design, e-commerce solutions, digital marketing, and cloud infrastructure. Our team specializes in creating custom digital solutions tailored to your business needs."
     },
     {
-      question: "How long does the consultation take?",
-      answer: "The consultation typically takes 30-45 minutes. This gives us enough time to understand your requirements, discuss your goals, and provide you with valuable insights and recommendations for your project."
+      question: "How long does a typical project take?",
+      answer: "Project timelines vary depending on complexity and scope. A simple website might take 2-4 weeks, while a complex e-commerce platform could take 3-6 months. We provide detailed timelines during our initial consultation and keep you updated throughout the process."
     },
     {
-      question: "Is the consultation really free?",
-      answer: "Yes, absolutely! Our consultation is completely free with no hidden costs or obligations. We believe in providing value upfront and helping you make informed decisions about your project."
+      question: "What is your pricing structure?",
+      answer: "Our pricing is project-based and depends on the scope, complexity, and requirements. We offer transparent pricing with detailed proposals that break down all costs. We also provide flexible payment plans and can work within various budgets."
     },
     {
-      question: "What information should I prepare for the consultation?",
-      answer: "Please prepare details about your project goals, target audience, desired features, budget range, timeline expectations, and any specific requirements. The more information you provide, the better we can assist you."
+      question: "Do you provide ongoing support after launch?",
+      answer: "Yes, we offer comprehensive post-launch support including maintenance, updates, bug fixes, and performance monitoring. We also provide training and documentation to help your team manage the solution effectively."
     },
     {
-      question: "Do I need to commit to working with you after the consultation?",
-      answer: "No, there's no obligation to work with us after the consultation. Our goal is to provide you with valuable insights and help you make the best decision for your project, whether that's with us or another provider."
+      question: "Can you work with existing systems?",
+      answer: "Absolutely! We have extensive experience integrating with existing systems and platforms. We can work with your current infrastructure, APIs, databases, and third-party services to ensure seamless integration."
     },
     {
-      question: "Can I get a written proposal after the consultation?",
-      answer: "Yes! After the consultation, we can provide you with a detailed written proposal including project scope, timeline, budget breakdown, and next steps. This proposal is also provided at no cost."
+      question: "What technologies do you use?",
+      answer: "We use modern, industry-standard technologies including React, Next.js, Node.js, Python, PHP, and various cloud platforms. We choose the best technology stack for each project based on requirements, scalability, and performance needs."
     },
     {
-      question: "What types of projects do you consult on?",
-      answer: "We consult on a wide range of digital projects including web development, mobile apps, e-commerce solutions, UI/UX design, digital marketing strategies, and system integrations. No project is too big or too small."
+      question: "How do you ensure project quality?",
+      answer: "We follow industry best practices including code reviews, testing protocols, and quality assurance processes. Our team includes experienced developers, designers, and project managers who ensure every project meets our high standards."
     },
     {
-      question: "How quickly can I schedule a consultation?",
-      answer: "We typically respond to consultation requests within 24 hours and can usually schedule a consultation within 2-3 business days. For urgent projects, we can often accommodate same-day or next-day consultations."
+      question: "Do you provide hosting and domain services?",
+      answer: "Yes, we offer complete hosting and domain management services. We can set up reliable hosting infrastructure, manage domains, SSL certificates, and provide ongoing maintenance to ensure your website or application runs smoothly."
     }
   ];
+
+  // Use API data if available, otherwise use fallback
+  const faqs = faqResponse?.data?.result?.length > 0 ? faqResponse.data.result : fallbackFaqs;
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -57,17 +69,25 @@ const FAQSection = () => {
             </div>
           </div>
           <h2 className="text-sudo-title-28 lg:text-sudo-title-48 md:leading-[60px] font-heading md:w-2/3 mx-auto text-center mb-6 text-sudo-neutral-6">
-            Consultation Frequently Asked Questions
+            Frequently Asked Questions
           </h2>
           <p className="text-sudo-paragraph-20 text-sudo-neutral-4 text-center max-w-3xl">
-            Find answers to common questions about our free consultation process and what you can expect.
+            Find answers to common questions about our services, process, and what you can expect when working with us.
           </p>
         </div>
 
         {/* FAQ Grid */}
         <div className="max-w-4xl mx-auto">
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-sudo-blue-6 mx-auto mb-4" />
+                <p className="text-sudo-neutral-4">Loading FAQs...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {faqs.map((faq: any, index: number) => (
               <div 
                 key={index}
                 className="group bg-sudo-white-2 rounded-2xl border border-sudo-white-3 overflow-hidden hover:shadow-lg transition-all duration-300"
@@ -104,24 +124,25 @@ const FAQSection = () => {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Bottom CTA */}
         <div className="text-center mt-16">
           <div className="bg-sudo-white-2 rounded-3xl p-8 max-w-2xl mx-auto border border-sudo-white-3">
-            <h3 className="text-sudo-header-28 font-bold mb-4 text-sudo-neutral-6">Ready for Your Free Consultation?</h3>
+            <h3 className="text-sudo-header-28 font-bold mb-4 text-sudo-neutral-6">Still Have Questions?</h3>
             <p className="text-sudo-neutral-4 mb-6">
-              Don&apos;t wait! Schedule your free consultation today and get expert insights for your project.
+              Can&apos;t find what you&apos;re looking for? Our team is here to help. Get in touch with us for personalized assistance.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#consultation-form" className="bg-gradient-to-r from-sudo-purple-6 to-sudo-blue-6 text-sudo-white-1 px-8 py-3 rounded-full font-semibold hover:from-sudo-purple-7 hover:to-sudo-blue-7 transition-all duration-300 transform hover:scale-105">
-                Request Consultation
-              </a>
-              <a href="tel:+15551234567" className="border border-sudo-purple-6 text-sudo-purple-6 px-8 py-3 rounded-full font-semibold hover:bg-sudo-purple-6 hover:text-sudo-white-1 transition-all duration-300">
-                Call Now
-              </a>
+              <button className="bg-gradient-to-r from-sudo-purple-6 to-sudo-blue-6 text-sudo-white-1 px-8 py-3 rounded-full font-semibold hover:from-sudo-purple-7 hover:to-sudo-blue-7 transition-all duration-300 transform hover:scale-105">
+                Contact Support
+              </button>
+              <button className="border border-sudo-purple-6 text-sudo-purple-6 px-8 py-3 rounded-full font-semibold hover:bg-sudo-purple-6 hover:text-sudo-white-1 transition-all duration-300">
+                Schedule a Call
+              </button>
             </div>
           </div>
         </div>

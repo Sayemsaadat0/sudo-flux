@@ -1,353 +1,207 @@
-"use client";
+'use client';
+import { Trash2, Eye, Calendar, User, ExternalLink } from 'lucide-react';
+import TeamForm from './_components/TeamForm';
+import { TeamResponseType, useGetTeamList, useDeleteTeam } from '@/hooks/teams.hooks';
+import { getBaseUrl } from '@/utils/getBaseUrl';
+import Image from 'next/image';
+import { toast } from 'sonner';
 
-import { useState } from "react";
-import { useGetTeamList, useAddTeam, useUpdateTeam, useDeleteTeam, TeamResponseType } from "@/hooks/teams.hooks";
-import { Plus, Edit, Trash2, Eye, EyeOff } from "lucide-react";
-import Button from "@/components/ui/button";
-import { toast } from "sonner";
-import Image from "next/image";
+export default function TeamsManagementPage() {
+  const baseUrl = getBaseUrl();
+  const { data, isLoading } = useGetTeamList();
+  const { mutateAsync: deleteTeam } = useDeleteTeam();
 
-export default function TeamsPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTeam, setEditingTeam] = useState<TeamResponseType | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    title: "",
-    image: "",
-    bio: "",
-    socials: [{ name: "linkedin", url: "" }],
-    order: 0,
-  });
-
-  const { data: teamsResponse, isLoading } = useGetTeamList();
-  const teams = teamsResponse?.data?.data || [];
-  const createTeamMutation = useAddTeam();
-  const updateTeamMutation = useUpdateTeam(editingTeam?._id || "");
-  const deleteTeamMutation = useDeleteTeam(editingTeam?._id || "");
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      // Create FormData for API submission
-      const submitFormData = new FormData();
-      submitFormData.append('name', formData.name);
-      submitFormData.append('title', formData.title);
-      submitFormData.append('image', formData.image);
-      submitFormData.append('bio', formData.bio);
-      submitFormData.append('order', String(formData.order));
-      submitFormData.append('socials', JSON.stringify(formData.socials));
-      
-      if (editingTeam) {
-        await updateTeamMutation.mutateAsync(submitFormData);
-        toast.success("Team member updated successfully");
-      } else {
-        await createTeamMutation.mutateAsync(submitFormData);
-        toast.success("Team member created successfully");
-      }
-      
-      setIsModalOpen(false);
-      setEditingTeam(null);
-      resetForm();
-    } catch {
-      toast.error("Failed to save team member");
-    }
-  };
-
-  const handleEdit = (team: TeamResponseType) => {
-    setEditingTeam(team);
-    setFormData({
-      name: team.name,
-      title: team.title,
-      image: team.image,
-      bio: team.bio || "",
-      socials: team.socials,
-      order: team.order,
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (confirm("Are you sure you want to delete this team member?")) {
+  const handleDelete = async (id: string, name: string) => {
+    if (window.confirm(`Are you sure you want to delete ${name}?`)) {
       try {
-        await deleteTeamMutation.mutateAsync({} as TeamResponseType);
-        toast.success("Team member deleted successfully");
-      } catch {
-        toast.error("Failed to delete team member");
+        await deleteTeam(id);
+        toast.success('Team member deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting team member:', error);
+        toast.error('Failed to delete team member. Please try again.');
       }
     }
   };
-
-  const toggleActive = async (team: TeamResponseType) => {
-    try {
-      // Create FormData for the update
-      const formData = new FormData();
-      formData.append('isActive', String(!team.isActive));
-      
-      await updateTeamMutation.mutateAsync(formData);
-      toast.success(`Team member ${team.isActive ? "deactivated" : "activated"}`);
-    } catch {
-      toast.error("Failed to update team member status");
-    }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      title: "",
-      image: "",
-      bio: "",
-      socials: [{ name: "linkedin", url: "" }],
-      order: 0,
-    });
-  };
-
-  const addSocial = () => {
-    setFormData({
-      ...formData,
-      socials: [...formData.socials, { name: "", url: "" }],
-    });
-  };
-
-  const removeSocial = (index: number) => {
-    setFormData({
-      ...formData,
-      socials: formData.socials.filter((_, i) => i !== index),
-    });
-  };
-
-  const updateSocial = (index: number, field: string, value: string) => {
-    const updatedSocials = [...formData.socials];
-    updatedSocials[index] = { ...updatedSocials[index], [field]: value };
-    setFormData({ ...formData, socials: updatedSocials });
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Loading team members...</div>
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-sudo-neutral-6">Team Management</h1>
-          <p className="text-sudo-neutral-4">Manage your team members</p>
-        </div>
-        <Button
-          onClick={() => {
-            setEditingTeam(null);
-            resetForm();
-            setIsModalOpen(true);
-          }}
-          className="bg-sudo-blue-6 text-white hover:bg-sudo-blue-7"
-          label="Add Team Member"
-          icon={<Plus size={18} />}
-        />
-      </div>
-
-      {/* Team Members Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {teams?.map((team: TeamResponseType) => (
-          <div
-            key={team._id}
-            className={`bg-white rounded-lg border p-6 ${
-              !team.isActive ? "opacity-50" : ""
-            }`}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <Image
-                  src={team.image}
-                  alt={team.name}
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <h3 className="font-semibold text-sudo-neutral-6">{team.name}</h3>
-                  <p className="text-sm text-sudo-neutral-4">{team.title}</p>
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => toggleActive(team)}
-                  className="p-1 text-sudo-neutral-4 hover:text-sudo-blue-6"
-                  title={team.isActive ? "Deactivate" : "Activate"}
-                >
-                  {team.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-                </button>
-                <button
-                  onClick={() => handleEdit(team)}
-                  className="p-1 text-sudo-neutral-4 hover:text-sudo-blue-6"
-                  title="Edit"
-                >
-                  <Edit size={16} />
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="p-1 text-sudo-neutral-4 hover:text-red-600"
-                  title="Delete"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </div>
-            
-            {team.bio && (
-              <p className="text-sm text-sudo-neutral-4 mb-4 line-clamp-3">
-                {team.bio}
+    <div className="p-4">
+      <div className="mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-sudo-neutral-5 mb-1">
+                Team Management
+              </h1>
+              <p className="text-sudo-neutral-3 text-sm">
+                Manage team members, their roles, and status
               </p>
-            )}
-            
-            <div className="flex flex-wrap gap-2">
-              {team.socials.map((social, index) => (
-                <a
-                  key={index}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs bg-sudo-neutral-2 text-sudo-neutral-6 px-2 py-1 rounded"
-                >
-                  {social.name}
-                </a>
-              ))}
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
-              {editingTeam ? "Edit Team Member" : "Add Team Member"}
-            </h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Name *</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Title *</label>
-                  <input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Image URL *</label>
-                <input
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Bio</label>
-                <textarea
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  className="w-full border rounded-lg px-3 py-2 h-20"
-                  placeholder="Brief description about the team member"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Order</label>
-                <input
-                  type="number"
-                  value={formData.order}
-                  onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                  className="w-full border rounded-lg px-3 py-2"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1">Social Links</label>
-                {formData.socials.map((social, index) => (
-                  <div key={index} className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      placeholder="Platform (e.g., linkedin, twitter)"
-                      value={social.name}
-                      onChange={(e) => updateSocial(index, "name", e.target.value)}
-                      className="flex-1 border rounded-lg px-3 py-2"
-                    />
-                    <input
-                      type="url"
-                      placeholder="URL"
-                      value={social.url}
-                      onChange={(e) => updateSocial(index, "url", e.target.value)}
-                      className="flex-1 border rounded-lg px-3 py-2"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeSocial(index)}
-                      className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addSocial}
-                  className="text-sudo-blue-6 hover:text-sudo-blue-7 text-sm"
-                >
-                  + Add Social Link
-                </button>
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setEditingTeam(null);
-                    resetForm();
-                  }}
-                  className="px-4 py-2 border border-sudo-neutral-3 text-sudo-neutral-6 rounded-lg hover:bg-sudo-neutral-2"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createTeamMutation.isPending || updateTeamMutation.isPending}
-                  className="px-4 py-2 bg-sudo-blue-6 text-white rounded-lg hover:bg-sudo-blue-7 disabled:opacity-50"
-                >
-                  {createTeamMutation.isPending || updateTeamMutation.isPending
-                    ? "Saving..."
-                    : editingTeam
-                    ? "Update"
-                    : "Create"}
-                </button>
-              </div>
-            </form>
+            <TeamForm />
           </div>
         </div>
-      )}
+
+        {/* Table */}
+        <div className="bg-white rounded-lg shadow-sm border border-sudo-white-2 overflow-hidden">
+          <div className="overflow-x-auto">
+            {isLoading ? (
+              // Loading state
+              <div className="text-center py-10">
+                <span className="text-sudo-neutral-4 text-sm">Loading...</span>
+              </div>
+            ) : !data?.results || data.results.length === 0 ? (
+              // No data state
+              <div className="text-center py-10">
+                <span className="text-sudo-neutral-4 text-sm">No team members found</span>
+              </div>
+            ) : (
+              // Table when data is available
+              <table className="w-full">
+                <thead className="bg-sudo-white-1 border-b border-sudo-white-2">
+                  <tr>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">#</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Photo</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Name</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Title</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Status</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">LinkedIn</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Created At</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data.results.map((member: TeamResponseType, index: number) => (
+                    <tr
+                      key={member._id}
+                      className={`border-b border-sudo-white-1 hover:bg-sudo-white-1 transition-colors ${
+                        index % 2 === 0 ? "bg-white" : "bg-sudo-white-1/30"
+                      }`}
+                    >
+                      {/* Index */}
+                      <td className="py-3 px-4">
+                        <span className="text-sudo-neutral-4 font-medium text-sm">
+                          {index + 1}
+                        </span>
+                      </td>
+
+                      {/* Photo */}
+                      <td className="py-3 px-4">
+                        {member.image ? (
+                          <div className="w-12 h-12 relative rounded-full overflow-hidden">
+                            <Image
+                              src={typeof member.image === 'string' && member.image.startsWith('http') ? member.image : `${baseUrl}${member.image}`}
+                              alt={member.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-12 h-12 bg-sudo-white-2 rounded-full flex items-center justify-center">
+                            <User size={20} className="text-sudo-neutral-3" />
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Name */}
+                      <td className="py-3 px-4">
+                        <div className="font-medium text-sudo-neutral-5 text-sm">
+                          {member.name}
+                        </div>
+                      </td>
+
+                      {/* Title */}
+                      <td className="py-3 px-4">
+                        <span className="text-sudo-neutral-5 text-sm">
+                          {member.title}
+                        </span>
+                      </td>
+
+                      {/* Status */}
+                      <td className="py-3 px-4">
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            member.status === "current"
+                              ? "bg-green-100 text-green-600"
+                              : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {member.status === "current" ? "Current" : "Former"}
+                        </span>
+                      </td>
+
+                      {/* LinkedIn */}
+                      <td className="py-3 px-4">
+                        {member.linkedin ? (
+                          <a
+                            href={member.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-sudo-blue-6 hover:text-sudo-blue-7 transition-colors"
+                          >
+                            <ExternalLink size={14} />
+                            <span className="text-xs">LinkedIn</span>
+                          </a>
+                        ) : (
+                          <span className="text-sudo-neutral-3 text-xs">-</span>
+                        )}
+                      </td>
+
+                      {/* Created At */}
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-1">
+                          <Calendar size={14} className="text-sudo-neutral-3" />
+                          <span className="text-sudo-neutral-5 text-sm">
+                            {member?.createdAt
+                              ? new Date(member.createdAt).toLocaleDateString()
+                              : "-"}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-1">
+                          <button className="p-1.5 text-sudo-blue-6 hover:bg-sudo-blue-1 rounded transition-colors">
+                            <Eye size={14} />
+                          </button>
+
+                          <TeamForm instance={member} />
+                          
+                          <button 
+                            onClick={() => handleDelete(member._id!, member.name)}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-4 flex items-center justify-between">
+          <div className="text-sudo-neutral-3 text-sm">
+            {data?.pagination && (
+              <>Showing {data.results?.length || 0} of {data.pagination.total_count} team members</>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-1.5 border border-sudo-white-3 rounded-lg text-sudo-neutral-3 hover:bg-sudo-white-1 transition-colors text-sm">
+              Previous
+            </button>
+            <button className="px-3 py-1.5 bg-sudo-purple-6 text-white rounded-lg text-sm">1</button>
+            <button className="px-3 py-1.5 border border-sudo-white-3 rounded-lg text-sudo-neutral-3 hover:bg-sudo-white-1 transition-colors text-sm">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

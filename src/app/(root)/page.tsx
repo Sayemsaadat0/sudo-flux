@@ -35,10 +35,9 @@ export default async function Home() {
   };
 
   // Run requests in parallel with fallbacks
-  const [industries, blogs, faqs] = await Promise.all([
+  const [industries, faqs] = await Promise.all([
     safeFetch(`${baseUrl}/api/industries?per_page=100`, []),
-    safeFetch(`${baseUrl}/api/blogs?per_page=6&published=true`, []),
-    safeFetch(`${baseUrl}/api/faq?per_page=10`, []),
+    safeFetch(`${baseUrl}/api/faq?per_page=10&category=general&publish=true`, []),
   ]);
 
   return (

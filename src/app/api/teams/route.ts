@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Team } from "@/models/Team";
+import { put } from '@vercel/blob';
 
 // Configure for static export
- 
 
 // ======================
 // GET /api/teams
@@ -12,7 +12,7 @@ import { Team } from "@/models/Team";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const ordering = searchParams.get("ordering") || "order"; // Default: by order
+    const ordering = searchParams.get("ordering") || "-createdAt"; // Default: latest first
 
     // Pagination parameters
     const page = parseInt(searchParams.get("page") || "1");
@@ -22,7 +22,8 @@ export async function GET(request: Request) {
 
     // Search and filter parameters
     const search = searchParams.get("search") || "";
-    const isActive = searchParams.get("isActive") || "";
+    const title = searchParams.get("title") || "";
+    const status = searchParams.get("status") || "";
 
     const sortField = ordering.startsWith("-")
       ? ordering.substring(1)
@@ -32,18 +33,20 @@ export async function GET(request: Request) {
     // Build query object for search and filtering
     const query: any = {};
 
-    // Add search functionality (searches across name, title, bio)
+    // Add search functionality (searches across name, title)
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: "i" } },
         { title: { $regex: search, $options: "i" } },
-        { bio: { $regex: search, $options: "i" } },
       ];
     }
 
     // Add filters
-    if (isActive !== "") {
-      query.isActive = isActive === "true" ? true : isActive === "false" ? false : isActive;
+    if (title) {
+      query.title = { $regex: title, $options: "i" };
+    }
+    if (status !== "") {
+      query.status = status;
     }
 
     // Get total count for pagination
@@ -56,7 +59,7 @@ export async function GET(request: Request) {
       .skip(skip)
       .limit(limit);
 
-    // Return results as-is
+    // Return results as-is (with relative URLs)
     const resultsWithUrls = results.map(team => team.toObject());
 
     return NextResponse.json(
@@ -72,7 +75,8 @@ export async function GET(request: Request) {
         },
         filters: {
           search,
-          isActive,
+          title,
+          status,
         },
       },
       { status: 200 }
@@ -92,25 +96,75 @@ export async function GET(request: Request) {
 // ======================
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, title, image, bio, socials, order, isActive } = body;
+    const formData = await request.formData();
 
-    if (!name || !title || !image) {
+    // Extract form fields
+    const name = formData.get("name") as string;
+    const title = formData.get("title") as string;
+    const linkedin = formData.get("linkedin") as string;
+    const status = formData.get("status") as string;
+    const imageFile = formData.get("image") as File | null;
+
+    if (!name || !title) {
       return NextResponse.json(
-        { success: false, message: "Name, title, and image are required" },
+        { success: false, message: "Name and Title are required" },
         { status: 400 }
       );
     }
 
-    // Create new team member instance
+    let imageUrl = "";
+
+    // Handle image upload if provided
+    if (imageFile && imageFile.size > 0) {
+      // Validate file type
+      const allowedTypes = [
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+        "image/gif",
+        "image/webp",
+        "image/svg+xml",
+      ];
+      if (!allowedTypes.includes(imageFile.type)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Invalid file type. Only images are allowed.",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (imageFile.size > maxSize) {
+        return NextResponse.json(
+          { success: false, message: "File too large. Maximum size is 5MB." },
+          { status: 400 }
+        );
+      }
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileExtension = imageFile.name.split(".").pop();
+      const fileName = `teams/${timestamp}_${randomString}.${fileExtension}`;
+
+      // Upload to Vercel Blob Storage
+      const blob = await put(fileName, imageFile, {
+        access: 'public',
+      });
+
+      // Set the blob URL
+      imageUrl = blob.url;
+    }
+
     const teamData = {
       name,
       title,
-      image,
-      bio,
-      socials: socials || [],
-      order: order || 0,
-      isActive: isActive !== undefined ? isActive : true,
+      linkedin: linkedin || "",
+      status: status || "current",
+      image: imageUrl,
     };
 
     const newTeam = new Team(teamData);

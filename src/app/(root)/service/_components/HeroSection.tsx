@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import Button from '@/components/ui/button';
 import { ArrowRight, Sparkles, Zap, Shield, Rocket } from 'lucide-react';
 // import LineAnimation from '@/components/animations/LineAnimation';
@@ -95,21 +96,25 @@ const HeroSection = () => {
               ref={ctaRef}
               className="flex flex-col sm:flex-row gap-6 justify-center items-center"
             >
-              <Button 
-                icon={<ArrowRight size={20} />} 
-                icon_style="border border-sudo-purple-3 text-sudo-purple-3 bg-sudo-white-2" 
-                className="text-sudo-neutral-6 bg-gradient-to-r from-sudo-purple-3 to-sudo-blue-3 hover:from-sudo-purple-4 hover:to-sudo-blue-4  shadow-lg hover:shadow-xl transition-all duration-300" 
-                label="Get Started Today"
-                size="lg"
-              />
-              <Button 
-                icon={<ArrowRight size={20} />} 
-                icon_style="border border-sudo-neutral-4 text-sudo-neutral-4 bg-transparent" 
-                className="text-sudo-neutral-6 border-sudo-neutral-4 hover:bg-sudo-neutral-4 hover:text-sudo-white-1 transition-all duration-300" 
-                label="View Portfolio"
-                variant="outlineBtn"
-                size="lg"
-              />
+              <Link href="/contact">
+                <Button 
+                  icon={<ArrowRight size={20} />} 
+                  icon_style="border border-sudo-purple-3 text-sudo-purple-3 bg-sudo-white-2" 
+                  className="text-sudo-neutral-6 bg-gradient-to-r from-sudo-purple-3 to-sudo-blue-3 hover:from-sudo-purple-4 hover:to-sudo-blue-4  shadow-lg hover:shadow-xl transition-all duration-300" 
+                  label="Get Started Today"
+                  size="lg"
+                />
+              </Link>
+              <Link href="/portfolio">
+                <Button 
+                  icon={<ArrowRight size={20} />} 
+                  icon_style="border border-sudo-neutral-4 text-sudo-neutral-4 bg-transparent" 
+                  className="text-sudo-neutral-6 border-sudo-neutral-4 hover:bg-sudo-neutral-4 hover:text-sudo-white-1 transition-all duration-300" 
+                  label="View Portfolio"
+                  variant="outlineBtn"
+                  size="lg"
+                />
+              </Link>
             </div>
           </div>
 
