@@ -23,10 +23,8 @@ interface ConsultationInstance {
   phone: string;
   company?: string;
   projectType: string;
-  budget: string;
-  timeline: string;
   description: string;
-  status: 'new' | 'in-progress' | 'completed' | 'cancelled';
+  status?: 'new' | 'in-progress' | 'completed' | 'cancelled';
   createdAt?: string;
   updatedAt?: string;
 }
@@ -55,8 +53,6 @@ const ConsultationForm = ({ instance }: ConsultationFormProps) => {
       phone: instance?.phone || "",
       company: instance?.company || "",
       projectType: instance?.projectType || "",
-      budget: instance?.budget || "",
-      timeline: instance?.timeline || "",
       description: instance?.description || "",
       status: instance?.status || "new" as 'new' | 'in-progress' | 'completed' | 'cancelled',
     },
@@ -64,13 +60,16 @@ const ConsultationForm = ({ instance }: ConsultationFormProps) => {
     validationSchema: ConsultationAddEditFormValidation,
     onSubmit: async (data: any) => {
       try {
+        // Filter data to only include fields expected by the API
+        const { status, ...apiData } = data;
+        
         if (instance) {
-          // Update existing consultation
-          await updateConsultationMutation(data);
+          // Update existing consultation - include status for updates
+          await updateConsultationMutation({ ...apiData, status });
           toast.success('Consultation updated successfully!');
         } else {
-          // Create new consultation
-          await mutateAsync(data);
+          // Create new consultation - only send required fields
+          await mutateAsync(apiData);
           toast.success('Consultation created successfully!');
           resetForm();
         }
@@ -211,55 +210,6 @@ const ConsultationForm = ({ instance }: ConsultationFormProps) => {
             )}
           </div>
 
-          {/* Budget and Timeline */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Budget Range <span className="text-red-500">*</span>
-              </label>
-              <select
-                id="budget"
-                name="budget"
-                value={values.budget}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select Budget</option>
-                <option value="under-5k">Under $5,000</option>
-                <option value="5k-10k">$5,000 - $10,000</option>
-                <option value="10k-25k">$10,000 - $25,000</option>
-                <option value="25k-50k">$25,000 - $50,000</option>
-                <option value="50k-100k">$50,000 - $100,000</option>
-                <option value="over-100k">Over $100,000</option>
-              </select>
-              {Boolean(errors.budget) && touched.budget && (
-                <p className="text-red-500 text-sm mt-1">{String(errors.budget)}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Timeline <span className="text-red-500">*</span>
-              </label>
-              <select
-                id="timeline"
-                name="timeline"
-                value={values.timeline}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select Timeline</option>
-                <option value="asap">ASAP</option>
-                <option value="1-month">Within 1 Month</option>
-                <option value="2-3-months">2-3 Months</option>
-                <option value="3-6-months">3-6 Months</option>
-                <option value="6-months-plus">6+ Months</option>
-                <option value="flexible">Flexible</option>
-              </select>
-              {Boolean(errors.timeline) && touched.timeline && (
-                <p className="text-red-500 text-sm mt-1">{String(errors.timeline)}</p>
-              )}
-            </div>
-          </div>
 
           {/* Description */}
           <div>
@@ -279,27 +229,6 @@ const ConsultationForm = ({ instance }: ConsultationFormProps) => {
             />
           </div>
 
-          {/* Status */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={values.status}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="new">New</option>
-              <option value="in-progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-            {Boolean(errors.status) && touched.status && (
-              <p className="text-red-500 text-sm mt-1">{String(errors.status)}</p>
-            )}
-          </div>
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4 border-t border-gray-200">

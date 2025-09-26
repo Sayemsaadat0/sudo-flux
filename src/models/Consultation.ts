@@ -4,10 +4,8 @@ export interface IConsultation extends Document {
   name: string;
   email: string;
   phone: string;
-  company: string;
+  company?: string;
   projectType: string;
-  budget: string;
-  timeline: string;
   description: string;
   status: 'new' | 'in-progress' | 'completed' | 'cancelled';
   createdAt: Date;
@@ -37,16 +35,6 @@ const ConsultationSchema = new Schema<IConsultation>(
       trim: true 
     },
     projectType: { 
-      type: String, 
-      required: true, 
-      trim: true 
-    },
-    budget: { 
-      type: String, 
-      required: true, 
-      trim: true 
-    },
-    timeline: { 
       type: String, 
       required: true, 
       trim: true 
