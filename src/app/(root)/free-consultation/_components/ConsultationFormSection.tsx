@@ -60,7 +60,7 @@ const ConsultationFormSection = () => {
       try {
         await submitConsultation(data);
         setShowSuccessToast(true);
-        // resetForm();
+        resetForm();
       } catch (error: any) {
         console.error('Error submitting consultation:', error);
         setErrorMessage(error?.response?.data?.message || 'Failed to submit consultation request. Please try again.');
