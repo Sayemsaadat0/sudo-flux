@@ -1,11 +1,12 @@
 'use client'
 
+import React from 'react'
 import { useFormik } from 'formik'
 import { Github, Twitter, Linkedin, Instagram, Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
 import Button from '../ui/button'
 import LineAnimation from '../animations/LineAnimation'
-import { toast } from 'sonner'
 import { useSubmitPublicContact } from '@/hooks/publicContact.hooks'
+import { SuccessToast, ErrorToast } from '@/components/ui/custom-toast'
 import * as Yup from 'yup'
 
 // Validation schema for the contact form
@@ -30,6 +31,9 @@ const ContactFormValidation = Yup.object({
 
 export default function ContactSection() {
   const { mutateAsync: submitContact, isPending } = useSubmitPublicContact()
+  const [showSuccessToast, setShowSuccessToast] = React.useState(false)
+  const [showErrorToast, setShowErrorToast] = React.useState(false)
+  const [errorMessage, setErrorMessage] = React.useState('')
 
   const {
     handleChange,
@@ -49,11 +53,12 @@ export default function ContactSection() {
     onSubmit: async (data) => {
       try {
         await submitContact(data)
-        toast.success('Message sent successfully! We\'ll get back to you soon.')
+        setShowSuccessToast(true)
         resetForm()
       } catch (error: any) {
         console.error('Error submitting contact:', error)
-        toast.error(error?.response?.data?.message || 'Failed to send message. Please try again.')
+        setErrorMessage(error?.response?.data?.message || 'Failed to send message. Please try again.')
+        setShowErrorToast(true)
       }
     },
   })
@@ -274,6 +279,26 @@ export default function ContactSection() {
           </div>
                  </div>
        </div>
+
+       {/* Custom Success Toast */}
+       <SuccessToast
+         open={showSuccessToast}
+         onOpenChange={setShowSuccessToast}
+         title="Message Sent Successfully! 🎉"
+         message="Thank you for reaching out! We've received your message and will get back to you within 24-48 hours. We appreciate your interest in working with us!"
+         autoClose={true}
+         autoCloseDelay={5000}
+       />
+
+       {/* Custom Error Toast */}
+       <ErrorToast
+         open={showErrorToast}
+         onOpenChange={setShowErrorToast}
+         title="Oops! Something went wrong 😔"
+         message={errorMessage}
+         autoClose={true}
+         autoCloseDelay={5000}
+       />
      </section>
    )
 }

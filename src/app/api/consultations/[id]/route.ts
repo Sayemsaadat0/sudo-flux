@@ -57,7 +57,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, email, phone, company, projectType, budget, timeline, description, status } = body;
+    const { name, email, phone, company, projectType, description, status } = body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -66,7 +66,7 @@ export async function PATCH(
       );
     }
 
-    if (!name || !email || !phone || !projectType || !budget || !timeline || !description) {
+    if (!name || !email || !phone || !projectType || !description) {
       return NextResponse.json(
         { success: false, message: "All required fields must be provided" },
         { status: 400 }
@@ -79,8 +79,6 @@ export async function PATCH(
       phone,
       company,
       projectType,
-      budget,
-      timeline,
       description,
     };
 

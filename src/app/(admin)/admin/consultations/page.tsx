@@ -1,5 +1,5 @@
 'use client';
-import { Trash2, Eye, Calendar, User, Phone, Building, DollarSign, Clock } from 'lucide-react';
+import { Trash2, Eye, Calendar, User, Phone, Building, Mail } from 'lucide-react';
 import ConsultationForm from './_components/ConsultationForm';
 import { ConsultationResponseType, useGetConsultationList, useDeleteConsultation } from '@/hooks/consultations.hooks';
 import { toast } from "sonner";
@@ -93,8 +93,8 @@ export default function ConsultationsManagementPage() {
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">#</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Client</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Project Type</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Budget</th>
-                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Timeline</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Email</th>
+                    <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Description</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Status</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Created At</th>
                     <th className="text-left py-3 px-4 font-semibold text-sudo-neutral-5 text-sm">Actions</th>
@@ -144,26 +144,30 @@ export default function ConsultationsManagementPage() {
                       {/* Project Type */}
                       <td className="py-3 px-4">
                         <span className="text-sudo-neutral-5 text-sm capitalize">
-                          {consultation.projectType.replace('-', ' ')}
+                          {consultation.projectType?.replace('-', ' ') || 'N/A'}
                         </span>
                       </td>
 
-                      {/* Budget */}
+                      {/* Email */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-1">
-                          <DollarSign size={14} className="text-sudo-neutral-3" />
+                          <Mail size={14} className="text-sudo-neutral-3" />
                           <span className="text-sudo-neutral-5 text-sm">
-                            {consultation.budget.replace('-', ' - ').replace('k', 'K').replace('under', 'Under')}
+                            {consultation.email || 'N/A'}
                           </span>
                         </div>
                       </td>
 
-                      {/* Timeline */}
+                      {/* Description */}
                       <td className="py-3 px-4">
-                        <div className="flex items-center gap-1">
-                          <Clock size={14} className="text-sudo-neutral-3" />
-                          <span className="text-sudo-neutral-5 text-sm capitalize">
-                            {consultation.timeline.replace('-', ' ')}
+                        <div className="max-w-xs">
+                          <span className="text-sudo-neutral-5 text-sm line-clamp-2">
+                            {consultation.description ? 
+                              (consultation.description.length > 50 
+                                ? `${consultation.description.substring(0, 50)}...` 
+                                : consultation.description
+                              ) : 'N/A'
+                            }
                           </span>
                         </div>
                       </td>

@@ -6,6 +6,7 @@ import { Applicant } from "@/models/Applicant";
  
 import { Career } from "@/models/Career";
 import { put } from '@vercel/blob';
+import { transporter } from "@/lib/mailer";
 
 // ======================
 // GET /api/applicants
@@ -189,6 +190,81 @@ export async function POST(request: Request) {
 
     const newApplicant = new Applicant(applicantData);
     await newApplicant.save();
+
+    // Send return email to the applicant
+    try {
+      // Get career details for the email
+      const career = await Career.findById(careerId);
+      const jobTitle = career?.title || "the position";
+
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+          <div style="background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 20px;">
+              <h1 style="color: #333333; margin: 0; font-size: 24px; font-weight: bold;">
+                Thank You for Your Application!
+              </h1>
+            </div>
+
+            <!-- Main Content -->
+            <div style="margin-bottom: 30px;">
+              <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Dear ${name},
+              </p>
+              
+              <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Thank you for applying to <strong>${jobTitle}</strong> at Sudo Flux! We have successfully received your application and resume, and we truly appreciate your interest in joining our team.
+              </p>
+              
+              <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Our HR team will review your application and qualifications. If your profile matches our requirements, we will contact you within 5-7 business days to schedule the next steps in our hiring process.
+              </p>
+              
+              <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                We're excited about the possibility of you joining our team and contributing to our mission of creating exceptional digital experiences.
+              </p>
+            </div>
+
+            <!-- Application Summary -->
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+              <h3 style="color: #333333; margin: 0 0 15px 0; font-size: 18px;">Application Summary:</h3>
+              <ul style="color: #555555; font-size: 14px; line-height: 1.6; margin: 0; padding-left: 20px;">
+                <li><strong>Position:</strong> ${jobTitle}</li>
+                <li><strong>Applicant:</strong> ${name}</li>
+                <li><strong>Email:</strong> ${email}</li>
+                <li><strong>Phone:</strong> ${phone}</li>
+                <li><strong>Status:</strong> Application Received</li>
+              </ul>
+            </div>
+
+            <!-- Footer -->
+            <div style="border-top: 1px solid #e0e0e0; padding-top: 20px; text-align: center;">
+              <p style="color: #888888; font-size: 14px; margin: 0 0 10px 0;">
+                Best regards,<br />
+                The Sudo Flux HR Team
+              </p>
+              
+              <p style="color: #888888; font-size: 12px; margin: 0; font-style: italic;">
+                This is an automated response. Please do not reply to this email.
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        to: email,
+        subject: `Thank you for your application - ${jobTitle}`,
+        html: emailHtml,
+      });
+
+      console.log(`Job application return email sent successfully to ${email}`);
+    } catch (emailError) {
+      console.error("Error sending job application return email:", emailError);
+      // Don't fail the application creation if email fails
+    }
 
     return NextResponse.json(
       { success: true, message: "Application submitted successfully", applicant: newApplicant },

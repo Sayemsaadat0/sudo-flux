@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import "@/DB/db"; // ensure DB connection
 import { Contact } from "@/models/Contact";
+import { transporter } from "@/lib/mailer";
 
 // Configure for static export
  
@@ -106,6 +107,61 @@ export async function POST(request: Request) {
       subject, 
       description
     });
+
+    // Send return email to the user
+    try {
+      const emailHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
+          <div style="background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 20px;">
+              <h1 style="color: #333333; margin: 0; font-size: 24px; font-weight: bold;">
+                Thank You for Reaching Out!
+              </h1>
+            </div>
+
+            <!-- Main Content -->
+            <div style="margin-bottom: 30px;">
+              <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Dear ${name},
+              </p>
+              
+              <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                Thank you for reaching out to us! We have received your message${subject ? ` regarding "${subject}"` : ''} and truly appreciate you taking the time to contact us.
+              </p>
+              
+              <p style="color: #555555; font-size: 16px; line-height: 1.6; margin: 0 0 20px 0;">
+                We will get back to you soon.
+              </p>
+            </div>
+
+            <!-- Footer -->
+            <div style="border-top: 1px solid #e0e0e0; padding-top: 20px; text-align: center;">
+              <p style="color: #888888; font-size: 14px; margin: 0 0 10px 0;">
+                Best regards,<br />
+                The Sudo Flux Team
+              </p>
+              
+              <p style="color: #888888; font-size: 12px; margin: 0; font-style: italic;">
+                This is an automated response. Please do not reply to this email.
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        to: email,
+        subject: `Thank you for contacting Sudo Flux - ${subject || 'Your Inquiry'}`,
+        html: emailHtml,
+      });
+
+      console.log(`Return email sent successfully to ${email}`);
+    } catch (emailError) {
+      console.error("Error sending return email:", emailError);
+      // Don't fail the contact creation if email fails
+    }
     
     return NextResponse.json(
       { success: true, message: "Contact created successfully", contact: newContact },

@@ -4,8 +4,8 @@ import { Github, Twitter, Linkedin, Instagram, Send, Calendar, DollarSign, Clock
 import Button from '@/components/ui/button';
 import LineAnimation from '@/components/animations/LineAnimation';
 import { useFormik } from 'formik';
-import { toast } from 'sonner';
 import { useSubmitPublicConsultation } from '@/hooks/consultations.hooks';
+import { SuccessToast, ErrorToast } from '@/components/ui/custom-toast';
 import * as Yup from 'yup';
 
 // Validation schema for the consultation form
@@ -33,6 +33,9 @@ const ConsultationFormValidation = Yup.object({
 
 const ConsultationFormSection = () => {
   const { mutateAsync: submitConsultation, isPending } = useSubmitPublicConsultation();
+  const [showSuccessToast, setShowSuccessToast] = React.useState(false);
+  const [showErrorToast, setShowErrorToast] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const {
     handleChange,
@@ -56,11 +59,12 @@ const ConsultationFormSection = () => {
     onSubmit: async (data) => {
       try {
         await submitConsultation(data);
-        toast.success('Consultation request submitted successfully! We\'ll contact you within 24 hours.');
+        setShowSuccessToast(true);
         resetForm();
       } catch (error: any) {
         console.error('Error submitting consultation:', error);
-        toast.error(error?.response?.data?.message || 'Failed to submit consultation request. Please try again.');
+        setErrorMessage(error?.response?.data?.message || 'Failed to submit consultation request. Please try again.');
+        setShowErrorToast(true);
       }
     },
   });
@@ -343,6 +347,26 @@ const ConsultationFormSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Custom Success Toast */}
+      <SuccessToast
+        open={showSuccessToast}
+        onOpenChange={setShowSuccessToast}
+        title="Consultation Request Submitted! 🚀"
+        message="Thank you for your interest! We've received your consultation request and our team will contact you within 24 hours to schedule your free consultation. Get ready to bring your vision to life!"
+        autoClose={true}
+        autoCloseDelay={5000}
+      />
+
+      {/* Custom Error Toast */}
+      <ErrorToast
+        open={showErrorToast}
+        onOpenChange={setShowErrorToast}
+        title="Oops! Something went wrong 😔"
+        message={errorMessage}
+        autoClose={true}
+        autoCloseDelay={5000}
+      />
     </section>
   );
 };
