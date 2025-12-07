@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mongoose Quick Start Guide</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "Segoe UI", Calibri, sans-serif;
+        line-height: 1.6;
+      }
+      body {
+        margin: 2rem auto;
+        max-width: 900px;
+        padding: 0 1rem 4rem;
+      }
+      header {
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 1rem;
+      }
+      h1,
+      h2,
+      h3 {
+        margin-top: 2.5rem;
+      }
+      code {
+        font-family: "Fira Code", Consolas, monospace;
+      }
+      pre {
+        background: #0f111a;
+        color: #f8f8f2;
+        padding: 1rem;
+        border-radius: 6px;
+        overflow-x: auto;
+      }
+      pre code {
+        font-size: 0.95rem;
+      }
+      section {
+        margin-bottom: 2rem;
+      }
+      ul {
+        padding-left: 1.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>sudo-flux API Build Notes</h1>
+      <p>
+        Serial walkthrough of how this repository wires up Mongoose, structures
+        models, and exposes fully typed CRUD APIs under <code>src/app/api</code>.
+        The steps below are derived from the actual source, not a generic guide.
+      </p>
+    </header>
+
+    <section id="step-1">
+      <h2>1. Project Scaffolding &amp; Dependencies</h2>
+      <ul>
+        <li>
+          Created with Next.js App Router (<code>next@15.4.5</code>) and React 19
+          as recorded in <code>package.json</code>.
+        </li>
+        <li>
+          Server-side tooling includes <code>mongoose@8.18.0</code>,
+          <code>bcryptjs</code> for hashing, <code>jsonwebtoken</code> for auth, and
+          <code>yup</code> for schema validation.
+        </li>
+        <li>
+          Core scripts: <code>npm run dev</code> (Next dev server on port 4000),
+          <code>npm run build</code>, and <code>npm run start</code>.
+        </li>
+      </ul>
+      <pre><code># relevant installs already present in package.json
+npm install mongoose bcryptjs jsonwebtoken yup
+npm install next react react-dom @types/node typescript --save-dev</code></pre>
+    </section>
+
+    <section id="step-2">
+      <h2>2. Centralized Mongo Connection (<code>src/DB/db.ts</code>)</h2>
+      <p>
+        All API handlers import <code>@/DB/db</code> once; the module reads
+        <code>DB_USER_NAME</code>, <code>DB_PASSWORD</code>, and
+        <code>DB_NAME</code> to build an Atlas SRV URI, then invokes
+        <code>mongoose.connect()</code>. The promise is created eagerly, so every
+        route gets a shared connection without extra boilerplate.
+      </p>
+      <pre><code>import { connect } from "mongoose";
+
+const MONGO_URI =
+  `mongodb+srv://${process.env.DB_USER_NAME}:${process.env.DB_PASSWORD}` +
+  `@cluster0.njebycd.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+
+connect(MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((error) => console.log(error));</code></pre>
+      <p>
+        Because the module executes on import, every route simply does
+        <code>import "@/DB/db"</code> and starts querying immediately.
+      </p>
+    </section>
+
+    <section id="step-3">
+      <h2>3. Domain Models under <code>src/models</code></h2>
+      <ul>
+        <li>
+          Each collection (Applicant, Blog, Career, Category, Consultation,
+          Contact, Faq, Industry, Legal, Service, Team, User, Visitor) gets its own
+          Mongoose schema with timestamps and TypeScript interfaces.
+        </li>
+        <li>
+          Models reuse <code>mongoose.models</code> to avoid recompile issues in
+          Next's hot reload environment.
+        </li>
+        <li>
+          Relationships use refs, e.g. <code>Service.category</code> references
+          <code>Category</code>.
+        </li>
+      </ul>
+      <pre><code>// src/models/Service.ts
+const ServiceSchema = new Schema(
+  {
+    title: { type: String, required: true, trim: true },
+    subTitle: { type: String, required: true, trim: true },
+    statsString: { type: String, required: true, trim: true },
+    description: { type: String, required: true },
+    benefits: [{ type: String, required: true }],
+    category: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+  },
+  { timestamps: true }
+);</code></pre>
+    </section>
+
+    <section id="step-4">
+      <h2>4. Route Layout (<code>src/app/api</code>)</h2>
+      <p>
+        Next.js route handlers mirror REST resources. Every folder exposes a
+        <code>route.ts</code> file and optional dynamic segments for
+        record-specific operations. Notable directories:
+      </p>
+      <ul>
+        <li>
+          CRUD resources: <code>applicants</code>, <code>blogs</code>,
+          <code>careers</code>, <code>categories</code>, <code>consultations</code>,
+          <code>contacts</code>, <code>faq</code>, <code>industries</code>,
+          <code>legal</code>, <code>services</code>, <code>teams</code>,
+          <code>visitors</code>.
+        </li>
+        <li>
+          Auth workflows: <code>auth/login</code>, <code>auth/register</code>,
+          <code>auth/forgot-password</code>, <code>auth/reset-password</code>,
+          <code>auth/change-password</code>.
+        </li>
+        <li>
+          Utility endpoints: <code>crudLengthStats</code>,
+          <code>upload</code>, <code>send</code>, visitor analytics helpers such as
+          <code>visitors/update-section</code>.
+        </li>
+      </ul>
+      <p>
+        Dynamic routes (e.g. <code>services/[id]/route.ts</code>) hold PATCH/PUT
+        and DELETE logic; list endpoints stay in the root folder.
+      </p>
+    </section>
+
+    <section id="step-5">
+      <h2>5. Example: Services API</h2>
+      <ol>
+        <li>
+          <code>GET /api/services</code> pulls query params for pagination,
+          ordering, search, and category filters, builds a Mongoose query, and
+          returns results plus pagination metadata.
+        </li>
+        <li>
+          <code>POST /api/services</code> validates required fields, ensures the
+          referenced category exists, enforces that <code>benefits</code> is a
+          non-empty array, persists the record, and populates the category snippet
+          before sending it back.
+        </li>
+        <li>
+          <code>Service.find()</code> responses populate category name/status to
+          avoid extra client calls.
+        </li>
+      </ol>
+      <pre><code>// src/app/api/services/route.ts (excerpt)
+const ordering = searchParams.get("ordering") || "-createdAt";
+const page = parseInt(searchParams.get("page") || "1");
+const per_page = parseInt(searchParams.get("per_page") || "10");
+const query: any = {};
+if (search) {
+  query.$or = [
+    { title: { $regex: search, $options: "i" } },
+    { subTitle: { $regex: search, $options: "i" } },
+    { description: { $regex: search, $options: "i" } },
+    { statsString: { $regex: search, $options: "i" } },
+  ];
+}</code></pre>
+      <p>
+        The same pattern appears in <code>categories</code>, <code>blogs</code>,
+        and other resources, providing a consistent API surface for the admin UI.
+      </p>
+    </section>
+
+    <section id="step-6">
+      <h2>6. Example: Visitor Analytics Pipeline</h2>
+      <p>
+        <code>src/app/api/visitors/route.ts</code> shows the most involved handler:
+      </p>
+      <ul>
+        <li>
+          Accepts <code>session_id</code>, <code>session_details</code>, and an
+          <code>analytics</code> array. Requests without JSON bodies or with wrong
+          types are rejected aggressively.
+        </li>
+        <li>
+          If a <code>session_id</code> exists, appends analytics via
+          <code>$push</code>; otherwise it generates a 9-digit ID and creates a new
+          document.
+        </li>
+        <li>
+          Enum enforcement (device type), numeric guards for section durations,
+          and exhaustive error responses help front-end instrumentation.
+        </li>
+      </ul>
+      <pre><code>// src/app/api/visitors/route.ts (excerpt)
+if (!Array.isArray(analytics)) {
+  return NextResponse.json(
+    { success: false, error: "analytics must be an array" },
+    { status: 400 }
+  );
+}
+
+if (session_id) {
+  session = await Visitor.findOneAndUpdate(
+    { session_id },
+    { $push: { analytics: { $each: analytics } }, ...(session_details && { session_details }) },
+    { new: true, upsert: false }
+  );
+} else {
+  const newSessionId = generateSessionId();
+  session = await Visitor.create({ session_id: newSessionId, session_details, analytics });
+}</code></pre>
+    </section>
+
+    <section id="step-7">
+      <h2>7. Authentication &amp; Security</h2>
+      <ul>
+        <li>
+          <code>src/models/User.ts</code> stores hashed passwords (pre-save
+          hook with <code>bcryptjs</code>), hides sensitive fields via a custom
+          <code>toJSON</code>, and exposes <code>comparePassword</code>.
+        </li>
+        <li>
+          <code>POST /api/auth/login</code> selects the password explicitly,
+          validates credentials, and issues a JWT signed with
+          <code>JWT_SECRET</code>/<code>JWT_SICRECT_KEY</code>.
+        </li>
+        <li>
+          Additional flows (register, forgot/reset password, change password)
+          live under <code>src/app/api/auth</code> and reuse the same model.
+        </li>
+      </ul>
+      <pre><code>// src/app/api/auth/login/route.ts (excerpt)
+const user = await User.findOne({ email }).select("+password");
+const isMatch = await user.comparePassword?.(password);
+const token = jwt.sign(
+  { sub: user._id.toString(), role: user.role, email: user.email },
+  process.env.JWT_SECRET!,
+  { expiresIn: "7d" }
+);</code></pre>
+    </section>
+
+    <section id="step-8">
+      <h2>8. Supporting Layers</h2>
+      <ul>
+        <li>
+          Client hooks under <code>src/hooks</code> wrap REST calls with React
+          Query to keep the admin dashboard in sync.
+        </li>
+        <li>
+          Form schemas in <code>src/lib/validate</code> (e.g.
+          <code>CategoryAddEditFormValidation</code>) ensure UI validation mirrors
+          backend expectations.
+        </li>
+        <li>
+          Utility libraries in <code>src/lib</code> cover mailers, Axios wrappers,
+          and time helpers used by API endpoints like <code>send</code>.
+        </li>
+      </ul>
+    </section>
+
+    <section id="step-9">
+      <h2>9. Running &amp; Testing the APIs</h2>
+      <ol>
+        <li>
+          Populate environment variables:
+          <code>DB_USER_NAME</code>, <code>DB_PASSWORD</code>, <code>DB_NAME</code>,
+          <code>JWT_SECRET</code>, email credentials for mailers, etc.
+        </li>
+        <li>
+          Start Next.js locally: <code>npm run dev</code>. The dev server serves
+          UI pages and API routes simultaneously on port 4000.
+        </li>
+        <li>
+          Hit endpoints via Thunder Client/Postman (e.g.
+          <code>http://localhost:4000/api/services?search=seo&amp;page=1</code>).
+        </li>
+        <li>
+          For production, <code>npm run build</code> followed by
+          <code>npm run start</code> bundles the handlers into Next's server.
+        </li>
+      </ol>
+    </section>
+  </body>
+</html>
+
