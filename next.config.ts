@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   // Hosting configuration
-  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://your-domain.com' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://sudo-flux.vercel.app' : '',
   basePath: process.env.NODE_ENV === 'production' ? '' : '',
   
   // Image optimization configuration
@@ -36,14 +36,10 @@ const nextConfig: NextConfig = {
       // Additional hosting domains for production
       {
         protocol: "https",
-        hostname: "your-domain.com",
+        hostname: "sudo-flux.vercel.app",
         pathname: "/**",
       },
-      {
-        protocol: "https",
-        hostname: "cdn.your-domain.com",
-        pathname: "/**",
-      },
+ 
     ],
     // Image optimization settings
     formats: ['image/webp', 'image/avif'],
