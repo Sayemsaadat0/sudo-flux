@@ -1,6 +1,9 @@
 import HomePageContainer from "@/components/home-page/HomePageContainer";
 import { getBaseUrl } from "@/utils/getBaseUrl";
 
+// Force dynamic rendering since we're using no-store cache
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const baseUrl = getBaseUrl();
 
