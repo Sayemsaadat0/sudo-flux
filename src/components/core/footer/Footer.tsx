@@ -1,6 +1,6 @@
 
 
-import Button from '@/components/ui/button'
+// import Button from '@/components/ui/button'
 import Link from 'next/link'
 import React from 'react'
 import Logo from '../logo/Logo'
@@ -28,7 +28,7 @@ export default function Footer() {
                                     <p className="text-sudo-neutral-4 max-w-sm">Join our newsletter for the latest updates, news, and more!</p>
 
                                     {/* Email Input and Button */}
-                                    <div className="flex flex-col  gap-3 max-w-md">
+                                    {/* <div className="flex flex-col  gap-3 max-w-md">
                                         <div className='flex-1 '>
                                             <input
                                                 type="email"
@@ -37,7 +37,7 @@ export default function Footer() {
                                             />
                                         </div>
                                         <Button className='text-sudo-white-1' label='Subscribe' />
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 
@@ -66,7 +66,7 @@ export default function Footer() {
                     </div>
                     <div className=" border-t border-sudo-white-4 py-6 text-center text-sudo-neutral-4 text-sm">
                         <p>
-                            &copy; {new Date().getFullYear()} YourCompanyName. All rights reserved.
+                            &copy; {new Date().getFullYear()} SUDO FLUX LTD. All rights reserved.
                         </p>
                         <div className="hidden sm:flex flex-col md:flex-row justify-center gap-4 mt-2 text-xs sm:text-sm">
                             <Link href="/privacy-policy" className="hover:text-sudo-neutral-6 transition-colors duration-200">

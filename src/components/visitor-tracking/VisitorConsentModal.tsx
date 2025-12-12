@@ -23,39 +23,39 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
   const [error, setError] = useState<string | null>(null)
   
   // Initialize hooks
-  const { locationData, loading: locationLoading } = useUserLocation()
+  const {  loading: locationLoading } = useUserLocation()
 
-  console.log('🔍 VisitorConsentModal - Component State:', {
-    isOpen,
-    visitorCode,
-    isLocationFetching,
-    locationLoading,
-    locationData,
-    fetchedLocationData,
-    isProcessing
-  })
+  // console.log('🔍 VisitorConsentModal - Component State:', {
+  //   isOpen,
+  //   visitorCode,
+  //   isLocationFetching,
+  //   locationLoading,
+  //   locationData,
+  //   fetchedLocationData,
+  //   isProcessing
+  // })
 
   // Console log the session ID whenever it changes
   useEffect(() => {
     if (visitorCode) {
-      console.log('🎫 VisitorConsentModal - Session ID received from provider:', visitorCode)
-      console.log('🎫 VisitorConsentModal - Session ID length:', visitorCode.length)
-      console.log('🎫 VisitorConsentModal - Session ID is 12 digits:', visitorCode.length === 12)
+      // console.log('🎫 VisitorConsentModal - Session ID received from provider:', visitorCode)
+      // console.log('🎫 VisitorConsentModal - Session ID length:', visitorCode.length)
+      // console.log('🎫 VisitorConsentModal - Session ID is 12 digits:', visitorCode.length === 12)
     } else {
-      console.log('❌ VisitorConsentModal - No session ID received from provider')
+      // console.log('❌ VisitorConsentModal - No session ID received from provider')
     }
   }, [visitorCode])
 
   // Automatically fetch location when component mounts
   useEffect(() => {
-    console.log('🚀 VisitorConsentModal - Component mounted, fetching location automatically')
+    // console.log('🚀 VisitorConsentModal - Component mounted, fetching location automatically')
     
     const fetchLocationOnMount = async () => {
       try {
-        console.log('📍 Starting automatic location fetch...')
+        // console.log('📍 Starting automatic location fetch...')
         const locationResult = await fetchLocationDirectly()
         if (locationResult) {
-          console.log('✅ Location fetched successfully on mount:', locationResult)
+          // console.log('✅ Location fetched successfully on mount:', locationResult)
           setFetchedLocationData(locationResult)
         } else {
           console.log('❌ Location fetch failed on mount')
@@ -86,7 +86,7 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
 
         if (response.ok) {
           const data = await response.json()
-          console.log(`Successfully fetched location from ${service.name}:`, data)
+          // console.log(`Successfully fetched location from ${service.name}:`, data)
           
           // Map the data to our format
           return {
@@ -108,25 +108,25 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
   }
 
   const handleAccept = async () => {
-    console.log('🎯 handleAccept called')
+    // console.log('🎯 handleAccept called')
     
     if (isProcessing) {
-      console.log('⏳ Already processing, ignoring accept call')
+      // console.log('⏳ Already processing, ignoring accept call')
       return
     }
     
-    console.log('🔄 Setting processing state to true')
+    // console.log('🔄 Setting processing state to true')
     setIsProcessing(true)
     setError(null) // Clear any previous errors
     
     try {
-      console.log('📋 Starting accept handler logic')
+      // console.log('📋 Starting accept handler logic')
       
       let sessionDetails: SessionDetails
       
       // Use already fetched location data (fetched on mount)
       if (fetchedLocationData) {
-        console.log('✅ Using pre-fetched location data:', fetchedLocationData)
+        // console.log('✅ Using pre-fetched location data:', fetchedLocationData)
         const locationString = `${fetchedLocationData.city}, ${fetchedLocationData.country}`
         sessionDetails = {
           ip_address: fetchedLocationData.ip,
@@ -134,16 +134,16 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
           browser_type: getBrowserType(),
           device_type: getDeviceType()
         }
-        console.log('📍 Session details with location:', sessionDetails)
+        // console.log('📍 Session details with location:', sessionDetails)
       } else {
-        console.log('❌ No pre-fetched location data available, using fallback')
+        // console.log('❌ No pre-fetched location data available, using fallback')
         sessionDetails = {
           ip_address: 'unknown',
           location: 'unknown',
           browser_type: getBrowserType(),
           device_type: getDeviceType()
         }
-        console.log('🔧 Session details with fallback:', sessionDetails)
+        // console.log('🔧 Session details with fallback:', sessionDetails)
       }
       
       // Create analytics for consent acceptance
@@ -157,14 +157,14 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
         }]
       }]
       
-      console.log('📊 Analytics data:', analytics)
+      // console.log('📊 Analytics data:', analytics)
       
       // Create or update visitor session using the new hook
       if (visitorCode) {
-        console.log('🎫 Using session ID from provider:', visitorCode)
+        // console.log('🎫 Using session ID from provider:', visitorCode)
         
         // First, try to create the session (this will work even if session exists)
-        console.log('🔄 Creating session with POST /api/visitors')
+        // console.log('🔄 Creating session with POST /api/visitors')
         try {
           const createResponse = await fetch('/api/visitors', {
             method: 'POST',
@@ -179,8 +179,8 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
           })
           
           if (createResponse.ok) {
-            const createResult = await createResponse.json()
-            console.log('✅ Session created/updated successfully:', createResult)
+            await createResponse.json()
+            // console.log('✅ Session created/updated successfully:', createResult)
           } else {
             let errorData;
             try {
@@ -237,19 +237,19 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
   }
 
   const handleReject = async () => {
-    console.log('❌ handleReject called')
+    // console.log('❌ handleReject called')
     
     if (isProcessing) {
-      console.log('⏳ Already processing, ignoring reject call')
+      // console.log('⏳ Already processing, ignoring reject call')
       return
     }
     
-    console.log('🔄 Setting processing state to true')
+    // console.log('🔄 Setting processing state to true')
     setIsProcessing(true)
     setError(null) // Clear any previous errors
     
     try {
-      console.log('📋 Starting reject handler logic')
+      // console.log('📋 Starting reject handler logic')
       
       // Use anonymized data when user rejects
       const sessionDetails: SessionDetails = {
@@ -259,7 +259,7 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
         device_type: getDeviceType()
       }
       
-      console.log('🔒 Session details with anonymized data:', sessionDetails)
+      // console.log('🔒 Session details with anonymized data:', sessionDetails)
       
       // Create analytics for consent rejection
       const analytics: PageAnalytics[] = [{
@@ -272,14 +272,14 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
         }]
       }]
       
-      console.log('📊 Analytics data:', analytics)
+      // console.log('📊 Analytics data:', analytics)
       
       // Create or update visitor session using the new hook
       if (visitorCode) {
-        console.log('🎫 Using session ID from provider:', visitorCode)
+        // console.log('🎫 Using session ID from provider:', visitorCode)
         
         // First, try to create the session (this will work even if session exists)
-        console.log('🔄 Creating session with POST /api/visitors')
+        // console.log('🔄 Creating session with POST /api/visitors')
         try {
           const createResponse = await fetch('/api/visitors', {
             method: 'POST',
@@ -294,8 +294,8 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
           })
           
           if (createResponse.ok) {
-            const createResult = await createResponse.json()
-            console.log('✅ Session created/updated successfully with anonymized data:', createResult)
+            await createResponse.json()
+            // console.log('✅ Session created/updated successfully with anonymized data:', createResult)
           } else {
             let errorData;
             try {
@@ -334,19 +334,19 @@ export default function VisitorConsentBox({ isOpen, onAccept, onReject, isLocati
           throw createError
         }
       } else {
-        console.log('❌ No visitor code available, cannot create session')
+        // console.log('❌ No visitor code available, cannot create session')
       }
       
-      console.log('🚫 Visitor consent rejected, using anonymized data:', sessionDetails)
+      // console.log('🚫 Visitor consent rejected, using anonymized data:', sessionDetails)
     } catch (error) {
       console.error('💥 Failed to process consent rejection:', error)
       setError(error instanceof Error ? error.message : 'An unexpected error occurred')
     } finally {
-      console.log('🏁 Reject handler finished, cleaning up...')
+      //  console.log('🏁 Reject handler finished, cleaning up...')
       setIsProcessing(false)
-      console.log('📞 Calling onReject callback')
+      // console.log('📞 Calling onReject callback')
     onReject()
-      console.log('🚪 Calling onClose callback')
+      // console.log('🚪 Calling onClose callback')
       onClose?.()
     }
   }
